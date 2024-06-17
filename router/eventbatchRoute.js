@@ -1,6 +1,6 @@
 const express = require('express')
 const route = express.Router()
-const { addBatch, updateBatch, deleteBatch, displayBatch ,completedBatch,displayCompletedBatch} = require('../controller/batchConroller')
+const { addBatch, updateBatch, deleteBatch, displayBatch ,completedBatch,displayCompletedBatch} = require('../controller/eventbatchConroller')
 route.post('/addbatch', addBatch)
 route.post('/Update', updateBatch)
 route.delete('/Delete', deleteBatch)

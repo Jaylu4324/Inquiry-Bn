@@ -1,4 +1,4 @@
-const model = require('../model/batchEvent')
+const model = require('../model/addCorsebatch')
 
 const addBatchEvent = (req, res) => {
     let {
@@ -6,7 +6,6 @@ const addBatchEvent = (req, res) => {
         EndtDate,
         Course,
         BatchTime,
-        TypeOfEvent,
         Amount,
         TypeOfPayment,
         Days } = req.body
@@ -17,7 +16,6 @@ const addBatchEvent = (req, res) => {
         EndtDate,
         Course,
         BatchTime,
-        TypeOfEvent,
         Days,
         Amount,
         TypeOfPayment,

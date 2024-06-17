@@ -1,14 +1,14 @@
 const express = require('express')
 require('./dbConfig')
 const rout = require('./router/invoicsRoute')
-const routinqry = require('./router/inquryRoute')
+const routinqry = require('./router/corseinquryRoute')
 const ruotStu = require('./router/studentRoute')
 const routInternship = require('./router/eventRoute')
 const routSeminar = require('./router/seminarRoute')
 const eventInquiry = require("./router/eventInquiryRoute")
 const batch = require('./router/eventbatchRoute')
-const batchevent = require('./router/batchEventRoute')
-const regBatch = require('./router/regBatchRoute')
+const batchevent = require('./router/addcorseRoute')
+const regBatch = require('./router/corseBatchRoute')
 const app = express()
 
 app.use(function (req, res, next) {

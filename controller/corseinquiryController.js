@@ -1,4 +1,4 @@
-const {model,validation} = require('../model/inquiryshcema')
+const {model,validation} = require('../model/corseinquiryshcema')
 
 const addInquiry = (req, res) => {
     let { FullName,
@@ -8,10 +8,12 @@ const addInquiry = (req, res) => {
         Description,
         CollageName,
         Course,
+        parentId,
         Interaction,
         FollowUp } = req.body
 
     const data = new model({
+        parentId,
         FullName,
         Contact,
         Email,
@@ -43,6 +45,7 @@ const addInquiry = (req, res) => {
 
 const updateinquiry = (req, res) => {
     let { FullName,
+        parentId,
         Contact,
         Email,
         Date,
@@ -67,7 +70,7 @@ const updateinquiry = (req, res) => {
         res.send({error})
     }else{
 
-        model.updateOne({ _id: req.query.id }, req.body)
+        model.updateOne({ _id: req.query.id }, {...req.body,parentId})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })

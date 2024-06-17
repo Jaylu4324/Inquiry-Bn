@@ -1,6 +1,6 @@
 const express=require('express')
 const route = express.Router()
-const {addBatchEvent,updatBatchEvent,deleteBatchEvent,getAllData,postiscompleted,getiscompleted}=require('../controller/batchEventController')
+const {addBatchEvent,updatBatchEvent,deleteBatchEvent,getAllData,postiscompleted,getiscompleted}=require('../controller/addCorseController')
 
 
 route.post('/addBevent', addBatchEvent)

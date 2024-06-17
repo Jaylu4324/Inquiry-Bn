@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const Batchevents=mongoose.Schema({
+const addCorseBatch=mongoose.Schema({
     StartDate:{
         type:Date
     },
@@ -31,4 +31,4 @@ const Batchevents=mongoose.Schema({
 })
 
 
-module.exports=mongoose.model("Batchevents",Batchevents)
+module.exports=mongoose.model("addCorseBatch",addCorseBatch)

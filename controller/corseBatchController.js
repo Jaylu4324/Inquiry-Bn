@@ -1,11 +1,11 @@
-const model = require("../model/ragBatchShcema")
-const model1 = require("../model/inquiryshcema");
+const model = require("../model/corseBatchShcema")
+const model1 = require("../model/corseinquiryshcema");
 
 const addBatch = (req, res) => {
-    let { EventId, StuName } = req.body;
+    let { parentId, StuName } = req.body;
     
     const data = new model({
-        EventId,
+        parentId,
         StuName,
         isCompleted: false
     });
@@ -37,10 +37,10 @@ const updateBatch = (req, res) => {
             }
         })
         .then(() => {
-            let { StuName, EventId } = req.body;
+            let { StuName, parentId } = req.body;
             
             if (StuName.length > 0) {
-                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return model.updateOne({ _id: req.query.id }, { StuName, parentId })
                     .then(() => {
                         let id1 = StuName.map(ele => ele._id);
                         return model1.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
@@ -49,7 +49,7 @@ const updateBatch = (req, res) => {
                         res.send({ msg: " reg Data set successfully" });
                     });
             } else {
-                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return model.updateOne({ _id: req.query.id }, { StuName, parentId })
                     .then(() => {
                         res.send({ msg: "Please provide some data" });
                     });
@@ -82,7 +82,7 @@ const deleteBatch = (req, res) => {
 };
 
 const displayBatch = (req, res) => {
-    model.find({EventId:req.query.id}).populate('EventId')
+    model.find({parentId:req.query.id}).populate('parentId')
         .then(data => {
             res.send({ msg: "Display reg Batch", data });
         })

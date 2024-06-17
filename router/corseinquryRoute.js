@@ -1,7 +1,7 @@
 const express = require('express')
 const route = express.Router()
 
-const { addInquiry, updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry} = require('../controller/inquiryController')
+const { addInquiry, updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry} = require('../controller/corseinquiryController')
 
 route.post('/addInquiry', addInquiry)
 route.post('/Update', updateinquiry)

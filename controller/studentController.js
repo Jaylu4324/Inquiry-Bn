@@ -12,6 +12,7 @@ const addStudent = (req, res) => {
         Parentcontact,
         days,
         Tfees,
+        
 Pfees
     } = req.body
 

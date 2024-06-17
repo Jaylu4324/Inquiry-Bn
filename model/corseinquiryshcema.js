@@ -2,7 +2,12 @@
 const mongoose = require('mongoose')
 const joi = require('joi')
 
-const Inquiry = mongoose.Schema({
+const corseInquiry = mongoose.Schema({
+    parentId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'addCorseBatch'
+    },
+    
     FullName: {
         type: String
     },
@@ -78,5 +83,5 @@ const validation = joi.object({
         .required(),
 })
 
-const model = mongoose.model('Inquiry', Inquiry)
+const model = mongoose.model('corseInquiry', corseInquiry)
 module.exports = { validation, model }
