@@ -29,10 +29,10 @@ const addInquiry = (req, res) => {
         FollowUp
     })
 
-    let {error, value}=validation.validate(req.body)
-    if(error){
-        res.send({error})
-    }else{
+    // let {error, value}=validation.validate({})
+    // if(error){
+        // res.send({error})
+    // }else{
 
         data.save().then((data1) => {
             res.send({ mag: "Inquiry Added", data1 })
@@ -41,7 +41,7 @@ const addInquiry = (req, res) => {
                 res.send({ err })
             })
     }
-}
+// }
 
 const updateinquiry = (req, res) => {
     let { FullName,
