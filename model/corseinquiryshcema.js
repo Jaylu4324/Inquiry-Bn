@@ -84,4 +84,4 @@ const corseInquiry = mongoose.Schema({
 // })
 
 const model = mongoose.model('corseInquiry', corseInquiry)
-module.exports = { validation, model }
+module.exports = {  model }
