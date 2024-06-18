@@ -31,15 +31,15 @@ const addEventInquiry = (req, res) => {
 
     const { error, value } = EinquiryValidation.validate({});
     if (error) {
-        res.status(400).JSON({ isSuccess: false, error })
+        res.status(400).json({ isSuccess: false, error })
     }
     else {
 
         data.save().then((data1) => {
-            res.status(201).JSON({ isSuccess: true, msg: "Event Inquiry Added", data1 })
+            res.status(201).json({ isSuccess: true, msg: "Event Inquiry Added", data1 })
         })
             .catch((err) => {
-                res.status(500).JSON({ isSuccess: false, err })
+                res.status(500).json({ isSuccess: false, err })
             })
     }
 
@@ -71,15 +71,15 @@ const updateEventinquiry = (req, res) => {
     });
 
     if (error) {
-        res.status(400).JSON({ isSuccess: false, error })
+        res.status(400).json({ isSuccess: false, error })
     }
     else {
         model.updateOne({ _id: req.query.id }, req.body)
             .then((data) => {
-                res.status(201).JSON({ isSuccess: true, msg: "Event Inquiry Updated", data })
+                res.status(201).json({ isSuccess: true, msg: "Event Inquiry Updated", data })
             })
             .catch((err) => {
-                res.status(500).JSON({ isSuccess: false, err })
+                res.status(500).json({ isSuccess: false, err })
             })
     }
 

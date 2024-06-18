@@ -26,19 +26,26 @@ const addevent = (req, res) => {
         IsCompleted: false
     })
 
-    const { error, value } = eventValidation.validate({ });
+    const { error, value } = eventValidation.validate({ 
+        // StartDate,
+        Course,
+        BatchTime,
+        Days,
+        TypeOfEvent,
+        TypeOfPayment,
+        Amount});
 
     if (error) {
-        res.status(400).JSON({ isSuccess: false, error })
+        res.status(400).json({ isSuccess: false, error })
     }
 
 else{
 
     eventdata.save().then((data) => {
-        res.status(201).JSON({isSuccess:true , msg: "Event data added", data })
+        res.status(201).json({isSuccess:true , msg: "Event data added", data })
     })
         .catch((err) => {
-            res.status(500).JSON({isSuccess:false, err })
+            res.status(500).json({isSuccess:false, err })
         })
 }
 }
@@ -60,17 +67,17 @@ let {StartDate,
         TypeOfPayment,
         Amount });
 if (error) {
-    res.status(400).JSON({ isSuccess: false, error })
+    res.status(400).json({ isSuccess: false, error })
     
 }
 else{
 
     model.updateOne({ _id: req.query.id }, req.body)
         .then((data) => {
-            res.status(201).JSON({isSuccess:true, msg: "Event Updated", data })
+            res.status(201).json({isSuccess:true, msg: "Event Updated", data })
         })
         .catch((err) => {
-            res.status(500).JSON({isSuccess:false, err })
+            res.status(500).json({isSuccess:false, err })
         })
 }
 

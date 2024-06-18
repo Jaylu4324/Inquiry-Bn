@@ -13,7 +13,7 @@ const addBatch = (req, res) => {
     const { error, value } = EventBatchVAlidation.validate({  });
 
     if(error){
-        res.status(400).JSON({ isSuccess: false, error })
+        res.status(400).json({ isSuccess: false, error })
         
     }
 else{
@@ -27,12 +27,12 @@ else{
             return model1.updateMany(filter, update)
                 .then(result => {
                     console.log(`${result.modifiedCount} documents were updated.`);
-                    res.status(201).JSON({isSuccess: true, msg: "Batch Added", data1 });
+                    res.status(201).json({isSuccess: true, msg: "Batch Added", data1 });
                 });
         })
         .catch(err => {
             console.error('Error:', err);
-            res.status(500).JSON({isSuccess: false, err });
+            res.status(500).json({isSuccess: false, err });
         });
 }
 
@@ -43,6 +43,11 @@ let {StuName} = req.body
 
 const { error, value } = EventBatchVAlidation.validate({ StuName  });
 
+if (error) {
+    res.status(400).json({ isSuccess: false, error })
+    
+}
+else{
 
     model.findOne({ _id: req.query.id })
         .then(prevdata => {
@@ -61,19 +66,21 @@ const { error, value } = EventBatchVAlidation.validate({ StuName  });
                         return model1.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
                     })
                     .then(() => {
-                        res.send({ msg: "Data set successfully" });
+                        res.status(201).json({isSuccess:true , msg: "Data set successfully" });
                     });
             } else {
                 return model.updateOne({ _id: req.query.id }, { StuName, EventId })
                     .then(() => {
-                        res.send({ msg: "Please provide some data" });
+                        res.status(201).json({isSuccess:true , msg: "Please provide some data" });
                     });
             }
         })
         .catch(err => {
             console.error('Error:', err);
-            res.send({ err });
+            res.status(500).json({isSuccess:false, err });
         });
+}
+
 };
 
 const deleteBatch = (req, res) => {

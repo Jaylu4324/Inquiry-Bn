@@ -32,10 +32,10 @@ const events=mongoose.Schema({
 })
 
 const eventValidation = joi.object({
-    StartDate:joi.date().required(),
+    // StartDate:joi.date().required(),
 Course:joi.string().required(),
 BatchTime:joi.date().required(),
-Days:joi.array().required(),
+Days:joi.array().min(1).required(),
 TypeOfEvent:joi.string().required(),
 TypeOfPayment:joi.string().required(),
 Amount:joi.number().required()
