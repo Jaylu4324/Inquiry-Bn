@@ -1,4 +1,4 @@
-const {model,validation} = require('../model/corseinquiryshcema')
+const {model} = require('../model/corseinquiryshcema')
 
 const addInquiry = (req, res) => {
     let { FullName,
@@ -56,19 +56,19 @@ const updateinquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
-    let {error, value}=validation.validate({FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Status,
-        Course,
-        Interaction,
-        FollowUp})
-    if(error){
-        res.send({error})
-    }else{
+    // let {error, value}=validation.validate({FullName,
+    //     Contact,
+    //     Email,
+    //     Date,
+    //     Description,
+    //     CollageName,
+    //     Status,
+    //     Course,
+    //     Interaction,
+    //     FollowUp})
+    // if(error){
+    //     res.send({error})
+    // }else{
 
         model.updateOne({ _id: req.query.id }, {...req.body,parentId})
             .then((data) => {
@@ -77,7 +77,7 @@ const updateinquiry = (req, res) => {
             .catch((err) => {
                 res.send({ err })
             })
-    }
+    // }
 }
 
 
