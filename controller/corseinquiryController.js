@@ -118,7 +118,7 @@ const displayInquiry = (req, res) => {
 }
 
 const displayOnGoingInquiry = (req, res) => {
-    model.find({ onGoing: true,isDeleted:false }).then((data) => {
+    model.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -127,7 +127,7 @@ const displayOnGoingInquiry = (req, res) => {
 }
 
 const displayRejectInquiry = (req, res) => {
-    model.find({ Reject: true,isDeleted:false  }).then((data) => {
+    model.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -137,7 +137,7 @@ const displayRejectInquiry = (req, res) => {
 
 
 const displayConfirmInquiry = (req, res) => {
-    model.find({ Confirm: true ,isDeleted:false }).then((data) => {
+    model.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
