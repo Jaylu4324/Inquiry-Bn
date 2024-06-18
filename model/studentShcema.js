@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose')
 
+
 const student  = mongoose.Schema({
     Name:{
         type:String
@@ -39,5 +40,7 @@ const student  = mongoose.Schema({
         type:Number
     },
 })
+
+
 
 module.exports=mongoose.model('student',student)

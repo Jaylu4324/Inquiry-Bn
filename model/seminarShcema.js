@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const joi = require('joi')
 
 const seminar = mongoose.Schema({
     College: {
@@ -24,5 +25,11 @@ const seminar = mongoose.Schema({
     }
 })
 
-
+const seminarVAlidation = joi.object({
+    College:joi.string().required(),
+StartDate:joi.date().required(),
+Course:joi.string().required(),
+SeminarTime:joi.date().required(),
+Days:joi.array().required()
+})
 module.exports = mongoose.model("seminar", seminar)

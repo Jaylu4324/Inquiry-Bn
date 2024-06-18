@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const  joi = require('joi')
+
 
 const eventInquiry = mongoose.Schema({
     eventId:{
@@ -46,4 +48,23 @@ const eventInquiry = mongoose.Schema({
     }
 })
 
-module.exports=mongoose.model('eventInquiry',eventInquiry)
+const EinquiryValidation = joi.object({
+    FullName:joi.string()
+    .alphanum()
+    .min(3)
+    .max(30)
+    .required(),
+
+    Contect:joi.number().required(),
+
+    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+
+Date:joi.date().required(),
+Description:joi.string().required(),
+CollageName:joi.string().required(),
+Interaction:joi.string().required(),
+FollowUp:joi.string().required()
+})
+
+const model=mongoose.model('eventInquiry',eventInquiry)
+module.exports={model,EinquiryValidation}

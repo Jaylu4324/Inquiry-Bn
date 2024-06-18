@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const joi =require('joi')
 
 const events=mongoose.Schema({
     StartDate:{
@@ -30,5 +31,15 @@ const events=mongoose.Schema({
     }
 })
 
+const eventValidation = joi.object({
+    StartDate:joi.date().required(),
+Course:joi.string().required(),
+BatchTime:joi.date().required(),
+Days:joi.array().required(),
+TypeOfEvent:joi.string().required(),
+TypeOfPayment:joi.string().required(),
+Amount:joi.number().required()
+})
 
-module.exports=mongoose.model("events",events)
+const model = mongoose.model("events",events)
+module.exports={model , eventValidation}

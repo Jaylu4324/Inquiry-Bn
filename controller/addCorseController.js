@@ -1,4 +1,4 @@
-const model = require('../model/addCorsebatch')
+const {model,validation} = require('../model/addCorsebatch')
 
 const addBatchEvent = (req, res) => {
     let {

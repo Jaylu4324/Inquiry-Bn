@@ -1,4 +1,4 @@
-const model = require("../model/eventBatch");
+const {model,EventBatchVAlidation} = require("../model/eventBatch");
 const model1 = require("../model/eventInquiryShcema");
 
 const addBatch = (req, res) => {
@@ -10,25 +10,40 @@ const addBatch = (req, res) => {
         isCompleted: false
     });
 
+    const { error, value } = EventBatchVAlidation.validate({  });
+
+    if(error){
+        res.status(400).JSON({ isSuccess: false, error })
+        
+    }
+else{
+
     data.save()
         .then((data1) => {
             let arr = StuName.map(ele => ele._id);
             const filter = { _id: { $in: arr } };
             const update = { $set: { isAdded: true } };
-
+    
             return model1.updateMany(filter, update)
                 .then(result => {
                     console.log(`${result.modifiedCount} documents were updated.`);
-                    res.send({ msg: "Batch Added", data1 });
+                    res.status(201).JSON({isSuccess: true, msg: "Batch Added", data1 });
                 });
         })
         .catch(err => {
             console.error('Error:', err);
-            res.send({ err });
+            res.status(500).JSON({isSuccess: false, err });
         });
+}
+
 };
 
 const updateBatch = (req, res) => {
+let {StuName} = req.body
+
+const { error, value } = EventBatchVAlidation.validate({ StuName  });
+
+
     model.findOne({ _id: req.query.id })
         .then(prevdata => {
             if (prevdata && prevdata.StuName.length > 0) {

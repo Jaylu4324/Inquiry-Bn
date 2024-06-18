@@ -1,4 +1,4 @@
-const model = require('../model/eventShcema')
+const {model,eventValidation} = require('../model/eventShcema')
 
 
 
@@ -26,25 +26,54 @@ const addevent = (req, res) => {
         IsCompleted: false
     })
 
+    const { error, value } = eventValidation.validate({ });
+
+    if (error) {
+        res.status(400).JSON({ isSuccess: false, error })
+    }
+
+else{
+
     eventdata.save().then((data) => {
-        res.send({ msg: "Event data added", data })
+        res.status(201).JSON({isSuccess:true , msg: "Event data added", data })
     })
         .catch((err) => {
-            res.send({ err })
+            res.status(500).JSON({isSuccess:false, err })
         })
+}
 }
 
 const updateevent = (req, res) => {
+let {StartDate,
+    Course,
+    BatchTime,
+    Days,
+    TypeOfEvent,
+    TypeOfPayment,
+    Amount}=req.body
 
-
+    const { error, value } = eventValidation.validate({StartDate,
+        Course,
+        BatchTime,
+        Days,
+        TypeOfEvent,
+        TypeOfPayment,
+        Amount });
+if (error) {
+    res.status(400).JSON({ isSuccess: false, error })
+    
+}
+else{
 
     model.updateOne({ _id: req.query.id }, req.body)
         .then((data) => {
-            res.send({ msg: "Event Updated", data })
+            res.status(201).JSON({isSuccess:true, msg: "Event Updated", data })
         })
         .catch((err) => {
-            res.send({ err })
+            res.status(500).JSON({isSuccess:false, err })
         })
+}
+
 
 }
 

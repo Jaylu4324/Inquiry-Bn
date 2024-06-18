@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const joi = require('joi')
 
 const EventbatchSchema = mongoose.Schema({
     EventId:{
@@ -13,5 +14,8 @@ const EventbatchSchema = mongoose.Schema({
         type:Boolean
     }
 })
-
-module.exports=mongoose.model('EventbatchSchema',EventbatchSchema)
+const EventBatchVAlidation = joi.object({
+    StuName:joi.array().required()
+})
+const model = mongoose.model('EventbatchSchema',EventbatchSchema)
+module.exports={EventBatchVAlidation,model}

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-// const joi = require('joi')
+const joi = require('joi')
 
 const addCorseBatch=mongoose.Schema({
     StartDate:{
@@ -31,14 +31,15 @@ const addCorseBatch=mongoose.Schema({
     }
 })
 
-// const validation = joi.object({
-//     StartDate=joi.date().required(),
-// Course=joi.string().required(),
-// BatchTime
-// Days
-// TypeOfEvent
-// TypeOfPayment
-// Amount
-// })
+const validation = joi.object({
+    StartDate:joi.date().required(),
+Course:joi.string().required(),
+BatchTime:joi.date().required(),
+Days:joi.array().required(),
+TypeOfEvent:joi.string().required(),
+TypeOfPayment:joi.string().required(),
+Amount:joi.number().required()
+})
 
-module.exports=mongoose.model("addCorseBatch",addCorseBatch)
+const model = mongoose.model("addCorseBatch",addCorseBatch)
+module.exports={validation,model}

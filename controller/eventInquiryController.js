@@ -1,4 +1,4 @@
-const model = require('../model/eventInquiryShcema')
+const { model, EinquiryValidation } = require('../model/eventInquiryShcema')
 
 const addEventInquiry = (req, res) => {
 
@@ -24,33 +24,64 @@ const addEventInquiry = (req, res) => {
         Reject: false,
         Confirm: false,
         isDeleted: false,
-        isAdded:false,
+        isAdded: false,
         Interaction,
         FollowUp
     })
 
+    const { error, value } = EinquiryValidation.validate({});
+    if (error) {
+        res.status(400).JSON({ isSuccess: false, error })
+    }
+    else {
 
-
-    data.save().then((data1) => {
-        res.send({ mag: "Event Inquiry Added", data1 })
-    })
-        .catch((err) => {
-            res.send({ err })
+        data.save().then((data1) => {
+            res.status(201).JSON({ isSuccess: true, msg: "Event Inquiry Added", data1 })
         })
+            .catch((err) => {
+                res.status(500).JSON({ isSuccess: false, err })
+            })
+    }
+
+
 }
 
 
 const updateEventinquiry = (req, res) => {
 
+    let {
+        FullName,
+        Contect,
+        Email,
+        Date,
+        Description,
+        CollageName,
+        Interaction,
+        FollowUp
+    } = req.body
+    const { error, value } = EinquiryValidation.validate({
+        FullName,
+        Contect,
+        Email,
+        Date,
+        Description,
+        CollageName,
+        Interaction,
+        FollowUp
+    });
 
-
-    model.updateOne({ _id: req.query.id }, req.body)
-        .then((data) => {
-            res.send({ msg: "Event Inquiry Updated", data })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
+    if (error) {
+        res.status(400).JSON({ isSuccess: false, error })
+    }
+    else {
+        model.updateOne({ _id: req.query.id }, req.body)
+            .then((data) => {
+                res.status(201).JSON({ isSuccess: true, msg: "Event Inquiry Updated", data })
+            })
+            .catch((err) => {
+                res.status(500).JSON({ isSuccess: false, err })
+            })
+    }
 
 }
 
@@ -84,7 +115,7 @@ const hardelet = (req, res) => {
 }
 const displayAllEventInquiry = (req, res) => {
 
-    model.find({eventId:req.query.id}).then((data) => {
+    model.find({ eventId: req.query.id }).then((data) => {
         res.send({ msg: "display all Event Inquiry", data })
     })
         .catch((err) => {
@@ -93,7 +124,7 @@ const displayAllEventInquiry = (req, res) => {
 }
 
 const displayOnGoingEventInquiry = (req, res) => {
-    model.find({ onGoing: true, isDeleted: false,eventId:req.query.id}).then((data) => {
+    model.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display OnGoing Event Inquiry", data })
     })
         .catch((err) => {
@@ -102,7 +133,7 @@ const displayOnGoingEventInquiry = (req, res) => {
 }
 
 const displayRejectEventInquiry = (req, res) => {
-    model.find({ Reject: true, isDeleted: false,eventId:req.query.id }).then((data) => {
+    model.find({ Reject: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display Reject Event Inquiry", data })
     })
         .catch((err) => {
@@ -112,7 +143,7 @@ const displayRejectEventInquiry = (req, res) => {
 
 
 const displayConfirmEventInquiry = (req, res) => {
-    model.find({ Confirm: true, isDeleted: false,eventId:req.query.id }).then((data) => {
+    model.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display Comfirm Event Inquiry", data })
     })
         .catch((err) => {
@@ -158,27 +189,27 @@ const ConfirmEventInquiry = (req, res) => {
         })
 }
 
-const eventIsAdded = (req,res) =>{
-    model.findOne({_id:req.query.id}).then((data)=>{
-        let obj=JSON.parse(JSON.stringify(data))
-        obj.isAdded=!obj.isAdded
+const eventIsAdded = (req, res) => {
+    model.findOne({ _id: req.query.id }).then((data) => {
+        let obj = JSON.parse(JSON.stringify(data))
+        obj.isAdded = !obj.isAdded
 
-        model.updateOne({_id:req.query.id},obj).then((udata)=>{
-            res.send({mas:"isAdded",ud:udata.isAdded})
+        model.updateOne({ _id: req.query.id }, obj).then((udata) => {
+            res.send({ mas: "isAdded", ud: udata.isAdded })
         })
-        .catch((err)=>{
-            res.send({err})
-        })
-    }).catch((e)=>{
-        res.send({e})
+            .catch((err) => {
+                res.send({ err })
+            })
+    }).catch((e) => {
+        res.send({ e })
     })
 }
 
-const getISAddeddata =(req,res) =>{
-    model.find({Confirm:true,isAdded:false,isDeleted:false,eventId:req.query.id}).then((data)=>{
-        res.send({msg:"allIsAdded",data})
-    }).catch((err)=>{
-        res.send({err})
+const getISAddeddata = (req, res) => {
+    model.find({ Confirm: true, isAdded: false, isDeleted: false, eventId: req.query.id }).then((data) => {
+        res.send({ msg: "allIsAdded", data })
+    }).catch((err) => {
+        res.send({ err })
     })
 }
 module.exports = {
