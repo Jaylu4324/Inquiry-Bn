@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose')
-const joi = require('joi')
+// const joi = require('joi')
 
 const corseInquiry = mongoose.Schema({
     parentId:{
@@ -50,38 +50,38 @@ const corseInquiry = mongoose.Schema({
 
 })
 
-const validation = joi.object({
-    FullName: joi.string()
-        .alphanum()
-        .min(3)
-        .max(30)
-        .required(),
+// const validation = joi.object({
+//     FullName: joi.string()
+//         .alphanum()
+//         .min(3)
+//         .max(30)
+//         .required(),
 
-    Contact: joi.number()
-        .required(),
+//     Contact: joi.number()
+//         .required(),
 
-    Email: joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-        .required(),
+//     Email: joi.string()
+//         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+//         .required(),
 
-    Date: joi.date().required(),
+//     Date: joi.date().required(),
 
-    Description: joi.string()
-        .required(),
+//     Description: joi.string()
+//         .required(),
     
 
-    CollageName: joi.string()
-        .required(),
+//     CollageName: joi.string()
+//         .required(),
 
-    Course: joi.array()
-        .required(),
+//     Course: joi.array()
+//         .required(),
 
-    Interaction: joi.string()
-        .required(),
+//     Interaction: joi.string()
+//         .required(),
 
-    FollowUp: joi.string()
-        .required(),
-})
+//     FollowUp: joi.string()
+//         .required(),
+// })
 
 const model = mongoose.model('corseInquiry', corseInquiry)
 module.exports = { validation, model }
