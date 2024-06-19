@@ -183,4 +183,11 @@ const ConfirmInquiry = (req, res) => {
             res.send({ err })
         })
 }
-module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry }
+const getISAddeddata = (req, res) => {
+    CourseInquirymodel.find({ Confirm: true, isAdded: false, isDeleted: false, parentId: req.query.id }).then((data) => {
+        res.send({ msg: "allIsAdded", data })
+    }).catch((err) => {
+        res.send({ err })
+    })
+}
+module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,getISAddeddata }

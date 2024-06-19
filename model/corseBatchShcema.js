@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const RagularbatchSchema = mongoose.Schema({
     EventId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'corseInquiry'
+        ref:'addCorseBatch'
     },
     
     StuName:{

@@ -2,6 +2,7 @@ const model = require("../model/corseBatchShcema")
 const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
 const addBatch = (req, res) => {
+    console.log(req.body)
     let { EventId, StuName } = req.body;
     
     const data = new model({
@@ -12,6 +13,7 @@ const addBatch = (req, res) => {
 
     data.save()
         .then((data1) => {
+            console.log("hefbff",data1)
             let arr = StuName.map(ele => ele._id);
             const filter = { _id: { $in: arr } };
             const update = { $set: { isAdded: true } };
