@@ -71,7 +71,7 @@ const updateinquiry = (req, res) => {
     //     res.send({error})
     // }else{
 
-        model.updateOne({ _id: req.query.id }, {...req.body,parentId})
+    model1.updateOne({ _id: req.query.id }, {...req.body,parentId})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })
@@ -83,11 +83,11 @@ const updateinquiry = (req, res) => {
 
 
 const deletinquiry = (req, res) => {
-    model.find({ _id: req.query.id }).then((data) => {
+    model1.find({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.isDeleted=true
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry Soft Deleted" })
         })
             .catch((err1) => {
@@ -101,7 +101,7 @@ const deletinquiry = (req, res) => {
 }
 const hardelet=(req,res)=>{
 
-    model.deleteOne({ _id: req.query.id })
+    model1.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Inquiry DEleted" })
         })
@@ -110,7 +110,7 @@ const hardelet=(req,res)=>{
         })
 }
 const displayInquiry = (req, res) => {
-    model.find().then((data) => {
+    model1.find().then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -119,7 +119,7 @@ const displayInquiry = (req, res) => {
 }
 
 const displayOnGoingInquiry = (req, res) => {
-    model.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    model1.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -128,7 +128,7 @@ const displayOnGoingInquiry = (req, res) => {
 }
 
 const displayRejectInquiry = (req, res) => {
-    model.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
+    model1.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -138,7 +138,7 @@ const displayRejectInquiry = (req, res) => {
 
 
 const displayConfirmInquiry = (req, res) => {
-    model.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    model1.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -147,13 +147,13 @@ const displayConfirmInquiry = (req, res) => {
 }
 
 const RejectInquiry = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    model1.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = false
         obj.Reject = true
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry Rejected" })
         })
             .catch((err1) => {
@@ -166,13 +166,13 @@ const RejectInquiry = (req, res) => {
 }
 
 const ConfirmInquiry = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    model1.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = true
         obj.Reject = false
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry confirm" })
         })
             .catch((err1) => {
