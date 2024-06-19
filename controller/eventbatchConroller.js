@@ -1,5 +1,5 @@
-const {model,EventBatchVAlidation} = require("../model/eventBatch");
-const model1 = require("../model/eventInquiryShcema");
+const {model2,EventBatchVAlidation} = require("../model/eventBatch");
+const {model1} = require("../model/eventInquiryShcema");
 
 const addBatch = (req, res) => {
     let { EventId, StuName } = req.body;

@@ -1,4 +1,4 @@
-const {model,eventValidation} = require('../model/eventShcema')
+const {model4,eventValidation} = require('../model/eventShcema')
 
 
 

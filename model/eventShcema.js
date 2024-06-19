@@ -42,4 +42,4 @@ Amount:joi.number().required()
 })
 
 const model = mongoose.model("events",events)
-module.exports={model , eventValidation}
+module.exports={model4 , eventValidation}

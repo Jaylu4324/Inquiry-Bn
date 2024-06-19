@@ -1,5 +1,5 @@
 const model = require("../model/corseBatchShcema")
-const model1 = require("../model/corseinquiryshcema");
+const {model1} = require("../model/corseinquiryshcema");
 
 const addBatch = (req, res) => {
     let { parentId, StuName } = req.body;

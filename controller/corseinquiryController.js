@@ -1,4 +1,4 @@
-const {model} = require('../model/corseinquiryshcema')
+const {model1} = require('../model/corseinquiryshcema')
 
 const addInquiry = (req, res) => {
     let { FullName,
