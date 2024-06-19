@@ -9,6 +9,7 @@ const eventInquiry = require("./router/eventInquiryRoute")
 const batch = require('./router/eventbatchRoute')
 const batchevent = require('./router/addcorseRoute')
 const regBatch = require('./router/corseBatchRoute')
+const login=require('./router/loginRoute')
 const app = express()
 
 app.use(function (req, res, next) {
@@ -23,6 +24,7 @@ app.use(function (req, res, next) {
 
 
 app.use(express.json())
+app.use('/login',login)
 app.use('/invoice', rout)
 app.use('/inquiry', routinqry)
 app.use('/student', ruotStu)

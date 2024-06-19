@@ -26,7 +26,8 @@ const addInquiry = (req, res) => {
         isDeleted: false,
         Course,
         Interaction,
-        FollowUp
+        FollowUp,
+        isAdded:false
     })
 
     // let {error, value}=validation.validate({})

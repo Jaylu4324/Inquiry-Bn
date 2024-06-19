@@ -46,6 +46,9 @@ const corseInquiry = mongoose.Schema({
     },
     isDeleted: {
         type: Boolean
+    },
+    isAdded: {
+        type: Boolean
     }
 
 })
