@@ -2,10 +2,10 @@ const model = require("../model/corseBatchShcema")
 const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
 const addBatch = (req, res) => {
-    let { parentId, StuName } = req.body;
+    let { EventId, StuName } = req.body;
     
     const data = new model({
-        parentId,
+        EventId,
         StuName,
         isCompleted: false
     });
@@ -37,10 +37,10 @@ const updateBatch = (req, res) => {
             }
         })
         .then(() => {
-            let { StuName, parentId } = req.body;
+            let { StuName, EventId } = req.body;
             
             if (StuName.length > 0) {
-                return model.updateOne({ _id: req.query.id }, { StuName, parentId })
+                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
                     .then(() => {
                         let id1 = StuName.map(ele => ele._id);
                         return CourseInquirymodel.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
@@ -49,7 +49,7 @@ const updateBatch = (req, res) => {
                         res.send({ msg: " reg Data set successfully" });
                     });
             } else {
-                return model.updateOne({ _id: req.query.id }, { StuName, parentId })
+                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
                     .then(() => {
                         res.send({ msg: "Please provide some data" });
                     });
@@ -82,7 +82,7 @@ const deleteBatch = (req, res) => {
 };
 
 const displayBatch = (req, res) => {
-    model.find({parentId:req.query.id}).populate('parentId')
+    model.find({EventId:req.query.id}).populate('EventId')
         .then(data => {
             res.send({ msg: "Display reg Batch", data });
         })
