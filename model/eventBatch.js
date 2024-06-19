@@ -17,5 +17,5 @@ const EventbatchSchema = mongoose.Schema({
 const EventBatchVAlidation = joi.object({
     StuName:joi.array().min(1).required()
 })
-const model2 = mongoose.model('EventbatchSchema',EventbatchSchema)
-module.exports={EventBatchVAlidation,model2}
+const EventBacth = mongoose.model('EventbatchSchema',EventbatchSchema)
+module.exports={EventBatchVAlidation,EventBacth}

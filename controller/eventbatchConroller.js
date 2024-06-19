@@ -1,16 +1,16 @@
-const {model2,EventBatchVAlidation} = require("../model/eventBatch");
-const {model1} = require("../model/eventInquiryShcema");
+const {EventBacth,EventBatchVAlidation} = require("../model/eventBatch");
+const {eventInquiryModel} = require("../model/eventInquiryShcema");
 
 const addBatch = (req, res) => {
     let { EventId, StuName } = req.body;
     
-    const data = new model({
+    const data = new EventBacth({
         EventId,
         StuName,
         isCompleted: false
     });
 
-    const { error, value } = EventBatchVAlidation.validate({  });
+    const { error, value } = EventBatchVAlidation.validate({   StuName });
 
     if(error){
         res.status(400).json({ isSuccess: false, error })
@@ -24,7 +24,7 @@ else{
             const filter = { _id: { $in: arr } };
             const update = { $set: { isAdded: true } };
     
-            return model1.updateMany(filter, update)
+            return eventInquiryModel.updateMany(filter, update)
                 .then(result => {
                     console.log(`${result.modifiedCount} documents were updated.`);
                     res.status(201).json({isSuccess: true, msg: "Batch Added", data1 });
@@ -49,27 +49,27 @@ if (error) {
 }
 else{
 
-    model.findOne({ _id: req.query.id })
+    EventBacth.findOne({ _id: req.query.id })
         .then(prevdata => {
             if (prevdata && prevdata.StuName.length > 0) {
                 let ids = prevdata.StuName.map(ele => ele._id);
-                return model1.updateMany({ _id: { $in: ids } }, { $set: { isAdded: false } });
+                return eventInquiryModel.updateMany({ _id: { $in: ids } }, { $set: { isAdded: false } });
             }
         })
         .then(() => {
             let { StuName, EventId } = req.body;
             
             if (StuName.length > 0) {
-                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId })
                     .then(() => {
                         let id1 = StuName.map(ele => ele._id);
-                        return model1.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
+                        return eventInquiryModel.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
                     })
                     .then(() => {
                         res.status(201).json({isSuccess:true , msg: "Data set successfully" });
                     });
             } else {
-                return model.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId })
                     .then(() => {
                         res.status(201).json({isSuccess:true , msg: "Please provide some data" });
                     });
@@ -85,11 +85,11 @@ else{
 
 const deleteBatch = (req, res) => {
     const batchId = req.query.id;
-    model.findByIdAndDelete(batchId)
+    EventBacth.findByIdAndDelete(batchId)
         .then(deletedBatch => {
             if (deletedBatch) {
                 const studentIds = deletedBatch.StuName.map(student => student._id);
-                return model1.updateMany({ _id: { $in: studentIds } }, { $set: { isAdded: false } })
+                return eventInquiryModel.updateMany({ _id: { $in: studentIds } }, { $set: { isAdded: false } })
                     .then(() => {
                         res.send({ msg: "Batch Deleted and isAdded flag set to false for associated students" });
                     });
@@ -104,7 +104,7 @@ const deleteBatch = (req, res) => {
 };
 
 const displayBatch = (req, res) => {
-    model.find({EventId:req.query.id}).populate('EventId')
+    EventBacth.find({EventId:req.query.id}).populate('EventId')
         .then(data => {
             res.send({ msg: "Display Batch", data });
         })
@@ -115,12 +115,12 @@ const displayBatch = (req, res) => {
 };
 
 const completedBatch = (req, res) => {
-    model.findOne({ _id: req.query.id })
+    EventBacth.findOne({ _id: req.query.id })
         .then(data => {
             if (data) {
                 let obj = JSON.parse(JSON.stringify(data));
                 obj.isCompleted = true;
-                return model.updateOne({ _id: req.query.id }, obj)
+                return EventBacth.updateOne({ _id: req.query.id }, obj)
                     .then(() => {
                         res.send({ msg: "isCompleted flag set", isCompleted: obj.isCompleted });
                     });
@@ -135,7 +135,7 @@ const completedBatch = (req, res) => {
 };
 
 const displayCompletedBatch = (req, res) => {
-    model.find({ isCompleted: true })
+    EventBacth.find({ isCompleted: true })
         .then(data => {
             res.send({ data });
         })

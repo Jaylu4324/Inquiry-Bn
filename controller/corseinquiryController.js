@@ -1,4 +1,4 @@
-const {model1} = require('../model/corseinquiryshcema')
+const {CourseInquirymodel} = require('../model/corseinquiryshcema')
 
 const addInquiry = (req, res) => {
     let { FullName,
@@ -12,7 +12,7 @@ const addInquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
-    const data = new model({
+    const data = new CourseInquirymodel({
         parentId,
         FullName,
         Contact,
@@ -71,7 +71,7 @@ const updateinquiry = (req, res) => {
     //     res.send({error})
     // }else{
 
-    model1.updateOne({ _id: req.query.id }, {...req.body,parentId})
+    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body,parentId})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })
@@ -83,11 +83,11 @@ const updateinquiry = (req, res) => {
 
 
 const deletinquiry = (req, res) => {
-    model1.find({ _id: req.query.id }).then((data) => {
+    CourseInquirymodel.find({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.isDeleted=true
 
-        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry Soft Deleted" })
         })
             .catch((err1) => {
@@ -101,7 +101,7 @@ const deletinquiry = (req, res) => {
 }
 const hardelet=(req,res)=>{
 
-    model1.deleteOne({ _id: req.query.id })
+    CourseInquirymodel.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Inquiry DEleted" })
         })
@@ -110,7 +110,7 @@ const hardelet=(req,res)=>{
         })
 }
 const displayInquiry = (req, res) => {
-    model1.find().then((data) => {
+    CourseInquirymodel.find().then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -119,7 +119,7 @@ const displayInquiry = (req, res) => {
 }
 
 const displayOnGoingInquiry = (req, res) => {
-    model1.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    CourseInquirymodel.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -128,7 +128,7 @@ const displayOnGoingInquiry = (req, res) => {
 }
 
 const displayRejectInquiry = (req, res) => {
-    model1.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
+    CourseInquirymodel.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -138,7 +138,7 @@ const displayRejectInquiry = (req, res) => {
 
 
 const displayConfirmInquiry = (req, res) => {
-    model1.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    CourseInquirymodel.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -147,13 +147,13 @@ const displayConfirmInquiry = (req, res) => {
 }
 
 const RejectInquiry = (req, res) => {
-    model1.findOne({ _id: req.query.id }).then((data) => {
+    CourseInquirymodel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = false
         obj.Reject = true
 
-        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry Rejected" })
         })
             .catch((err1) => {
@@ -166,13 +166,13 @@ const RejectInquiry = (req, res) => {
 }
 
 const ConfirmInquiry = (req, res) => {
-    model1.findOne({ _id: req.query.id }).then((data) => {
+    CourseInquirymodel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = true
         obj.Reject = false
 
-        model1.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Inquiry confirm" })
         })
             .catch((err1) => {

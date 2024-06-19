@@ -86,5 +86,5 @@ const corseInquiry = mongoose.Schema({
 //         .required(),
 // })
 
-const model1 = mongoose.model('corseInquiry', corseInquiry)
-module.exports = {  model1 }
+const CourseInquirymodel = mongoose.model('corseInquiry', corseInquiry)
+module.exports = {  CourseInquirymodel }

@@ -1,5 +1,5 @@
 const model = require("../model/corseBatchShcema")
-const {model1} = require("../model/corseinquiryshcema");
+const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
 const addBatch = (req, res) => {
     let { parentId, StuName } = req.body;
@@ -16,7 +16,7 @@ const addBatch = (req, res) => {
             const filter = { _id: { $in: arr } };
             const update = { $set: { isAdded: true } };
 
-            return model1.updateMany(filter, update)
+            return CourseInquirymodel.updateMany(filter, update)
                 .then(result => {
                     console.log(`${result.modifiedCount} documents were updated.`);
                     res.send({ msg: "reg Batch Added", data1 });
@@ -33,7 +33,7 @@ const updateBatch = (req, res) => {
         .then(prevdata => {
             if (prevdata && prevdata.StuName.length > 0) {
                 let ids = prevdata.StuName.map(ele => ele._id);
-                return model1.updateMany({ _id: { $in: ids } }, { $set: { isAdded: false } });
+                return CourseInquirymodel.updateMany({ _id: { $in: ids } }, { $set: { isAdded: false } });
             }
         })
         .then(() => {
@@ -43,7 +43,7 @@ const updateBatch = (req, res) => {
                 return model.updateOne({ _id: req.query.id }, { StuName, parentId })
                     .then(() => {
                         let id1 = StuName.map(ele => ele._id);
-                        return model1.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
+                        return CourseInquirymodel.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
                     })
                     .then(() => {
                         res.send({ msg: " reg Data set successfully" });
@@ -67,7 +67,7 @@ const deleteBatch = (req, res) => {
         .then(deletedBatch => {
             if (deletedBatch) {
                 const studentIds = deletedBatch.StuName.map(student => student._id);
-                return model1.updateMany({ _id: { $in: studentIds } }, { $set: { isAdded: false } })
+                return CourseInquirymodel.updateMany({ _id: { $in: studentIds } }, { $set: { isAdded: false } })
                     .then(() => {
                         res.send({ msg: "reg Batch Deleted and isAdded flag set to false for associated students" });
                     });

@@ -66,5 +66,5 @@ Interaction:joi.string().required(),
 FollowUp:joi.string().required()
 })
 
-const model3=mongoose.model('eventInquiry',eventInquiry)
-module.exports={model3,EinquiryValidation}
+const eventInquiryModel=mongoose.model('eventInquiry',eventInquiry)
+module.exports={eventInquiryModel,EinquiryValidation}

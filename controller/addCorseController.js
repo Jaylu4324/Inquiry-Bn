@@ -1,4 +1,4 @@
-const {model,validation} = require('../model/addCorsebatch')
+const {AddCourseModel,validation} = require('../model/addCorsebatch')
 
 const addBatchEvent = (req, res) => {
     let {
@@ -11,7 +11,7 @@ const addBatchEvent = (req, res) => {
         Days } = req.body
 
 
-    const eventdata = new model({
+    const eventdata = new AddCourseModel({
         StartDate,
         EndtDate,
         Course,
@@ -34,7 +34,7 @@ const updatBatchEvent = (req, res) => {
 
 
 
-    model.updateOne({ _id: req.query.id }, req.body)
+    AddCourseModel.updateOne({ _id: req.query.id }, req.body)
         .then((data) => {
             res.send({ msg: "Event batch Updated", data })
         })
@@ -45,7 +45,7 @@ const updatBatchEvent = (req, res) => {
 }
 
 const deleteBatchEvent = (req, res) => {
-    model.deleteOne({ _id: req.query.id })
+    AddCourseModel.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Event batch DEleted" })
         })
@@ -55,7 +55,7 @@ const deleteBatchEvent = (req, res) => {
 }
 
 const getAllData = (req, res) => {
-    model.find({ IsCompleted: false }).then((data) => {
+    AddCourseModel.find({ IsCompleted: false }).then((data) => {
         res.send({ msg: "All Data", data })
     })
         .catch((err) => {
@@ -67,7 +67,7 @@ const postiscompleted= async (req,res)=>{
 try{
 
 const getid=req.query.id
-const getiscomp= await model.findByIdAndUpdate(getid,{IsCompleted:true},{new:true})
+const getiscomp= await AddCourseModel.findByIdAndUpdate(getid,{IsCompleted:true},{new:true})
 res.status(200).json({msg:'batch event completed',getiscomp})
 
 }
@@ -81,7 +81,7 @@ res.status(400).json({err:'error in completing'})
 const getiscompleted= async(req,res)=>{
 
 try{
-const getcompleted= await model.find({IsCompleted:true})
+const getcompleted= await AddCourseModel.find({IsCompleted:true})
 res.status(200).json({msg:'display completed data',getcompleted})
 }
 catch(err){

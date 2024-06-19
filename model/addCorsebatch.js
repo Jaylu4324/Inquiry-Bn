@@ -41,5 +41,5 @@ TypeOfPayment:joi.string().required(),
 Amount:joi.number().required()
 })
 
-const model = mongoose.model("addCorseBatch",addCorseBatch)
-module.exports={validation,model}
+const AddCourseModel = mongoose.model("addCorseBatch",addCorseBatch)
+module.exports={validation,AddCourseModel}

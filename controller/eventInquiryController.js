@@ -1,4 +1,4 @@
-const { model, EinquiryValidation } = require('../model/eventInquiryShcema')
+const { eventInquiryModel, EinquiryValidation } = require('../model/eventInquiryShcema')
 
 const addEventInquiry = (req, res) => {
 
@@ -12,7 +12,7 @@ const addEventInquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
-    const data = new model({
+    const data = new eventInquiryModel({
         eventId,
         FullName,
         Contact,
@@ -74,7 +74,7 @@ const updateEventinquiry = (req, res) => {
         res.status(400).json({ isSuccess: false, error })
     }
     else {
-        model.updateOne({ _id: req.query.id }, req.body)
+        eventInquiryModel.updateOne({ _id: req.query.id }, req.body)
             .then((data) => {
                 res.status(201).json({ isSuccess: true, msg: "Event Inquiry Updated", data })
             })
@@ -87,11 +87,11 @@ const updateEventinquiry = (req, res) => {
 
 
 const deletEventinquiry = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.isDeleted = true
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Event Inquiry Soft Deleted" })
         })
             .catch((err1) => {
@@ -105,7 +105,7 @@ const deletEventinquiry = (req, res) => {
 }
 const hardelet = (req, res) => {
 
-    model.deleteOne({ _id: req.query.id })
+    eventInquiryModel.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Inquiry DEleted" })
         })
@@ -115,7 +115,7 @@ const hardelet = (req, res) => {
 }
 const displayAllEventInquiry = (req, res) => {
 
-    model.find({ eventId: req.query.id }).then((data) => {
+    eventInquiryModel.find({ eventId: req.query.id }).then((data) => {
         res.send({ msg: "display all Event Inquiry", data })
     })
         .catch((err) => {
@@ -124,7 +124,7 @@ const displayAllEventInquiry = (req, res) => {
 }
 
 const displayOnGoingEventInquiry = (req, res) => {
-    model.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).then((data) => {
+    eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display OnGoing Event Inquiry", data })
     })
         .catch((err) => {
@@ -133,7 +133,7 @@ const displayOnGoingEventInquiry = (req, res) => {
 }
 
 const displayRejectEventInquiry = (req, res) => {
-    model.find({ Reject: true, isDeleted: false, eventId: req.query.id }).then((data) => {
+    eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display Reject Event Inquiry", data })
     })
         .catch((err) => {
@@ -143,7 +143,7 @@ const displayRejectEventInquiry = (req, res) => {
 
 
 const displayConfirmEventInquiry = (req, res) => {
-    model.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).then((data) => {
+    eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "display Comfirm Event Inquiry", data })
     })
         .catch((err) => {
@@ -152,13 +152,13 @@ const displayConfirmEventInquiry = (req, res) => {
 }
 
 const RejectEventInquiry = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = false
         obj.Reject = true
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Event Inquiry Rejected" })
         })
             .catch((err1) => {
@@ -171,13 +171,13 @@ const RejectEventInquiry = (req, res) => {
 }
 
 const ConfirmEventInquiry = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.onGoing = false
         obj.Confirm = true
         obj.Reject = false
 
-        model.updateOne({ _id: req.query.id }, obj).then((dataup) => {
+        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
             res.send({ msg: "Event Inquiry confirm" })
         })
             .catch((err1) => {
@@ -190,11 +190,11 @@ const ConfirmEventInquiry = (req, res) => {
 }
 
 const eventIsAdded = (req, res) => {
-    model.findOne({ _id: req.query.id }).then((data) => {
+    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
         let obj = JSON.parse(JSON.stringify(data))
         obj.isAdded = !obj.isAdded
 
-        model.updateOne({ _id: req.query.id }, obj).then((udata) => {
+        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((udata) => {
             res.send({ mas: "isAdded", ud: udata.isAdded })
         })
             .catch((err) => {
@@ -206,7 +206,7 @@ const eventIsAdded = (req, res) => {
 }
 
 const getISAddeddata = (req, res) => {
-    model.find({ Confirm: true, isAdded: false, isDeleted: false, eventId: req.query.id }).then((data) => {
+    eventInquiryModel.find({ Confirm: true, isAdded: false, isDeleted: false, eventId: req.query.id }).then((data) => {
         res.send({ msg: "allIsAdded", data })
     }).catch((err) => {
         res.send({ err })
