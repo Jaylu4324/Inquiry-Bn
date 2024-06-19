@@ -41,5 +41,5 @@ TypeOfPayment:joi.string().required(),
 Amount:joi.number().required()
 })
 
-const model = mongoose.model("events",events)
+const model4 = mongoose.model("events",events)
 module.exports={model4 , eventValidation}
