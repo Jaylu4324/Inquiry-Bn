@@ -30,7 +30,7 @@ const addEventInquiry = (req, res) => {
     })
 
     const { error, value } = EinquiryValidation.validate({FullName,
-        Contect,
+        Contact,
         Email,
         Date,
         Description,
