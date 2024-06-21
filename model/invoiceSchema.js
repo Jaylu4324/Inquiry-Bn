@@ -3,6 +3,12 @@ const mongoose = require('mongoose')
 const joi =require('joi')
 
 const Invoice = mongoose.Schema({
+
+    stuId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'student'
+    },
+
     stuName:{
         type:String
     },

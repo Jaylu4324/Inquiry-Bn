@@ -1,4 +1,4 @@
-const model = require('../model/studentShcema')
+const {stuModel} = require('../model/studentShcema')
 
 const addStudent = (req, res) => {
     let { Name,
@@ -8,6 +8,7 @@ const addStudent = (req, res) => {
         AcademicCourse,
         course,
         Date,
+        Rfees,
         btime,
         Parentcontact,
         days,
@@ -17,12 +18,13 @@ Pfees
     } = req.body
 
 
-    const stuData = new model({
+    const stuData = new stuModel({
         Name,
         Contact,
         Email,
         CollegeName,
         AcademicCourse,
+        Rfees,
         course,
         Date,
         btime,
@@ -45,7 +47,7 @@ const updateStu = (req, res) => {
 
 
 
-    model.updateOne({ _id: req.query.id }, req.body)
+    stuModel.updateOne({ _id: req.query.id }, req.body)
         .then((data) => {
             res.send({ msg: "Student Updated", data })
         })
@@ -56,7 +58,7 @@ const updateStu = (req, res) => {
 }
 
 const deleteStu = (req, res) => {
-    model.deleteOne({ _id: req.query.id })
+    stuModel.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Student DEleted" })
         })
@@ -66,7 +68,7 @@ const deleteStu = (req, res) => {
 }
 
 const getAllStu = (req, res) => {
-    model.find().then((data) => {
+    stuModel.find().then((data) => {
         res.send({ msg: "All student", data })
     })
         .catch((err) => {

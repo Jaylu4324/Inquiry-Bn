@@ -1,4 +1,6 @@
 const model = require('../model/invoiceSchema');
+const {stuModel} = require('../model/studentShcema')
+
 const { jsPDF } = require("jspdf");
 
 
@@ -31,7 +33,7 @@ const addInvoice = (req, res) => {
         Total
     } = req.body;
 
-    const data = new model({
+    const data1 = new model({
         stuName,
         invoiceDate,
         Course,
@@ -42,22 +44,80 @@ const addInvoice = (req, res) => {
         Total
     });
 
-    data.save().then((data1) => {
-        res.send({ msg: "Data Added", data1 });
-    }).catch((err) => {
-        res.send({ err });
-    });
+    stuModel.findOne({_id:req.body.stuId}).then((data)=>{
+        let stuObj = JSON.parse(JSON.stringify(data))
+        stuObj.Rfees= stuObj.Rfees-Amount
+        stuObj.Pfees= stuObj.Pfees+Amount
+
+        stuModel.updateOne({_id:req.body.stuId},stuObj).then((udata)=>{
+            data1.save().then((data1) => {
+                res.send({ msg: "Data Added", data1 });
+            }).catch((err) => {
+                res.send({ err ,msg:"add"});
+            });
+        })
+        .catch((err)=>{
+            res.send({err,msg:"updet"})
+        })
+
+    })
+    .catch((err)=>{
+        res.send({err})
+    })
+
+  
 };
 
-const updateinvoice = (req, res) => {
-    model.updateOne({ _id: req.query.id }, req.body)
-        .then((data) => {
-            res.send({ msg: "Invoice Updated", data });
-        })
-        .catch((err) => {
-            res.send({ err });
-        });
+const updateinvoice = async (req, res) => {
+    try {
+        const invoiceId = req.query.id;
+        const studentId = req.body.stuId;
+        const newAmount = req.body.Amount;
+
+        // Find the invoice by ID
+        const invoiceData = await model.findOne({ _id: invoiceId });
+        if (!invoiceData) {
+            return res.status(404).send({ msg: "Invoice not found" });
+        }
+
+        // Find the student by ID
+        const studentData = await stuModel.findOne({ _id: studentId });
+        if (!studentData) {
+            return res.status(404).send({ msg: "Student not found" });
+        }
+
+        // Update the student's fees
+        const oldAmount = invoiceData.Amount;
+        let stuObj = JSON.parse(JSON.stringify(studentData));
+        console.log(stuObj.Rfees,stuObj.Pfees,"dsfdsfdsf",oldAmount,newAmount)
+        stuObj.Rfees = stuObj.Rfees + oldAmount
+        stuObj.Rfees = stuObj.Rfees - newAmount
+
+        stuObj.Pfees = stuObj.Pfees - oldAmount 
+        stuObj.Pfees = stuObj.Pfees + newAmount 
+
+
+
+        // Save the updated student data
+        await stuModel.updateOne({ _id: studentId }, stuObj);
+
+        // Update the invoice amount
+        invoiceData.Amount = newAmount;
+        await model.updateOne({ _id: invoiceId }, invoiceData);
+
+        res.send({ msg: "Invoice and student fees updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ err, msg: "Update failed" });
+    }
 };
+
+
+
+
+
+    
+
 
 const deletinvoice = (req, res) => {
     model.deleteOne({ _id: req.query.id })

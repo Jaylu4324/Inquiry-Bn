@@ -39,8 +39,12 @@ const student  = mongoose.Schema({
     Pfees:{
         type:Number
     },
+    Rfees:{
+        type:Number
+    },
 })
 
 
 
-module.exports=mongoose.model('student',student)
+const stuModel =mongoose.model('student',student)
+module.exports={stuModel}

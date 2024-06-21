@@ -10,3 +10,5 @@ route.get('/allStuden', getAllStu)
 
 
 module.exports = route
+
+
