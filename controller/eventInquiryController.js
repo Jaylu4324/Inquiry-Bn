@@ -29,7 +29,14 @@ const addEventInquiry = (req, res) => {
         FollowUp
     })
 
-    const { error, value } = EinquiryValidation.validate({});
+    const { error, value } = EinquiryValidation.validate({FullName,
+        Contect,
+        Email,
+        Date,
+        Description,
+        CollageName,
+        Interaction,
+        FollowUp});
     if (error) {
         res.status(400).json({ isSuccess: false, error })
     }
