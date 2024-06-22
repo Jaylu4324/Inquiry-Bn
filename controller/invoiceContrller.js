@@ -30,10 +30,12 @@ const addInvoice = (req, res) => {
         TypeOfPayment,
         Description,
         Remaining,
+        stuId,
         Total
     } = req.body;
 
     const data1 = new model({
+        stuId,
         stuName,
         invoiceDate,
         Course,
@@ -115,11 +117,9 @@ const updateinvoice = async (req, res) => {
 
 
 
-
-    
-
-
 const deletinvoice = (req, res) => {
+
+
     model.deleteOne({ _id: req.query.id })
         .then((data) => {
             res.send({ msg: "Invoice Deleted" });
@@ -130,7 +130,7 @@ const deletinvoice = (req, res) => {
 };
 
 const displayInvoice = (req, res) => {
-    model.find().then((data) => {
+    model.find().populate("stuId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
