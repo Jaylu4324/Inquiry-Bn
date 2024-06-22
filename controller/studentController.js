@@ -2,6 +2,7 @@ const {stuModel} = require('../model/studentShcema')
 
 const addStudent = (req, res) => {
     let { Name,
+        CourseId,
         Contact,
         Email,
         CollegeName,
@@ -21,6 +22,7 @@ Pfees
     const stuData = new stuModel({
         Name,
         Contact,
+        CourseId,
         Email,
         CollegeName,
         AcademicCourse,

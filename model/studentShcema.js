@@ -3,6 +3,10 @@ const mongoose = require('mongoose')
 
 
 const student  = mongoose.Schema({
+    CourseId:{
+        type:mongoose.Schema.Types.ObjectId
+
+    },
     Name:{
         type:String
     },
