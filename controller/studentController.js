@@ -70,7 +70,7 @@ const deleteStu = (req, res) => {
 }
 
 const getAllStu = (req, res) => {
-    stuModel.find().then((data) => {
+    stuModel.find({CourseId:req.query.id}).then((data) => {
         res.send({ msg: "All student", data })
     })
         .catch((err) => {
