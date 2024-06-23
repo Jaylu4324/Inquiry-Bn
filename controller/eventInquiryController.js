@@ -58,7 +58,7 @@ const updateEventinquiry = (req, res) => {
 
     let {
         FullName,
-        Contect,
+        Contact,
         Email,
         Date,
         Description,
@@ -68,7 +68,7 @@ const updateEventinquiry = (req, res) => {
     } = req.body
     const { error, value } = EinquiryValidation.validate({
         FullName,
-        Contect,
+        Contact,
         Email,
         Date,
         Description,

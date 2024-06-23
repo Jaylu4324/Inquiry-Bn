@@ -57,7 +57,7 @@ const EinquiryValidation = joi.object({
 
     Contact:joi.number().required(),
 
-    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
 
 Date:joi.date().required(),
 Description:joi.string().required(),
