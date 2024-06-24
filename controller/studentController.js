@@ -9,13 +9,13 @@ const addStudent = (req, res) => {
         AcademicCourse,
         course,
         Date,
-        Rfees,
+        
         btime,
         Parentcontact,
         days,
         Tfees,
         
-Pfees
+
     } = req.body
 
 
@@ -26,14 +26,14 @@ Pfees
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees,
+        Rfees:Tfees,
         course,
         Date,
         btime,
         Parentcontact,
         days,
         Tfees,
-Pfees
+Pfees:0
     })
 
     stuData.save().then((data) => {
