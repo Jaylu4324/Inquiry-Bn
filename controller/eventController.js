@@ -27,7 +27,7 @@ const addevent = (req, res) => {
     })
 
     const { error, value } = eventValidation.validate({ 
-        // StartDate,
+        StartDate,
         Course,
         BatchTime,
         Days,

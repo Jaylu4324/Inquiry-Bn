@@ -72,8 +72,9 @@ const addInvoice = (req, res) => {
 
 const updateinvoice = async (req, res) => {
     try {
+        console.log(req.body,"dvdfvmdfjvmdfjkvdfmvdf")
         const invoiceId = req.query.id;
-        const studentId = req.body.stuId;
+        const studentId = req.body.stuId._id;
         const newAmount = req.body.Amount;
 
         // Find the invoice by ID
@@ -105,7 +106,9 @@ const updateinvoice = async (req, res) => {
 
         // Update the invoice amount
         invoiceData.Amount = newAmount;
-        await model.updateOne({ _id: invoiceId }, invoiceData);
+        console.log(invoiceData,"dsfsdfdfdfdffdfffesadeadadasd")
+        let cp=JSON.parse(JSON.stringify(invoiceData))
+        await model.updateOne({ _id: invoiceId }, {...cp,...req.body,stuId:studentId});
 
         res.send({ msg: "Invoice and student fees updated successfully" });
     } catch (err) {
