@@ -21,29 +21,32 @@ const getImageBase64 = (filePath) => {
     });
 };
 
-const addInvoice = (req, res) => {
+const addInvoice = async(req, res) => {
+   
+    let length=await  model.find()
+    console.log(length,"gbhg")
     let {
-        stuName,
+        
         invoiceDate,
-        Course,
+        
         Amount,
         TypeOfPayment,
-        Description,
-        Remaining,
+        
+
         stuId,
-        Total
+        
     } = req.body;
 
     const data1 = new model({
         stuId,
-        stuName,
+        
         invoiceDate,
-        Course,
+        invoiceId:`INV${new Date().toLocaleString().split("/")[1]}00${length.length+1}`,
         Amount,
         TypeOfPayment,
-        Description,
-        Remaining,
-        Total
+        Description:"THANK'S FOR PAYMENT!",
+        
+        isDeleted:false
     });
 
     stuModel.findOne({_id:req.body.stuId}).then((data)=>{
@@ -67,7 +70,7 @@ const addInvoice = (req, res) => {
         res.send({err})
     })
 
-  
+ 
 };
 
 const updateinvoice = async (req, res) => {
@@ -120,16 +123,54 @@ const updateinvoice = async (req, res) => {
 
 
 
-const deletinvoice = (req, res) => {
+const deletinvoice =async (req, res) => {
 
 
-    model.deleteOne({ _id: req.query.id })
-        .then((data) => {
-            res.send({ msg: "Invoice Deleted" });
-        })
-        .catch((err) => {
-            res.send({ err });
-        });
+    try {
+        console.log(req.body,"delet inv")
+        const invoiceId = req.query.id;
+        const studentId = req.body.stuId._id;
+        const newAmount = req.body.Amount;
+
+        // Find the invoice by ID
+        const invoiceData = await model.findOne({ _id: invoiceId });
+        if (!invoiceData) {
+            return res.status(404).send({ msg: "Invoice not found" });
+        }
+
+        // Find the student by ID
+        const studentData = await stuModel.findOne({ _id: studentId });
+        if (!studentData) {
+            return res.status(404).send({ msg: "Student not found" });
+        }
+
+        // Update the student's fees
+        const oldAmount = invoiceData.Amount;
+        let stuObj = JSON.parse(JSON.stringify(studentData));
+        console.log(stuObj.Rfees,stuObj.Pfees,"dsfdsfdsf",oldAmount,newAmount)
+        stuObj.Rfees = stuObj.Rfees + oldAmount
+      
+
+        stuObj.Pfees = stuObj.Pfees - oldAmount 
+      
+
+
+
+        // Save the updated student data
+        await stuModel.updateOne({ _id: studentId }, stuObj);
+
+        // Update the invoice amount
+
+       
+        console.log(invoiceData,"dsfsdfdfdfdffdfffesadeadadasd")
+        let cp=JSON.parse(JSON.stringify(invoiceData))
+        await model.updateOne({ _id: invoiceId }, {...cp,...req.body,stuId:studentId,isDeleted:true,Amount:0});
+
+        res.send({ msg: "Invoice and student fees deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ err, msg: "Update failed" });
+    }
 };
 
 const displayInvoice = (req, res) => {
@@ -218,7 +259,7 @@ const pdfmail = async (req, res) => {
     const table = {
         headers: ['Field', 'Value'],
         body: [
-            ['Invoice ID', row._id],
+            ['Invoice ID', row.invoiceId],
             ['Date', row.invoiceDate && row.invoiceDate.split('T')[0]],
             ['Student Name',row.stuId.Name && row.stuId.Name],
             ['Course Name', row.stuId.course && row.stuId.course ],

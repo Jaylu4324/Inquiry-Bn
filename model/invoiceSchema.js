@@ -8,7 +8,9 @@ const Invoice = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'student'
     },
-
+    invoiceId:{
+        type:String
+    },
   
     invoiceDate:{
         type:Date
@@ -22,6 +24,9 @@ const Invoice = mongoose.Schema({
     },
     Description:{
         type:String
+    },
+    isDeleted:{
+        type:Boolean
     }
     
 })
