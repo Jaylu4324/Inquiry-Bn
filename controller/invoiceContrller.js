@@ -174,7 +174,7 @@ const deletinvoice =async (req, res) => {
 };
 
 const displayInvoice = (req, res) => {
-    model.find().populate("stuId").then((data) => {
+    model.find({isDeleted:false}).populate("stuId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
