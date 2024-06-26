@@ -23,7 +23,7 @@ const student  = mongoose.Schema({
         type:String
     },
     course:{
-        type:Array
+        type:String
     },
     Date:{
         type:Date

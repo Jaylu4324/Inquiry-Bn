@@ -140,7 +140,7 @@ const displayInvoice = (req, res) => {
     });
 };
 
-const nmailer = (pdfBuffer) => {
+const nmailer = (pdfBuffer,row) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -151,12 +151,12 @@ const nmailer = (pdfBuffer) => {
 
     const mailOptions = {
         from: 'krunal8588@gmail.com', // sender address
-        to: "krunalmistry7545@gmail.com", // list of receivers
+        to: `${row.stuId.Email}`, // list of receivers
         subject: "Invoice", // Subject line
         text: 'Please find attached the invoice.', // plain text body
         attachments: [
             {
-                filename: 'invoice.pdf',
+                filename: `${row.stuId.Name}_${row.stuId.course}.pdf`,
                 content: pdfBuffer, // use the buffer generated from the PDF
                 contentType: 'application/pdf'
             }
@@ -197,13 +197,13 @@ const pdfmail = async (req, res) => {
     doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
     // Load the image and add it to the PDF
-    const imagePath = path.join(__dirname, 'name.jpeg');
+    const imagePath = path.join(__dirname, 'name.png');
     try {
         const imgBase64 = await getImageBase64(imagePath);
         const logoWidth = 50;
         const logoHeight = 20;
         const centerX = doc.internal.pageSize.width / 2 - logoWidth / 2;
-        doc.addImage(imgBase64, 'JPEG', centerX, 10, logoWidth, logoHeight);
+        doc.addImage(imgBase64, 'PNG', centerX, 10, logoWidth, logoHeight);
     } catch (error) {
         console.error('Error loading image:', error);
     }
@@ -212,20 +212,19 @@ const pdfmail = async (req, res) => {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(24);
     doc.setTextColor(0, 0, 110);
-    doc.text('Invoice', doc.internal.pageSize.width / 2, 40, { align: 'center' });
+    doc.text('Fees Receipt'.toUpperCase(), doc.internal.pageSize.width / 2, 40, { align: 'center' });
 
     // Create a table with 2 columns and 8 rows
     const table = {
         headers: ['Field', 'Value'],
         body: [
             ['Invoice ID', row._id],
-            ['Date', row.invoiceDate],
-            ['Student Name', row.stuName],
-            ['Course Name', row.Course],
+            ['Date', row.invoiceDate && row.invoiceDate.split('T')[0]],
+            ['Student Name',row.stuId.Name && row.stuId.Name],
+            ['Course Name', row.stuId.course && row.stuId.course ],
             ['Payment Method', row.TypeOfPayment],
-            ['Description', row.Description],
-            ['Total Amount', row.Total],
-            ['Remaining Amount', row.Remaining],
+            ['Paid Amount',row.Amount]
+           
         ],
     };
 
@@ -291,7 +290,7 @@ const pdfmail = async (req, res) => {
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
     // Send the email with the PDF attachment
-    nmailer(pdfBuffer);
+    nmailer(pdfBuffer,row);
 
     // Send the PDF via WhatsApp
     // const recipientNumber = '+919724947545'; // Replace with the recipient's WhatsApp number
