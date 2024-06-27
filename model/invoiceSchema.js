@@ -37,9 +37,10 @@ invoiceDate:joi.date().required(),
 
 Amount:joi.number().required(),
 TypeOfPayment:joi.string().required(),
-Description:joi.string().required(),
-    
+
+   
 })
 
 
-module.exports=mongoose.model('Invoice',Invoice)
+const invoiceModel=mongoose.model('Invoice',Invoice)
+module.exports={InvoiceValidation,invoiceModel}

@@ -1,5 +1,5 @@
-const model = require('../model/invoiceSchema');
-const {stuModel} = require('../model/studentShcema')
+const { invoiceModel, InvoiceValidation } = require('../model/invoiceSchema');
+const { stuModel } = require('../model/studentShcema')
 
 const { jsPDF } = require("jspdf");
 
@@ -21,67 +21,98 @@ const getImageBase64 = (filePath) => {
     });
 };
 
-const addInvoice = async(req, res) => {
-   
-    let length=await  model.find()
-    console.log(length,"gbhg")
+const addInvoice = async (req, res) => {
     let {
-        
+
         invoiceDate,
-        
+
         Amount,
         TypeOfPayment,
-        
+        invoiceId,
 
         stuId,
-        
+
     } = req.body;
-
-    const data1 = new model({
-        stuId,
-        
+    const { error, value } = InvoiceValidation.validate({
         invoiceDate,
-        invoiceId:`INV${new Date().toLocaleString().split("/")[1]}00${length.length+1}`,
         Amount,
         TypeOfPayment,
-        Description:"THANK'S FOR PAYMENT!",
         
-        isDeleted:false
+        
     });
 
-    stuModel.findOne({_id:req.body.stuId}).then((data)=>{
-        let stuObj = JSON.parse(JSON.stringify(data))
-        stuObj.Rfees= stuObj.Rfees-Amount
-        stuObj.Pfees= stuObj.Pfees+Amount
+    if (error) {
+        res.status(404).send({ error });
+    }
+    else {
 
-        stuModel.updateOne({_id:req.body.stuId},stuObj).then((udata)=>{
-            data1.save().then((data1) => {
-                res.send({ msg: "Data Added", data1 });
-            }).catch((err) => {
-                res.send({ err ,msg:"add"});
-            });
+
+        let length = await invoiceModel.find()
+        console.log(length, "gbhg")
+
+
+        const data1 = new invoiceModel({
+            stuId,
+
+            invoiceDate,
+            invoiceId: `INV${new Date().toLocaleString().split("/")[1]}00${length.length + 1}`,
+            Amount,
+            TypeOfPayment,
+            Description: "THANK'S FOR PAYMENT!",
+
+            isDeleted: false
+        });
+
+        stuModel.findOne({ _id: req.body.stuId }).then((data) => {
+            let stuObj = JSON.parse(JSON.stringify(data))
+            stuObj.Rfees = stuObj.Rfees - Amount
+            stuObj.Pfees = stuObj.Pfees + Amount
+
+            if (req.body.Amount > stuObj.Rfees) {
+                res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
+            }
+
+            stuModel.updateOne({ _id: req.body.stuId }, stuObj).then((udata) => {
+                data1.save().then((data1) => {
+                    res.send({ msg: "Data Added", data1 });
+                }).catch((err) => {
+                    res.send({ err, msg: "add" });
+                });
+            })
+                .catch((err) => {
+                    res.send({ err, msg: "updet" })
+                })
+
         })
-        .catch((err)=>{
-            res.send({err,msg:"updet"})
-        })
+            .catch((err) => {
+                res.send({ err })
+            })
 
-    })
-    .catch((err)=>{
-        res.send({err})
-    })
-
- 
+    }
 };
 
 const updateinvoice = async (req, res) => {
     try {
-        console.log(req.body,"dvdfvmdfjvmdfjkvdfmvdf")
+        let { invoiceDate, Amount, TypeOfPayment } = req.body;
+
+        const { error, value } = InvoiceValidation.validate({
+            invoiceDate,
+            Amount,
+            TypeOfPayment,
+        });
+
+        if (error) {
+            return res.status(404).send({ error });
+        }
+
+        console.log(req.body, "dvdfvmdfjvmdfjkvdfmvdf");
+
         const invoiceId = req.query.id;
         const studentId = req.body.stuId._id;
         const newAmount = req.body.Amount;
 
         // Find the invoice by ID
-        const invoiceData = await model.findOne({ _id: invoiceId });
+        const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
         if (!invoiceData) {
             return res.status(404).send({ msg: "Invoice not found" });
         }
@@ -95,23 +126,25 @@ const updateinvoice = async (req, res) => {
         // Update the student's fees
         const oldAmount = invoiceData.Amount;
         let stuObj = JSON.parse(JSON.stringify(studentData));
-        console.log(stuObj.Rfees,stuObj.Pfees,"dsfdsfdsf",oldAmount,newAmount)
-        stuObj.Rfees = stuObj.Rfees + oldAmount
-        stuObj.Rfees = stuObj.Rfees - newAmount
+        console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount);
 
+        stuObj.Rfees = stuObj.Rfees + oldAmount 
         stuObj.Pfees = stuObj.Pfees - oldAmount 
-        stuObj.Pfees = stuObj.Pfees + newAmount 
 
-
+        if (newAmount > stuObj.Rfees) {
+            return res.status(404).send({ msg: "Paid Amount Must Be less than Total Amount" });
+        }
+        stuObj.Rfees = stuObj.Rfees -newAmount
+        stuObj.Pfees = stuObj.Pfees   +newAmount
 
         // Save the updated student data
         await stuModel.updateOne({ _id: studentId }, stuObj);
 
         // Update the invoice amount
         invoiceData.Amount = newAmount;
-        console.log(invoiceData,"dsfsdfdfdfdffdfffesadeadadasd")
-        let cp=JSON.parse(JSON.stringify(invoiceData))
-        await model.updateOne({ _id: invoiceId }, {...cp,...req.body,stuId:studentId});
+        console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
+        let cp = JSON.parse(JSON.stringify(invoiceData));
+        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId });
 
         res.send({ msg: "Invoice and student fees updated successfully" });
     } catch (err) {
@@ -123,17 +156,18 @@ const updateinvoice = async (req, res) => {
 
 
 
-const deletinvoice =async (req, res) => {
+
+const deletinvoice = async (req, res) => {
 
 
     try {
-        console.log(req.body,"delet inv")
+        console.log(req.body, "delet inv")
         const invoiceId = req.query.id;
         const studentId = req.body.stuId._id;
         const newAmount = req.body.Amount;
 
         // Find the invoice by ID
-        const invoiceData = await model.findOne({ _id: invoiceId });
+        const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
         if (!invoiceData) {
             return res.status(404).send({ msg: "Invoice not found" });
         }
@@ -147,12 +181,12 @@ const deletinvoice =async (req, res) => {
         // Update the student's fees
         const oldAmount = invoiceData.Amount;
         let stuObj = JSON.parse(JSON.stringify(studentData));
-        console.log(stuObj.Rfees,stuObj.Pfees,"dsfdsfdsf",oldAmount,newAmount)
+        console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount)
         stuObj.Rfees = stuObj.Rfees + oldAmount
-      
 
-        stuObj.Pfees = stuObj.Pfees - oldAmount 
-      
+
+        stuObj.Pfees = stuObj.Pfees - oldAmount
+
 
 
 
@@ -161,10 +195,10 @@ const deletinvoice =async (req, res) => {
 
         // Update the invoice amount
 
-       
-        console.log(invoiceData,"dsfsdfdfdfdffdfffesadeadadasd")
-        let cp=JSON.parse(JSON.stringify(invoiceData))
-        await model.updateOne({ _id: invoiceId }, {...cp,...req.body,stuId:studentId,isDeleted:true,Amount:0});
+
+        console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd")
+        let cp = JSON.parse(JSON.stringify(invoiceData))
+        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId, isDeleted: true, Amount: 0 });
 
         res.send({ msg: "Invoice and student fees deleted successfully" });
     } catch (err) {
@@ -174,14 +208,14 @@ const deletinvoice =async (req, res) => {
 };
 
 const displayInvoice = (req, res) => {
-    model.find({isDeleted:false}).populate("stuId").then((data) => {
+    invoiceModel.find({ isDeleted: false }).populate("stuId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
     });
 };
 
-const nmailer = (pdfBuffer,row) => {
+const nmailer = (pdfBuffer, row) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -215,7 +249,7 @@ const nmailer = (pdfBuffer,row) => {
 
 // const sendWhatsApp = (pdfBuffer, recipientNumber) => {
 //     const mediaUrl = `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
-    
+
 //     client.messages.create({
 //         from: 'whatsapp:+15123687385', // Your Twilio WhatsApp number
 //         to: `whatsapp:${recipientNumber}`, // Recipient's WhatsApp number
@@ -261,11 +295,10 @@ const pdfmail = async (req, res) => {
         body: [
             ['Invoice ID', row.invoiceId],
             ['Date', row.invoiceDate && row.invoiceDate.split('T')[0]],
-            ['Student Name',row.stuId.Name && row.stuId.Name],
-            ['Course Name', row.stuId.course && row.stuId.course ],
+            ['Student Name', row.stuId.Name && row.stuId.Name],
+            ['Course Name', row.stuId.course && row.stuId.course],
             ['Payment Method', row.TypeOfPayment],
-            ['Paid Amount',row.Amount]
-           
+            ['Paid Amount', row.Amount]
         ],
     };
 
@@ -322,41 +355,48 @@ const pdfmail = async (req, res) => {
         footerY += 5;
     });
 
+    // Add "This is a computer-generated invoice. Signature not required."
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('This is a computer-generated invoice. Signature not required.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 50, { align: 'center' });
+
     // Copyright notice
     doc.setTextColor(100);
     doc.setFontSize(8);
-    doc.text('© 2023 TechNishal. All Rights Reserved.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 2, { align: 'center' });
+    doc.text('© 2023 TechNishal. All Rights Reserved.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 5, { align: 'center' });
 
     // Convert the PDF to a buffer
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
     // Send the email with the PDF attachment
-    nmailer(pdfBuffer,row);
+    nmailer(pdfBuffer, row);
 
     // Send the PDF via WhatsApp
     // const recipientNumber = '+919724947545'; // Replace with the recipient's WhatsApp number
     // sendWhatsApp(pdfBuffer, recipientNumber);
 
-// const client = new Client();
+    // const client = new Client();
 
-// client.on('qr', (qr) => {
-//     // Generate and scan this code with your phone
-//     console.log('QR RECEIVED', qr);
-// });
+    // client.on('qr', (qr) => {
+    //     // Generate and scan this code with your phone
+    //     console.log('QR RECEIVED', qr);
+    // });
 
-// client.on('ready', () => {
-//     console.log('Client is ready!');
-// });
+    // client.on('ready', () => {
+    //     console.log('Client is ready!');
+    // });
 
-// client.on('message', msg => {
-//     if (msg.body == '!ping') {
-//         msg.reply('pong');
-//     }
-// });
+    // client.on('message', msg => {
+    //     if (msg.body == '!ping') {
+    //         msg.reply('pong');
+    //     }
+    // });
 
-// client.initialize();
+    // client.initialize();
+
     // Send response to client
     res.send('Invoice generated and email/WhatsApp sent.');
 };
+
 
 module.exports = { addInvoice, updateinvoice, deletinvoice, displayInvoice, pdfmail };
