@@ -46,7 +46,7 @@ const addInquiry = (req, res) => {
 
 const updateinquiry = (req, res) => {
     let { FullName,
-        parentId,
+        
         Contact,
         Email,
         Date,
@@ -119,7 +119,7 @@ const displayInquiry = (req, res) => {
 }
 
 const displayOnGoingInquiry = (req, res) => {
-    CourseInquirymodel.find({ onGoing: true,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    CourseInquirymodel.find({ onGoing: true,isDeleted:false }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -128,7 +128,7 @@ const displayOnGoingInquiry = (req, res) => {
 }
 
 const displayRejectInquiry = (req, res) => {
-    CourseInquirymodel.find({ Reject: true,isDeleted:false ,parentId:req.query.id }).then((data) => {
+    CourseInquirymodel.find({ Reject: true,isDeleted:false  }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
@@ -138,7 +138,7 @@ const displayRejectInquiry = (req, res) => {
 
 
 const displayConfirmInquiry = (req, res) => {
-    CourseInquirymodel.find({ Confirm: true ,isDeleted:false ,parentId:req.query.id}).then((data) => {
+    CourseInquirymodel.find({ Confirm: true ,isDeleted:false }).then((data) => {
         res.send({ msg: "display Inquiry", data })
     })
         .catch((err) => {
