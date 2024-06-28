@@ -26,7 +26,7 @@ const addStudent = (req, res) => {
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees:Tfees,
+        Rfees:Tfees,    
         course,
         Date,
         btime,
@@ -77,5 +77,20 @@ const getAllStu = (req, res) => {
             res.send({ err })
         })
 }
+const InvoiceGet = (req, res) => {
+    // Extract the course ID from the request query parameters
+    const courseId = req.query.id;
+
+    // Define the query to find students with the given course ID and Rfess not equal to 0
+    stuModel.find({ CourseId: courseId, Rfess: { $ne: 0 } }, (err, students) => {
+        if (err) {
+            // Handle error
+            return res.status(500).send({ error: 'Database query failed' });
+        }
+        // Send the retrieved students as the response
+        res.status(200).send(students);
+    });
+};
+
 
 module.exports = { addStudent, updateStu, deleteStu, getAllStu }

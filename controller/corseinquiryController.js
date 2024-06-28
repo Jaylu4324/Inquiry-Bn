@@ -8,12 +8,12 @@ const addInquiry = (req, res) => {
         Description,
         CollageName,
         Course,
-        parentId,
+        
         Interaction,
         FollowUp } = req.body
 
     const data = new CourseInquirymodel({
-        parentId,
+        
         FullName,
         Contact,
         Email,
@@ -71,7 +71,7 @@ const updateinquiry = (req, res) => {
     //     res.send({error})
     // }else{
 
-    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body,parentId})
+    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })
@@ -184,7 +184,7 @@ const ConfirmInquiry = (req, res) => {
         })
 }
 const getISAddeddata = (req, res) => {
-    CourseInquirymodel.find({ Confirm: true, isAdded: false, isDeleted: false, parentId: req.query.id }).then((data) => {
+    CourseInquirymodel.find({ Confirm: true, isAdded: false, isDeleted: false }).then((data) => {
         res.send({ msg: "allIsAdded", data })
     }).catch((err) => {
         res.send({ err })

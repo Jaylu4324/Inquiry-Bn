@@ -3,10 +3,7 @@ const mongoose = require('mongoose')
 // const joi = require('joi')
 
 const corseInquiry = mongoose.Schema({
-    parentId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'addCorseBatch'
-    },
+    
     
     FullName: {
         type: String
