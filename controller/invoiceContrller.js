@@ -55,7 +55,7 @@ const addInvoice = async (req, res) => {
             stuId,
 
             invoiceDate,
-            invoiceId: `INV${new Date().toLocaleString().split("/")[1]}00${length.length + 1}`,
+            invoiceId: `INV${new Date().toLocaleString().split("/")[0]}00${length.length + 1}`,
             Amount,
             TypeOfPayment,
             Description: "THANK'S FOR PAYMENT!",
