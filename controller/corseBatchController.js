@@ -1,34 +1,54 @@
 const model = require("../model/corseBatchShcema")
 const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
-const addBatch = (req, res) => {
-    console.log(req.body)
+
+
+const addBatch = async (req, res) => {
+    console.log(req.body);
     let { EventId, StuName } = req.body;
-    
+
     const data = new model({
         EventId,
         StuName,
         isCompleted: false
     });
 
-    data.save()
-        .then((data1) => {
-            console.log("hefbff",data1)
-            let arr = StuName.map(ele => ele._id);
-            const filter = { _id: { $in: arr } };
-            const update = { $set: { isAdded: true } };
+    try {
+        const data1 = await data.save();
+        console.log("Saved batch:", data1);
+        
+        // Create an array of student IDs to filter the CourseInquirymodel
+        let arr = StuName.map(ele => ele._id);
 
-            return CourseInquirymodel.updateMany(filter, update)
-                .then(result => {
-                    console.log(`${result.modifiedCount} documents were updated.`);
-                    res.send({ msg: "reg Batch Added", data1 });
-                });
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            res.send({ err });
+        // Fetch the documents that need to be updated
+        const students = await CourseInquirymodel.find({ _id: { $in: arr } });
+
+        // Update the 'flag' array for each student
+        const updatePromises = students.map(student => {
+            // Iterate over StuName to find corresponding student and course
+            StuName.forEach(stu => {
+                if (stu._id.equals(student._id)) {
+                    student.flag.forEach(flag => {
+                        if (stu.Course.includes(flag.Course)) {
+                            flag.isAdded = true;
+                        }
+                    });
+                }
+            });
+            return student.save();
         });
+
+        // Await all updates
+        const updateResults = await Promise.all(updatePromises);
+        console.log(`${updateResults.length} documents were updated.`);
+
+        res.send({ msg: "Batch Added", data1 });
+    } catch (err) {
+        console.error('Error:', err);
+        res.send({ err });
+    }
 };
+
 
 const updateBatch = (req, res) => {
     model.findOne({ _id: req.query.id })

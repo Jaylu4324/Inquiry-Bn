@@ -26,6 +26,9 @@ const corseInquiry = mongoose.Schema({
     Course: {
         type: Array
     },
+    flag: {
+        type: Array
+    },
     onGoing: {
         type: Boolean
     },

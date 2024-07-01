@@ -11,6 +11,12 @@ const addInquiry = (req, res) => {
         
         Interaction,
         FollowUp } = req.body
+        let flag=Course.map((ele)=>{
+            return{Course:ele,
+                isAdded:false
+            }
+        })
+        console.log(flag)
 
     const data = new CourseInquirymodel({
         
@@ -19,6 +25,7 @@ const addInquiry = (req, res) => {
         Email,
         Date,
         Description,
+        flag,
         CollageName,
         onGoing: true,
         Reject: false,
@@ -57,6 +64,12 @@ const updateinquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
+        let flag=Course.map((ele)=>{
+            return{Course:ele,
+                isAdded:false
+            }
+        })
+
     // let {error, value}=validation.validate({FullName,
     //     Contact,
     //     Email,
@@ -71,7 +84,7 @@ const updateinquiry = (req, res) => {
     //     res.send({error})
     // }else{
 
-    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body})
+    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body,flag})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })
@@ -184,10 +197,26 @@ const ConfirmInquiry = (req, res) => {
         })
 }
 const getISAddeddata = (req, res) => {
-    CourseInquirymodel.find({ Confirm: true, isAdded: false, isDeleted: false }).then((data) => {
-        res.send({ msg: "allIsAdded", data })
-    }).catch((err) => {
-        res.send({ err })
+    let Course = req.query.Course;
+
+    CourseInquirymodel.find({
+        Confirm: true,
+        isDeleted: false,
+        flag: {
+            $elemMatch: {
+                Course: Course,
+                isAdded: false
+            }
+        }
     })
-}
+    .then((data) => {
+        res.send({ msg: "allIsAdded", data });
+    })
+    .catch((err) => {
+        res.send({ err });
+    });
+};
+
+
+
 module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,getISAddeddata }
