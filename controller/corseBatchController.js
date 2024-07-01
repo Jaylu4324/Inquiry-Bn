@@ -27,12 +27,12 @@ const addBatch = async (req, res) => {
         const updatePromises = students.map(student => {
             let shouldSave = false; // Flag to check if we need to save the document
             student.flag.forEach(flag => {
-                StuName.forEach(stu => {
-                    if (stu._id.equals(student._id) && stu.Course.includes(flag.Course) && !flag.isAdded) {
-                        flag.isAdded = true;
-                        shouldSave = true; // Mark that this student needs to be saved
-                    }
-                });
+                // Check if this student and course should be updated
+                let matchingStu = StuName.find(stu => stu._id.equals(student._id));
+                if (matchingStu && matchingStu.Course.includes(flag.Course) && !flag.isAdded) {
+                    flag.isAdded = true;
+                    shouldSave = true; // Mark that this student needs to be saved
+                }
             });
             return shouldSave ? student.save() : Promise.resolve(); // Save only if there are changes
         });
@@ -48,7 +48,8 @@ const addBatch = async (req, res) => {
     }
 };
 
-module.exports = { addBatch };
+
+
 
 
 const updateBatch = (req, res) => {
