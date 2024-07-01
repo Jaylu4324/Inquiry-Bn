@@ -11,7 +11,7 @@ const addInquiry = (req, res) => {
         
         Interaction,
         FollowUp } = req.body
-        let flag=Course.map((ele)=>{
+        let flag=Course&&Course.map((ele)=>{
             return{Course:ele,
                 isAdded:false
             }
@@ -64,7 +64,7 @@ const updateinquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
-        let flag=Course.map((ele)=>{
+        let flag=Course&&Course.map((ele)=>{
             return{Course:ele,
                 isAdded:false
             }

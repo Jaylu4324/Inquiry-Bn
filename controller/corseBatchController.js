@@ -16,7 +16,7 @@ const addBatch = async (req, res) => {
     try {
         const data1 = await data.save();
         console.log("Saved batch:", data1);
-        
+
         // Create an array of student IDs to filter the CourseInquirymodel
         let arr = StuName.map(ele => ele._id);
 
@@ -25,22 +25,21 @@ const addBatch = async (req, res) => {
 
         // Update the 'flag' array for each student
         const updatePromises = students.map(student => {
-            // Iterate over StuName to find corresponding student and course
-            StuName.forEach(stu => {
-                if (stu._id.equals(student._id)) {
-                    student.flag.forEach(flag => {
-                        if (stu.Course.includes(flag.Course)) {
-                            flag.isAdded = true;
-                        }
-                    });
-                }
+            let shouldSave = false; // Flag to check if we need to save the document
+            student.flag.forEach(flag => {
+                StuName.forEach(stu => {
+                    if (stu._id.equals(student._id) && stu.Course.includes(flag.Course) && !flag.isAdded) {
+                        flag.isAdded = true;
+                        shouldSave = true; // Mark that this student needs to be saved
+                    }
+                });
             });
-            return student.save();
+            return shouldSave ? student.save() : Promise.resolve(); // Save only if there are changes
         });
 
         // Await all updates
         const updateResults = await Promise.all(updatePromises);
-        console.log(`${updateResults.length} documents were updated.`);
+        console.log(`${updateResults.filter(res => res).length} documents were updated.`);
 
         res.send({ msg: "Batch Added", data1 });
     } catch (err) {
@@ -48,6 +47,8 @@ const addBatch = async (req, res) => {
         res.send({ err });
     }
 };
+
+module.exports = { addBatch };
 
 
 const updateBatch = (req, res) => {
