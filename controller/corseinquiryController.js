@@ -11,12 +11,12 @@ const addInquiry = (req, res) => {
         
         Interaction,
         FollowUp } = req.body
-        let flag=Course&&Course.map((ele)=>{
+        let Testarr=Course&&Course.map((ele)=>{
             return{Course:ele,
                 isAdded:false
             }
         })
-        console.log(flag)
+        console.log(Testarr)
 
     const data = new CourseInquirymodel({
         
@@ -25,7 +25,7 @@ const addInquiry = (req, res) => {
         Email,
         Date,
         Description,
-        flag,
+        Testarr,
         CollageName,
         onGoing: true,
         Reject: false,
@@ -64,7 +64,7 @@ const updateinquiry = (req, res) => {
         Interaction,
         FollowUp } = req.body
 
-        let flag=Course&&Course.map((ele)=>{
+        let Testarr=Course&&Course.map((ele)=>{
             return{Course:ele,
                 isAdded:false
             }
@@ -84,7 +84,7 @@ const updateinquiry = (req, res) => {
     //     res.send({error})
     // }else{
 
-    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body,flag})
+    CourseInquirymodel.updateOne({ _id: req.query.id }, {...req.body,Testarr})
             .then((data) => {
                 res.send({ msg: "Inquiry Updated", data })
             })
@@ -202,7 +202,7 @@ const getISAddeddata = (req, res) => {
     CourseInquirymodel.find({
         Confirm: true,
         isDeleted: false,
-        flag: {
+        Testarr: {
             $elemMatch: {
                 Course: Course,
                 isAdded: false

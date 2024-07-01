@@ -26,7 +26,7 @@ const corseInquiry = mongoose.Schema({
     Course: {
         type: Array
     },
-    flag: {
+    Testarr: {
         type: Array
     },
     onGoing: {
