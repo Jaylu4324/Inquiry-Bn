@@ -2,7 +2,6 @@ const model = require("../model/corseBatchShcema")
 const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
 
-
 const addBatch = async (req, res) => {
     console.log(req.body);
     let { EventId, StuName } = req.body;
@@ -17,29 +16,31 @@ const addBatch = async (req, res) => {
         const data1 = await data.save();
         console.log("Saved batch:", data1);
 
-        // Create an array of student IDs to filter the CourseInquirymodel
+        // Create an array of student IDs and courses to filter the CourseInquirymodel
         let arr = StuName.map(ele => ele._id);
+        let courses = StuName.reduce((acc, stu) => {
+            acc[stu._id] = stu.Course;
+            return acc;
+        }, {});
 
-        // Fetch the documents that need to be updated
-        const students = await CourseInquirymodel.find({ _id: { $in: arr } });
+        // Prepare bulk update operations
+        let bulkOps = Object.keys(courses).map(studentId => ({
+            updateMany: {
+                filter: {
+                    _id: studentId,
+                    "flag.Course": { $in: courses[studentId] },
+                    "flag.isAdded": false
+                },
+                update: {
+                    $set: { "flag.$[elem].isAdded": true }
+                },
+                arrayFilters: [{ "elem.Course": { $in: courses[studentId] } }]
+            }
+        }));
 
-        // Update the 'flag' array for each student
-        const updatePromises = students.map(student => {
-            let shouldSave = false; // Flag to check if we need to save the document
-            student.flag.forEach(flag => {
-                // Check if this student and course should be updated
-                let matchingStu = StuName.find(stu => stu._id.equals(student._id));
-                if (matchingStu && matchingStu.Course.includes(flag.Course) && !flag.isAdded) {
-                    flag.isAdded = true;
-                    shouldSave = true; // Mark that this student needs to be saved
-                }
-            });
-            return shouldSave ? student.save() : Promise.resolve(); // Save only if there are changes
-        });
-
-        // Await all updates
-        const updateResults = await Promise.all(updatePromises);
-        console.log(`${updateResults.filter(res => res).length} documents were updated.`);
+        // Perform bulk update
+        const bulkWriteResult = await CourseInquirymodel.bulkWrite(bulkOps);
+        console.log(`${bulkWriteResult.modifiedCount} documents were updated.`);
 
         res.send({ msg: "Batch Added", data1 });
     } catch (err) {
@@ -47,6 +48,9 @@ const addBatch = async (req, res) => {
         res.send({ err });
     }
 };
+
+
+
 
 
 
