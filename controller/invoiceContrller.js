@@ -143,8 +143,9 @@ const updateinvoice = async (req, res) => {
         // Save the updated student data
         await stuModel.updateOne({ _id: studentId }, stuObj);
 
+        
         // Update the invoice amount
-        parseInt(invoiceData.Amount) = parseInt(newAmount);
+        invoiceData.Amount = parseInt(newAmount);
         console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
         let cp = JSON.parse(JSON.stringify(invoiceData));
         await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId });
