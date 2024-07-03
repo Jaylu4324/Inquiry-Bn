@@ -92,5 +92,15 @@ const InvoiceGet = (req, res) => {
     });
 };
 
+const fillterbyDate=(req,res)=>{
+    stuModel.find().sort({Date:-1})
+    .then((data)=>{
+        res.send({data,msg:"fillter"})
+    })
+    .catch((err)=>{
+        res.send({err})
+    })
+}
 
-module.exports = { addStudent, updateStu, deleteStu, getAllStu }
+
+module.exports = { addStudent, updateStu, deleteStu, getAllStu ,fillterbyDate}

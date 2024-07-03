@@ -65,23 +65,26 @@ const addInvoice = async (req, res) => {
 
         stuModel.findOne({ _id: req.body.stuId }).then((data) => {
             let stuObj = JSON.parse(JSON.stringify(data))
-            stuObj.Rfees = stuObj.Rfees - Amount
-            stuObj.Pfees = stuObj.Pfees + Amount
+            stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(Amount)
+            stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(Amount)
 
-            if (req.body.Amount > stuObj.Rfees) {
+            if (parseInt(req.body.Amount) > parseInt(stuObj.Rfees)) {
                 res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
             }
 
-            stuModel.updateOne({ _id: req.body.stuId }, stuObj).then((udata) => {
-                data1.save().then((data1) => {
-                    res.send({ msg: "Data Added", data1 });
-                }).catch((err) => {
-                    res.send({ err, msg: "add" });
-                });
-            })
-                .catch((err) => {
-                    res.send({ err, msg: "updet" })
+            else{
+
+                stuModel.updateOne({ _id: req.body.stuId }, stuObj).then((udata) => {
+                    data1.save().then((data1) => {
+                        res.send({ msg: "Data Added", data1 });
+                    }).catch((err) => {
+                        res.send({ err, msg: "add" });
+                    });
                 })
+                    .catch((err) => {
+                        res.send({ err, msg: "updet" })
+                    })
+            }
 
         })
             .catch((err) => {
@@ -128,20 +131,20 @@ const updateinvoice = async (req, res) => {
         let stuObj = JSON.parse(JSON.stringify(studentData));
         console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount);
 
-        stuObj.Rfees = stuObj.Rfees + oldAmount 
-        stuObj.Pfees = stuObj.Pfees - oldAmount 
+        stuObj.Rfees = parseInt(stuObj.Rfees) + parseInt(oldAmount) 
+        stuObj.Pfees = parseInt(stuObj.Pfees) - parseInt(oldAmount) 
 
-        if (newAmount > stuObj.Rfees) {
+        if (parseInt(newAmount) > parseInt(stuObj.Rfees)) {
             return res.status(404).send({ msg: "Paid Amount Must Be less than Total Amount" });
         }
-        stuObj.Rfees = stuObj.Rfees -newAmount
-        stuObj.Pfees = stuObj.Pfees   +newAmount
+        stuObj.Rfees = parseInt(stuObj.Rfees) -parseInt(newAmount)
+        stuObj.Pfees = parseInt(stuObj.Pfees)   +parseInt(newAmount)
 
         // Save the updated student data
         await stuModel.updateOne({ _id: studentId }, stuObj);
 
         // Update the invoice amount
-        invoiceData.Amount = newAmount;
+        parseInt(invoiceData.Amount) = parseInt(newAmount);
         console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
         let cp = JSON.parse(JSON.stringify(invoiceData));
         await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId });
