@@ -64,6 +64,7 @@ const addInvoice = async (req, res) => {
         });
 
         stuModel.findOne({ _id: req.body.stuId }).then((data) => {
+            let stuObj = JSON.parse(JSON.stringify(data))
 
             if (parseInt(req.body.Amount) >= parseInt(stuObj.Rfees)) {
                 res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
@@ -72,7 +73,6 @@ const addInvoice = async (req, res) => {
             
             
             else{
-                let stuObj = JSON.parse(JSON.stringify(data))
                 stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(Amount)
                 stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(Amount)
 
