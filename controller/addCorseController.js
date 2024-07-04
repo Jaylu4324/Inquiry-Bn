@@ -1,4 +1,5 @@
 const {AddCourseModel,validation} = require('../model/addCorsebatch')
+const {RagularbatchSchema} = require('../model/corseBatchShcema')
 
 const addBatchEvent = (req, res) => {
     let {
@@ -68,6 +69,15 @@ try{
 
 const getid=req.query.id
 const getiscomp= await AddCourseModel.findByIdAndUpdate(getid,{IsCompleted:true},{new:true})
+
+const batcharr =await RagularbatchSchema.find({EventId:req.query.id}) 
+batcharr.map(async(ele)=>{
+    ele.isCompleted=true
+    
+   const mapped = await RagularbatchSchema.updateOne({_id:ele._id},ele)
+})
+
+
 res.status(200).json({msg:'batch event completed',getiscomp})
 
 }
@@ -78,6 +88,10 @@ res.status(400).json({err:'error in completing'})
 
 }
 }
+
+
+
+
 const getiscompleted= async(req,res)=>{
 
 try{
