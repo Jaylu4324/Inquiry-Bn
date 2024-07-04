@@ -48,7 +48,7 @@ const addInvoice = async (req, res) => {
 
 
         let length = await invoiceModel.find()
-        console.log(length, "gbhg")
+        console.log(req.body, "gbhg")
 
 
         const data1 = new invoiceModel({
@@ -56,7 +56,7 @@ const addInvoice = async (req, res) => {
 
             invoiceDate,
             invoiceId: `INV${new Date().toLocaleString().split("/")[0]}00${length.length + 1}`,
-            Amount,
+            Amount: parseInt(Amount),
             TypeOfPayment,
             Description: "THANK'S FOR PAYMENT!",
 
@@ -66,7 +66,7 @@ const addInvoice = async (req, res) => {
         stuModel.findOne({ _id: req.body.stuId }).then((data) => {
             let stuObj = JSON.parse(JSON.stringify(data))
 
-            if (parseInt(req.body.Amount) >= parseInt(stuObj.Rfees)) {
+            if (parseInt(req.body.Amount) > parseInt(stuObj.Rfees)) {
                 res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
             }
 
@@ -114,7 +114,8 @@ const updateinvoice = async (req, res) => {
 
         const invoiceId = req.query.id;
         const studentId = req.body.stuId._id;
-        const newAmount = req.body.Amount;
+        let newAmount = req.body.Amount;
+        newAmount=parseInt(newAmount)
 
         // Find the invoice by ID
         const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
@@ -129,7 +130,7 @@ const updateinvoice = async (req, res) => {
         }
 
         // Update the student's fees
-        const oldAmount = invoiceData.Amount;
+        const oldAmount = parseInt(invoiceData.Amount)
         let stuObj = JSON.parse(JSON.stringify(studentData));
         console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount);
 
