@@ -93,13 +93,29 @@ const InvoiceGet = (req, res) => {
 };
 
 const fillterbyDate=(req,res)=>{
-    stuModel.find().sort({Date:-1})
-    .then((data)=>{
-        res.send({data,msg:"fillter"})
-    })
-    .catch((err)=>{
-        res.send({err})
-    })
+    let key=req.query.key
+    let sortby=req.query.sortby
+    let courseid=req.query.courseid
+
+    if(!courseid){
+
+        stuModel.find().sort({[key]:parseInt(sortby)})
+        .then((data)=>{
+            res.send({data,msg:" is fillter"})
+        })
+        .catch((err)=>{
+            res.send({err})
+        })
+    }else{
+        stuModel.find({CourseId:courseid}).sort({[key]:parseInt(sortby)})
+        .then((data)=>{
+            res.send({data,msg:"else fillter"})
+        })
+        .catch((err)=>{
+            res.send({err})
+        })
+
+    }
 }
 
 
