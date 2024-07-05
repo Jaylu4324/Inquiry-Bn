@@ -77,6 +77,13 @@ const getAllStu = (req, res) => {
             res.send({ err })
         })
 }
+const Alldata=(req,res)=>{
+    stuModel.find().then((data)=>{
+        res.send({data})
+    }).catch((err)=>{
+        res.send({err})
+    })
+}
 const InvoiceGet = (req, res) => {
     // Extract the course ID from the request query parameters
     const courseId = req.query.id;
@@ -119,4 +126,4 @@ const fillterbyDate=(req,res)=>{
 }
 
 
-module.exports = { addStudent, updateStu, deleteStu, getAllStu ,fillterbyDate}
+module.exports = { addStudent, updateStu, deleteStu, getAllStu ,fillterbyDate,Alldata}
