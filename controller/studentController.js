@@ -1,4 +1,4 @@
-const {stuModel} = require('../model/studentShcema')
+const { stuModel } = require('../model/studentShcema')
 
 const addStudent = (req, res) => {
     let { Name,
@@ -9,12 +9,12 @@ const addStudent = (req, res) => {
         AcademicCourse,
         course,
         Date,
-        
+
         btime,
         Parentcontact,
         days,
         Tfees,
-        
+
 
     } = req.body
 
@@ -26,14 +26,14 @@ const addStudent = (req, res) => {
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees:Tfees,    
+        Rfees: Tfees,
         course,
         Date,
         btime,
         Parentcontact,
         days,
         Tfees,
-Pfees:0
+        Pfees: 0
     })
 
     stuData.save().then((data) => {
@@ -70,18 +70,18 @@ const deleteStu = (req, res) => {
 }
 
 const getAllStu = (req, res) => {
-    stuModel.find({CourseId:req.query.id}).then((data) => {
+    stuModel.find({ CourseId: req.query.id }).then((data) => {
         res.send({ msg: "All student", data })
     })
         .catch((err) => {
             res.send({ err })
         })
 }
-const Alldata=(req,res)=>{
-    stuModel.find().then((data)=>{
-        res.send({data})
-    }).catch((err)=>{
-        res.send({err})
+const Alldata = (req, res) => {
+    stuModel.find().then((data) => {
+        res.send({ data })
+    }).catch((err) => {
+        res.send({ err })
     })
 }
 const InvoiceGet = (req, res) => {
@@ -99,31 +99,64 @@ const InvoiceGet = (req, res) => {
     });
 };
 
-const fillterbyDate=(req,res)=>{
-    let key=req.query.key
-    let sortby=req.query.sortby
-    let courseid=req.query.courseid
+const fillterbyDate = (req, res) => {
+    let key = req.query.key
+    let sortby = req.query.sortby
+    let courseid = req.query.courseid
 
-    if(!courseid){
+    if (!courseid) {
 
-        stuModel.find().sort({[key]:parseInt(sortby)})
-        .then((data)=>{
-            res.send({data,msg:" is fillter"})
-        })
-        .catch((err)=>{
-            res.send({err})
-        })
-    }else{
-        stuModel.find({CourseId:courseid}).sort({[key]:parseInt(sortby)})
-        .then((data)=>{
-            res.send({data,msg:"else fillter"})
-        })
-        .catch((err)=>{
-            res.send({err})
-        })
+        stuModel.find().sort({ [key]: parseInt(sortby) })
+            .then((data) => {
+                res.send({ data, msg: " is fillter" })
+            })
+            .catch((err) => {
+                res.send({ err })
+            })
+    } else {
+        stuModel.find({ CourseId: courseid }).sort({ [key]: parseInt(sortby) })
+            .then((data) => {
+                res.send({ data, msg: "else fillter" })
+            })
+            .catch((err) => {
+                res.send({ err })
+            })
 
     }
 }
 
 
-module.exports = { addStudent, updateStu, deleteStu, getAllStu ,fillterbyDate,Alldata}
+const filterByMonth = async (req, res) => {
+    let { perentId, month, sort } = req.query
+    sort=parseInt(sort)
+    if (!perentId) {
+
+        try {
+            const januaryData = await stuModel.find({
+                $expr: {
+                    $eq: [{ $month: "$Date" }, month]
+                }
+            }).sort({Date:sort});
+            res.json(januaryData);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    else {
+        try {
+            const januaryData = await stuModel.find({
+                $expr: {
+                    $eq: [{ $month: "$Date" }, month]
+                }
+                , CourseId: perentId
+            }).sort({Date:sort});
+            res.json(januaryData);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+};
+
+
+module.exports = { addStudent, updateStu, deleteStu, getAllStu, fillterbyDate, Alldata, filterByMonth }

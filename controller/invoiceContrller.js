@@ -404,6 +404,63 @@ const pdfmail = async (req, res) => {
     // Send response to client
     res.send('Invoice generated and email/WhatsApp sent.');
 };
+const fillterbyDate = (req, res) => {
+    let key = req.query.key
+    let sortby = req.query.sortby
+    let stuId = req.query.stuId
+
+    if (!stuId) {
+
+        invoiceModel.find().sort({ [key]: parseInt(sortby) })
+            .then((data) => {
+                res.send({ data, msg: " is fillter" })
+            })
+            .catch((err) => {
+                res.send({ err })
+            })
+    } else {
+        invoiceModel.find({ stuId }).sort({ [key]: parseInt(sortby) })
+            .then((data) => {
+                res.send({ data, msg: "else fillter" })
+            })
+            .catch((err) => {
+                res.send({ err })
+            })
+
+    }
+}
 
 
-module.exports = { addInvoice, updateinvoice, deletinvoice, displayInvoice, pdfmail };
+const filterByMonth = async (req, res) => {
+    let { stuId, month, sort } = req.query
+    sort=parseInt(sort)
+    if (!stuId) {
+
+        try {
+            const januaryData = await invoiceModel.find({
+                $expr: {
+                    $eq: [{ $month: "$invoiceDate" }, month]
+                }
+            }).sort({invoiceDate:sort});
+            res.json(januaryData);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    else {
+        try {
+            const januaryData = await invoiceModel.find({
+                $expr: {
+                    $eq: [{ $month: "$invoiceDate" }, month]
+                }
+                , stuId
+            }).sort({invoiceDate:sort});
+            res.json(januaryData);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+};
+
+module.exports = { addInvoice, updateinvoice, deletinvoice, displayInvoice, pdfmail,fillterbyDate,filterByMonth };
