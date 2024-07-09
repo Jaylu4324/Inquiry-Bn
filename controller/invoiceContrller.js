@@ -59,7 +59,7 @@ const addInvoice = async (req, res) => {
             Amount: parseInt(Amount),
             TypeOfPayment,
             Description: "THANK'S FOR PAYMENT!",
-
+            courseId,
             isDeleted: false
         });
 
