@@ -49,7 +49,7 @@ const updateStu = (req, res) => {
 
 
 
-    stuModel.updateOne({ _id: req.query.id }, req.body)
+    stuModel.updateOne({ _id: req.query.id }, {...req.body,CourseId:req.body.CourseId._id})
         .then((data) => {
             res.send({ msg: "Student Updated", data })
         })

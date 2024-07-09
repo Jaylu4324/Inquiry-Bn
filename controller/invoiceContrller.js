@@ -25,7 +25,7 @@ const addInvoice = async (req, res) => {
     let {
 
         invoiceDate,
-
+        courseId,
         Amount,
         TypeOfPayment,
         invoiceId,
@@ -37,7 +37,7 @@ const addInvoice = async (req, res) => {
         invoiceDate,
         Amount,
         TypeOfPayment,
-        
+        courseId
         
     });
 
@@ -222,6 +222,13 @@ const displayInvoice = (req, res) => {
     });
 };
 
+const courseInvoice = (req, res) => {
+    invoiceModel.find({ isDeleted: false,courseId:req.query.parentId }).populate("stuId").then((data) => {
+        res.send({ msg: "display invoice", data });
+    }).catch((err) => {
+        res.send({ err });
+    });
+};
 const nmailer = (pdfBuffer, row) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -463,4 +470,13 @@ const filterByMonth = async (req, res) => {
     }
 };
 
-module.exports = { addInvoice, updateinvoice, deletinvoice, displayInvoice, pdfmail,fillterbyDate,filterByMonth };
+const search=async(req,res)=>{
+    
+   const populatedata =await invoiceModel.find().populate("stuId")
+
+  const filterdata= populatedata.filter((ele)=>{
+    return ele.stuId.Name == req.query.name
+   })
+   res.send({filterdata})
+}
+module.exports = { addInvoice, updateinvoice, search,deletinvoice,courseInvoice, displayInvoice, pdfmail,fillterbyDate,filterByMonth };

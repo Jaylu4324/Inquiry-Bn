@@ -8,6 +8,10 @@ const Invoice = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'student'
     },
+    courseId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'addCorseBatch'
+    },
     invoiceId:{
         type:String
     },

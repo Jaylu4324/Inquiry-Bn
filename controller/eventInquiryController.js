@@ -59,6 +59,7 @@ const updateEventinquiry = (req, res) => {
     let {
         FullName,
         Contact,
+        eventId,
         Email,
         Date,
         Description,
@@ -81,7 +82,7 @@ const updateEventinquiry = (req, res) => {
         res.status(400).json({ isSuccess: false, error })
     }
     else {
-        eventInquiryModel.updateOne({ _id: req.query.id }, req.body)
+        eventInquiryModel.updateOne({ _id: req.query.id }, {...req.body,eventId:eventId._id})
             .then((data) => {
                 res.status(201).json({ isSuccess: true, msg: "Event Inquiry Updated", data })
             })

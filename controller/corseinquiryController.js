@@ -217,6 +217,49 @@ const getISAddeddata = (req, res) => {
     });
 };
 
+const fillterbyDate = (req, res) => {
+    let key = req.query.key
+    let sortby = req.query.sortby
+    
+
+   
+    
+        CourseInquirymodel.find().sort({ [key]: parseInt(sortby) })
+            .then((data) => {
+                res.send({ data, msg: "else fillter" })
+            })
+            .catch((err) => {
+                res.send({ err })
+            })
+
+    
+}
 
 
-module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,getISAddeddata }
+const filterByMonth = async (req, res) => {
+    let {  month, sort } = req.query
+    
+
+    
+        try {
+            const januaryData = await CourseInquirymodel.find({
+                $expr: {
+                    $eq: [{ $month: "$Date" }, month]
+                }
+            }).sort({Date:sort});
+            res.json(januaryData);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    
+};
+const search=(req,res)=>{
+    let FullName = req.query.FullName
+    CourseInquirymodel.find({FullName}).then((data)=>{
+        res.send({data})
+    })
+    .catch((err)=>{
+        res.send({err})
+    })
+}
+module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry,search, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}

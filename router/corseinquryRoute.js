@@ -1,7 +1,7 @@
 const express = require('express')
 const route = express.Router()
 
-const { addInquiry, updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry,getISAddeddata, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry} = require('../controller/corseinquiryController')
+const { addInquiry, fillterbyDate,filterByMonth,search,updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry,getISAddeddata, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry} = require('../controller/corseinquiryController')
 
 route.post('/addInquiry', addInquiry)
 route.post('/Update', updateinquiry)
@@ -13,6 +13,9 @@ route.get('/Confirm', displayConfirmInquiry)
 route.post('/RejectedInquiry',RejectInquiry)
 route.get("/getisAdded",getISAddeddata)
 route.post('/ConfimInquiry',ConfirmInquiry)
+route.get("/coursefillbydate",fillterbyDate)
+route.get("/coursefillbymonth",filterByMonth)
+route.get("/searchstu",search)
 
 
 

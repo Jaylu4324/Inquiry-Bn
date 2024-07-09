@@ -60,7 +60,7 @@ else{
             let { StuName, EventId } = req.body;
             
             if (StuName.length > 0) {
-                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id })
                     .then(() => {
                         let id1 = StuName.map(ele => ele._id);
                         return eventInquiryModel.updateMany({ _id: { $in: id1 } }, { $set: { isAdded: true } });
@@ -69,7 +69,7 @@ else{
                         res.status(201).json({isSuccess:true , msg: "Data set successfully" });
                     });
             } else {
-                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId })
+                return EventBacth.updateOne({ _id: req.query.id }, { StuName, EventId:EventId>_id })
                     .then(() => {
                         res.status(201).json({isSuccess:true , msg: "Please provide some data" });
                     });
