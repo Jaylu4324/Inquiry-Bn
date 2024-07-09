@@ -414,9 +414,9 @@ const pdfmail = async (req, res) => {
 const fillterbyDate = (req, res) => {
     let key = req.query.key
     let sortby = req.query.sortby
-    let stuId = req.query.stuId
+    let courseId = req.query.courseId
 
-    if (!stuId) {
+    if (!courseId) {
 
         invoiceModel.find().sort({ [key]: parseInt(sortby) })
             .then((data) => {
@@ -426,7 +426,7 @@ const fillterbyDate = (req, res) => {
                 res.send({ err })
             })
     } else {
-        invoiceModel.find({ stuId }).sort({ [key]: parseInt(sortby) })
+        invoiceModel.find({ courseId }).sort({ [key]: parseInt(sortby) })
             .then((data) => {
                 res.send({ data, msg: "else fillter" })
             })
@@ -439,9 +439,9 @@ const fillterbyDate = (req, res) => {
 
 
 const filterByMonth = async (req, res) => {
-    let { stuId, month, sort } = req.query
-    sort=parseInt(sort)
-    if (!stuId) {
+    let { courseId, month, sort } = req.query
+    courseId=parseInt(sort)
+    if (!courseId) {
 
         try {
             const januaryData = await invoiceModel.find({
@@ -461,7 +461,7 @@ const filterByMonth = async (req, res) => {
                 $expr: {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
-                , stuId
+                , courseId:req.query.courseId
             }).sort({invoiceDate:sort});
             res.json(januaryData);
         } catch (err) {
