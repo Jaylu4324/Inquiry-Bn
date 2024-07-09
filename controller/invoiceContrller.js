@@ -418,7 +418,7 @@ const fillterbyDate = (req, res) => {
 
     if (!courseId) {
 
-        invoiceModel.find().sort({ [key]: parseInt(sortby) })
+        invoiceModel.find().populate("stuId").sort({ [key]: parseInt(sortby) })
             .then((data) => {
                 res.send({ data, msg: " is fillter" })
             })
@@ -426,7 +426,7 @@ const fillterbyDate = (req, res) => {
                 res.send({ err })
             })
     } else {
-        invoiceModel.find({ courseId }).sort({ [key]: parseInt(sortby) })
+        invoiceModel.find({ courseId }).populate("stuId").sort({ [key]: parseInt(sortby) })
             .then((data) => {
                 res.send({ data, msg: "else fillter" })
             })
@@ -448,8 +448,8 @@ const filterByMonth = async (req, res) => {
                 $expr: {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
-            }).sort({invoiceDate:sort});
-            res.json(januaryData);
+            }).sort({invoiceDate:sort}).populate("stuId");
+            res.send(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
@@ -462,7 +462,7 @@ const filterByMonth = async (req, res) => {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
                 , courseId:req.query.courseId
-            }).sort({invoiceDate:sort});
+            }).sort({invoiceDate:sort}).populate("stuId");
             res.json(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
