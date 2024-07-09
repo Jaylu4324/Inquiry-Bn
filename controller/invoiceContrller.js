@@ -440,7 +440,7 @@ const fillterbyDate = (req, res) => {
 
 const filterByMonth = async (req, res) => {
     let { courseId, month, sort } = req.query
-    courseId=parseInt(sort)
+    sort=parseInt(sort)
     if (!courseId) {
 
         try {
