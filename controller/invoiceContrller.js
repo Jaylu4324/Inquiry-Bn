@@ -37,7 +37,7 @@ const addInvoice = async (req, res) => {
         invoiceDate,
         Amount,
         TypeOfPayment,
-        courseId
+        
         
     });
 
