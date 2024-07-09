@@ -151,7 +151,7 @@ const updateinvoice = async (req, res) => {
         invoiceData.Amount = parseInt(newAmount);
         console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
         let cp = JSON.parse(JSON.stringify(invoiceData));
-        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId });
+        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId ,courseId:req.body.courseId._id});
 
         res.send({ msg: "Invoice and student fees updated successfully" });
     } catch (err) {
