@@ -283,4 +283,4 @@ const rejectsearch=(req,res)=>{
         res.send({err})
     })
 }
-module.exports = { addInquiry, updateinquiry, deletinquiry,rejectsearch,confirmsearch,onGoingsearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry,search, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}
+module.exports = { addInquiry, updateinquiry, deletinquiry,rejectsearch,confirmsearch,onGoingsearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}
