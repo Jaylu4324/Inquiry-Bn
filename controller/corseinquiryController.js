@@ -253,13 +253,34 @@ const filterByMonth = async (req, res) => {
         }
     
 };
-const search=(req,res)=>{
+const confirmsearch=(req,res)=>{
     let FullName = req.query.FullName
-    CourseInquirymodel.find({FullName}).then((data)=>{
+    CourseInquirymodel.find({FullName,Confirm: true ,isDeleted:false}).then((data)=>{
         res.send({data})
     })
     .catch((err)=>{
         res.send({err})
     })
 }
-module.exports = { addInquiry, updateinquiry, deletinquiry, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry,search, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}
+
+
+const onGoingsearch=(req,res)=>{
+    let FullName = req.query.FullName
+    CourseInquirymodel.find({FullName,onGoing: true,isDeleted:false}).then((data)=>{
+        res.send({data})
+    })
+    .catch((err)=>{
+        res.send({err})
+    })
+}
+
+const rejectsearch=(req,res)=>{
+    let FullName = req.query.FullName
+    CourseInquirymodel.find({FullName,Reject: true,isDeleted:false }).then((data)=>{
+        res.send({data})
+    })
+    .catch((err)=>{
+        res.send({err})
+    })
+}
+module.exports = { addInquiry, updateinquiry, deletinquiry,rejectsearch,confirmsearch,onGoingsearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry,search, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}
