@@ -158,5 +158,15 @@ const filterByMonth = async (req, res) => {
     }
 };
 
+const search=(req,res)=>{
+    
+     stuModel.find({Name:req.query.Name}).then((data)=>{
 
-module.exports = { addStudent, updateStu, deleteStu, getAllStu, fillterbyDate, Alldata, filterByMonth }
+         res.send({data})
+     })
+     .catch((err)=>{
+        res.send({err})
+     })
+ 
+ }
+module.exports = { addStudent, updateStu,search, deleteStu, getAllStu, fillterbyDate, Alldata, filterByMonth }
