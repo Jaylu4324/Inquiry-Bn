@@ -475,7 +475,7 @@ const search=async(req,res)=>{
    const populatedata =await invoiceModel.find().populate("stuId")
 
   const filterdata= populatedata.filter((ele)=>{
-    return ele.stuId.Name == req.query.name
+    return ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
    })
    res.send({filterdata})
 }

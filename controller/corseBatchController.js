@@ -69,7 +69,7 @@ const addBatch = (req, res) => {
         let course11 = req.query.course;
   
         if (StuName.length > 0) {
-          return model.updateOne({ _id: req.query.id }, { StuName, EventId })
+          return model.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id })
             .then(() => {
               StuName.forEach(ele => {
                 CourseInquirymodel.findOne({ _id: ele._id })
