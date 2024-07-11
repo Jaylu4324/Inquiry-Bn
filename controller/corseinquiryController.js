@@ -258,7 +258,7 @@ const filterByMonth = async (req, res) => {
 
 const confirmsearch=async(req,res)=>{
     let {FullName} = req.query
-    const populatedata =await CourseInquirymodel.find({FullName,Confirm: true ,isDeleted:false})
+    const populatedata =await CourseInquirymodel.find({Confirm: true ,isDeleted:false})
  
    const filterdata= populatedata.filter((ele)=>{
      return ele.FullName.toLowerCase() == FullName.toLowerCase()
@@ -269,7 +269,8 @@ const confirmsearch=async(req,res)=>{
 
  const onGoingsearch=async(req,res)=>{
     let {FullName} = req.query
-    const populatedata =await CourseInquirymodel.find({FullName,onGoing: true,isDeleted:false})
+    
+    const populatedata =await CourseInquirymodel.find({onGoing: true,isDeleted:false})
  
    const filterdata= populatedata.filter((ele)=>{
      return ele.FullName.toLowerCase() == FullName.toLowerCase()
@@ -280,7 +281,7 @@ const confirmsearch=async(req,res)=>{
 
  const rejectsearch=async(req,res)=>{
     let {FullName} = req.query
-    const populatedata =await CourseInquirymodel.find({FullName,Reject: true,isDeleted:false })
+    const populatedata =await CourseInquirymodel.find({Reject: true,isDeleted:false })
  
    const filterdata= populatedata.filter((ele)=>{
      return ele.FullName.toLowerCase() == FullName.toLowerCase()
