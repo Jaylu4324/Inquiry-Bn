@@ -269,10 +269,20 @@ const commonSearch = async (req, res) => {
         res.send({ filterdata })
     
 }
+const Alldata=(req,res)=>{
+
+    let {key}=req.query
+    CourseInquirymodel.model.find({[key]:true}).then((allData)=>{
+        res.send({allData})
+    }).catch((err)=>{
+        res.send({err})
+    })
+
+}
 
 
 
 
 
 
-module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth }
+module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth ,Alldata}
