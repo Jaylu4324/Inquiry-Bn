@@ -260,7 +260,7 @@ const confirmsearch=async(req,res)=>{
     let {FullName} = req.query
     const populatedata =await CourseInquirymodel.find({Confirm: true ,isDeleted:false})
 
- if (populatedata>0) {
+ if (populatedata.length>0) {
     
      const filterdata= populatedata.filter((ele)=>{
        return ele.FullName.toLowerCase() == FullName.toLowerCase()
@@ -274,7 +274,7 @@ const confirmsearch=async(req,res)=>{
     let {FullName} = req.query
     
     const populatedata =await CourseInquirymodel.find({onGoing: true,isDeleted:false})
-    if (populatedata>0) {
+    if (populatedata.length>0) {
         
         const filterdata= populatedata.filter((ele)=>{
           return ele.FullName.toLowerCase() == FullName.toLowerCase()
