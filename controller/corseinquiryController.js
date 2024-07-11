@@ -248,7 +248,7 @@ const filterByMonth = async (req, res) => {
             $expr: {
                 $eq: [{ $month: "$Date" }, month]
             }
-        }).sort({ Date: sort });
+        }).sort({ Date: parseInt(sort) });
         res.json(januaryData);
     } catch (err) {
         res.status(500).json({ error: err.message });
