@@ -253,34 +253,42 @@ const filterByMonth = async (req, res) => {
         }
     
 };
-const confirmsearch=(req,res)=>{
-    let FullName = req.query.FullName
-    CourseInquirymodel.find({FullName,Confirm: true ,isDeleted:false}).then((data)=>{
-        res.send({data})
-    })
-    .catch((err)=>{
-        res.send({err})
-    })
-}
 
 
-const onGoingsearch=(req,res)=>{
-    let FullName = req.query.FullName
-    CourseInquirymodel.find({FullName,onGoing: true,isDeleted:false}).then((data)=>{
-        res.send({data})
-    })
-    .catch((err)=>{
-        res.send({err})
-    })
-}
 
-const rejectsearch=(req,res)=>{
-    let FullName = req.query.FullName
-    CourseInquirymodel.find({FullName,Reject: true,isDeleted:false }).then((data)=>{
-        res.send({data})
+const confirmsearch=async(req,res)=>{
+    let {FullName} = req.query
+    const populatedata =await CourseInquirymodel.find({FullName,Confirm: true ,isDeleted:false})
+ 
+   const filterdata= populatedata.filter((ele)=>{
+     return ele.FullName.toLowerCase() == FullName.toLowerCase()
     })
-    .catch((err)=>{
-        res.send({err})
+    res.send({filterdata})
+ }
+
+
+ const onGoingsearch=async(req,res)=>{
+    let {FullName} = req.query
+    const populatedata =await CourseInquirymodel.find({FullName,onGoing: true,isDeleted:false})
+ 
+   const filterdata= populatedata.filter((ele)=>{
+     return ele.FullName.toLowerCase() == FullName.toLowerCase()
     })
-}
+    res.send({filterdata})
+ }
+
+
+ const rejectsearch=async(req,res)=>{
+    let {FullName} = req.query
+    const populatedata =await CourseInquirymodel.find({FullName,Reject: true,isDeleted:false })
+ 
+   const filterdata= populatedata.filter((ele)=>{
+     return ele.FullName.toLowerCase() == FullName.toLowerCase()
+    })
+    res.send({filterdata})
+ }
+
+
+
+
 module.exports = { addInquiry, updateinquiry, deletinquiry,rejectsearch,confirmsearch,onGoingsearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,getISAddeddata ,fillterbyDate,filterByMonth}
