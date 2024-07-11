@@ -259,11 +259,14 @@ const filterByMonth = async (req, res) => {
 const confirmsearch=async(req,res)=>{
     let {FullName} = req.query
     const populatedata =await CourseInquirymodel.find({Confirm: true ,isDeleted:false})
- 
-   const filterdata= populatedata.filter((ele)=>{
-     return ele.FullName.toLowerCase() == FullName.toLowerCase()
-    })
-    res.send({filterdata})
+
+ if (populatedata>0) {
+    
+     const filterdata= populatedata.filter((ele)=>{
+       return ele.FullName.toLowerCase() == FullName.toLowerCase()
+      })
+      res.send({filterdata})
+ }
  }
 
 
@@ -271,22 +274,26 @@ const confirmsearch=async(req,res)=>{
     let {FullName} = req.query
     
     const populatedata =await CourseInquirymodel.find({onGoing: true,isDeleted:false})
- 
-   const filterdata= populatedata.filter((ele)=>{
-     return ele.FullName.toLowerCase() == FullName.toLowerCase()
-    })
-    res.send({filterdata})
+    if (populatedata>0) {
+        
+        const filterdata= populatedata.filter((ele)=>{
+          return ele.FullName.toLowerCase() == FullName.toLowerCase()
+         })
+         res.send({filterdata})
+    }
  }
 
 
  const rejectsearch=async(req,res)=>{
     let {FullName} = req.query
     const populatedata =await CourseInquirymodel.find({Reject: true,isDeleted:false })
- 
-   const filterdata= populatedata.filter((ele)=>{
-     return ele.FullName.toLowerCase() == FullName.toLowerCase()
-    })
-    res.send({filterdata})
+ if(populatedata.length>0){
+
+     const filterdata= populatedata.filter((ele)=>{
+       return ele.FullName.toLowerCase() == FullName.toLowerCase()
+      })
+      res.send({filterdata})
+ }
  }
 
 
