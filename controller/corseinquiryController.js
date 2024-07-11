@@ -272,7 +272,7 @@ const commonSearch = async (req, res) => {
 const Alldata=(req,res)=>{
 
     let {key}=req.query
-    CourseInquirymodel.model.find({[key]:true}).then((allData)=>{
+    CourseInquirymodel.find({[key]:true}).then((allData)=>{
         res.send({allData})
     }).catch((err)=>{
         res.send({err})
