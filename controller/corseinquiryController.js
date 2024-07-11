@@ -222,11 +222,11 @@ const getISAddeddata = (req, res) => {
 const fillterbyDate = (req, res) => {
     let key = req.query.key
     let sortby = req.query.sortby
+    let type = req.query.type
 
 
 
-
-    CourseInquirymodel.find().sort({ [key]: parseInt(sortby) })
+    CourseInquirymodel.find({[type]:true}).sort({ [key]: parseInt(sortby) })
         .then((data) => {
             res.send({ data, msg: "else fillter" })
         })
@@ -239,12 +239,12 @@ const fillterbyDate = (req, res) => {
 
 
 const filterByMonth = async (req, res) => {
-    let { month, sort } = req.query
+    let { month, sort ,type} = req.query
 
 
 
     try {
-        const januaryData = await CourseInquirymodel.find({
+        const januaryData = await CourseInquirymodel.find({[type]:true,
             $expr: {
                 $eq: [{ $month: "$Date" }, month]
             }
@@ -258,9 +258,9 @@ const filterByMonth = async (req, res) => {
 
 
 
-const confirmsearch = async (req, res) => {
-    let { FullName } = req.query
-    const populatedata = await CourseInquirymodel.find({ Confirm: true, isDeleted: false })
+const commonSearch = async (req, res) => {
+    let { FullName,type } = req.query
+    const populatedata = await CourseInquirymodel.find({[type]:true , isDeleted: false })
 
 
         const filterdata = populatedata.filter((ele) => {
@@ -271,32 +271,8 @@ const confirmsearch = async (req, res) => {
 }
 
 
-const onGoingsearch = async (req, res) => {
-    let { FullName } = req.query
-
-    const populatedata = await CourseInquirymodel.find({ onGoing: true, isDeleted: false })
-  
-
-        const filterdata = populatedata.filter((ele) => {
-            return ele.FullName && ele.FullName.toLowerCase() == FullName.toLowerCase()
-        })
-        res.send({ filterdata })
-    
-}
-
-const rejectsearch = async (req, res) => {
-    let { FullName } = req.query
-    const populatedata = await CourseInquirymodel.find({ Reject: true, isDeleted: false })
-
-
-        const filterdata = populatedata.filter((ele) => {
-            return ele.FullName && ele.FullName.toLowerCase() == FullName.toLowerCase() 
-        })
-        res.send({ filterdata })
-    
-}
 
 
 
 
-module.exports = { addInquiry, updateinquiry, deletinquiry, rejectsearch, confirmsearch, onGoingsearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth }
+module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth }

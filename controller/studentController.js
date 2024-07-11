@@ -1,4 +1,5 @@
 const { stuModel } = require('../model/studentShcema')
+const { AddCourseModel} = require('../model/addCorsebatch')
 
 const addStudent = (req, res) => {
     let { Name,
@@ -13,12 +14,17 @@ const addStudent = (req, res) => {
         btime,
         Parentcontact,
         days,
-        Tfees,
+        
 
 
     } = req.body
-
-
+    let fees;
+ AddCourseModel.findOne({_id:CourseId}).then((data)=>{
+    fees=data.Amount
+ })
+.catch((err)=>{
+    res.send({err})
+})
     const stuData = new stuModel({
         Name,
         Contact,
@@ -32,8 +38,8 @@ const addStudent = (req, res) => {
         btime,
         Parentcontact,
         days,
-        Tfees,
-        Pfees: 0
+        Pfees: 0,
+        Tfees:fees
     })
 
     stuData.save().then((data) => {
