@@ -32,7 +32,7 @@ const addStudent = (req, res) => {
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees: Tfees,
+        Rfees: fees,
         course,
         Date,
         btime,
