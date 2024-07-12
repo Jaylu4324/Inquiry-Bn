@@ -220,6 +220,60 @@ const getISAddeddata = (req, res) => {
         res.send({ err })
     })
 }
+
+const sortBykey =async (req,res)=>{
+    let {eventId,key,sortBy,type} = req.query
+    if (!eventId) {
+        
+        const sortData = await eventInquiryModel.find({[type]:true}).sort({[key]:parseInt(sortBy)})
+        res.send({sortData})
+
+    }
+    else{
+        const sortData = await eventInquiryModel.find({eventId,[type]:true}).sort({[key]:parseInt(sortBy)})
+        res.send({sortData})
+    }
+}
+const filterByMonth = async (req, res) => {
+    let { month, sortby ,type} = req.query
+
+
+
+    try {
+        const filterData = await eventInquiryModel.find({[type]:true,
+            $expr: {
+                $eq: [{ $month: "$Date" }, month]
+            }
+        }).sort({ Date: parseInt(sortby) });
+        res.json(filterData);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+};
+
+const commonSearch = async (req, res) => {
+    let { FullName,type } = req.query
+    const populatedata = await eventInquiryModel.find({[type]:true , isDeleted: false })
+
+
+        const filterdata = populatedata.filter((ele) => {
+            return ele.FullName && ele.FullName.toLowerCase() == FullName.toLowerCase()
+        })
+        res.send({ filterdata })
+    
+}
+const Alldata=(req,res)=>{
+
+    let {key}=req.query
+    eventInquiryModel.find({[key]:true}).then((allData)=>{
+        res.send({allData})
+    }).catch((err)=>{
+        res.send({err})
+    })
+
+}
+
 module.exports = {
     addEventInquiry,
     updateEventinquiry,
@@ -232,5 +286,9 @@ module.exports = {
     ConfirmEventInquiry,
     eventIsAdded,
     getISAddeddata,
-    hardelet
+    hardelet,
+    sortBykey,
+    filterByMonth,
+    commonSearch,
+    Alldata
 }
