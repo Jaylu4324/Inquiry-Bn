@@ -10,7 +10,7 @@ const addStudent = (req, res) => {
         AcademicCourse,
         course,
         Date,
-
+        baseString,
         btime,
         Parentcontact,
         days,
@@ -39,7 +39,8 @@ const addStudent = (req, res) => {
         Parentcontact,
         days,
         Pfees: 0,
-        Tfees:fees
+        Tfees:fees,
+        baseString,
     })
 
     stuData.save().then((data) => {
