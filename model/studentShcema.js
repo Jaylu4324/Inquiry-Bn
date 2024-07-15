@@ -4,7 +4,8 @@ const mongoose = require('mongoose')
 
 const student  = mongoose.Schema({
     CourseId:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"addCorseBatch"
 
     },
     Name:{

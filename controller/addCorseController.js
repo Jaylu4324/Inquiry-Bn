@@ -1,5 +1,5 @@
 const {AddCourseModel,validation} = require('../model/addCorsebatch')
-const {RagularbatchSchema} = require('../model/corseBatchShcema')
+const RagularbatchSchema = require('../model/corseBatchShcema')
 
 const addBatchEvent = (req, res) => {
     let {

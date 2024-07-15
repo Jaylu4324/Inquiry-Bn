@@ -84,7 +84,7 @@ const getAllStu = (req, res) => {
         })
 }
 const Alldata = (req, res) => {
-    stuModel.find().then((data) => {
+    stuModel.find().populate("CourseId").then((data) => {
         res.send({ data })
     }).catch((err) => {
         res.send({ err })
