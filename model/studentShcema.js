@@ -47,6 +47,9 @@ const student  = mongoose.Schema({
     Rfees:{
         type:Number
     },
+    baseString:{
+        type:String
+    }
 })
 
 

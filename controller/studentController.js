@@ -1,7 +1,7 @@
 const { stuModel } = require('../model/studentShcema')
 const { AddCourseModel} = require('../model/addCorsebatch')
 
-const addStudent = (req, res) => {
+const addStudent = async(req, res) => {
     let { Name,
         CourseId,
         Contact,
@@ -10,7 +10,7 @@ const addStudent = (req, res) => {
         AcademicCourse,
         course,
         Date,
-
+        baseString,
         btime,
         Parentcontact,
         days,
@@ -18,13 +18,8 @@ const addStudent = (req, res) => {
 
 
     } = req.body
-    let fees;
- AddCourseModel.findOne({_id:CourseId}).then((data)=>{
-    fees=data.Amount
- })
-.catch((err)=>{
-    res.send({err})
-})
+    let fees=await AddCourseModel.findOne({_id:CourseId})
+    console.log(fees.Amount)
     const stuData = new stuModel({
         Name,
         Contact,
@@ -32,14 +27,15 @@ const addStudent = (req, res) => {
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees: Tfees,
+        Rfees: fees.Amount,
         course,
         Date,
         btime,
         Parentcontact,
         days,
         Pfees: 0,
-        Tfees:fees
+        Tfees:fees.Amount,
+        baseString,
     })
 
     stuData.save().then((data) => {

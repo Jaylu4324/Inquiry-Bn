@@ -12,7 +12,12 @@ const { addEventInquiry,
     ConfirmEventInquiry,
     eventIsAdded,
     getISAddeddata,
-    hardelet } = require('../controller/eventInquiryController')
+    hardelet,
+    commonSearch,
+    filterByMonth,
+    sortBykey,
+    Alldata
+     } = require('../controller/eventInquiryController')
 
 route.post('/addInquiry', addEventInquiry)
 route.post('/Update', updateEventinquiry)
@@ -26,6 +31,14 @@ route.post('/RejectedInquiry', RejectEventInquiry)
 route.post('/ConfimInquiry', ConfirmEventInquiry)
 route.post('/isAdded',eventIsAdded)
 route.get('/getisAdded',getISAddeddata)
+route.get('/sortby',sortBykey)
+route.get('/filterbyMonth',filterByMonth)
+route.get('/search',commonSearch)
+route.get('/alldata',Alldata)
+
+
+
+
 
 
 
