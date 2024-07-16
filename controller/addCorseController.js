@@ -4,7 +4,7 @@ const RagularbatchSchema = require('../model/corseBatchShcema')
 const addBatchEvent = (req, res) => {
     let {
         StartDate,
-        EndtDate,
+        
         Course,
         BatchTime,
         batchName,
@@ -12,7 +12,7 @@ const addBatchEvent = (req, res) => {
 
         const { error, value } = validation.validate({
             StartDate,
-            EndtDate,
+            
             Course,
             BatchTime,
             batchName,
@@ -21,7 +21,7 @@ const addBatchEvent = (req, res) => {
 
     const eventdata = new AddCourseModel({
         StartDate,
-        EndtDate,
+        
         Course,
         batchName,
         BatchTime,
@@ -48,7 +48,7 @@ const updatBatchEvent = (req, res) => {
 
     let {
         StartDate,
-        EndtDate,
+        
         Course,
         BatchTime,
         batchName,
@@ -56,7 +56,7 @@ const updatBatchEvent = (req, res) => {
 
         const { error, value } = validation.validate({
             StartDate,
-            EndtDate,
+            
             Course,
             BatchTime,
             batchName,

@@ -5,9 +5,7 @@ const addCorseBatch=mongoose.Schema({
     StartDate:{
         type:Date
     },
-    EndtDate:{
-        type:Date
-    },
+   
     Course:{
         type:String
     },
