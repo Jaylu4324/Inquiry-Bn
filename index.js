@@ -22,6 +22,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 
 app.use(express.json())
 app.use('/login',login)
