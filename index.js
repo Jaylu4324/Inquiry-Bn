@@ -9,8 +9,7 @@ const eventInquiry = require("./router/eventInquiryRoute")
 const batch = require('./router/eventbatchRoute')
 const batchevent = require('./router/addcorseRoute')
 const regBatch = require('./router/corseBatchRoute')
-const login=require('./router/loginRoute')
-const bodyParser = require('body-parser')
+const login=require('./router/loginRoute
 const app = express()
 
 app.use(function (req, res, next) {
