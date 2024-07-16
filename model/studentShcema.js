@@ -35,9 +35,6 @@ const student  = mongoose.Schema({
     Parentcontact:{
         type:Number
     },
-    days:{
-        type:Array
-    },
     Tfees:{
         type:Number
     },
@@ -49,6 +46,9 @@ const student  = mongoose.Schema({
     },
     baseString:{
         type:String
+    },
+    Amount:{
+        type:Number
     }
 })
 

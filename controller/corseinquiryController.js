@@ -1,4 +1,4 @@
-const { CourseInquirymodel } = require('../model/corseinquiryshcema')
+const { CourseInquirymodel , validation } = require('../model/corseinquiryshcema')
 
 const addInquiry = (req, res) => {
     let { FullName,
@@ -11,37 +11,50 @@ const addInquiry = (req, res) => {
 
         Interaction,
         FollowUp } = req.body
-    let Testarr = Course && Course.map((ele) => {
-        return {
-            Course: ele,
-            isAdded: false
-        }
-    })
-    console.log(Testarr)
+  
 
-    const data = new CourseInquirymodel({
 
-        FullName,
+
+    let {error, value}=validation.validate({FullName,
         Contact,
         Email,
         Date,
         Description,
-        Testarr,
         CollageName,
-        onGoing: true,
-        Reject: false,
-        Confirm: false,
-        isDeleted: false,
         Course,
         Interaction,
-        FollowUp,
-        isAdded: false
-    })
+        FollowUp})
+    if(error){
+    res.send({error})
+    }else{
 
-    // let {error, value}=validation.validate({})
-    // if(error){
-    // res.send({error})
-    // }else{
+        let Testarr = Course && Course.map((ele) => {
+            return {
+                Course: ele,
+                isAdded: false
+            }
+        })
+        console.log(Testarr)
+
+        const data = new CourseInquirymodel({
+
+            FullName,
+            Contact,
+            Email,
+            Date,
+            Description,
+            Testarr,
+            CollageName,
+            onGoing: true,
+            Reject: false,
+            Confirm: false,
+            isDeleted: false,
+            Course,
+            Interaction,
+            FollowUp,
+            isAdded: false
+        })
+
 
     data.save().then((data1) => {
         res.send({ mag: "Inquiry Added", data1 })
@@ -50,7 +63,7 @@ const addInquiry = (req, res) => {
             res.send({ err })
         })
 }
-// }
+}
 
 const updateinquiry = (req, res) => {
     let { FullName,
@@ -72,19 +85,19 @@ const updateinquiry = (req, res) => {
         }
     })
 
-    // let {error, value}=validation.validate({FullName,
-    //     Contact,
-    //     Email,
-    //     Date,
-    //     Description,
-    //     CollageName,
-    //     Status,
-    //     Course,
-    //     Interaction,
-    //     FollowUp})
-    // if(error){
-    //     res.send({error})
-    // }else{
+    let {error, value}=validation.validate({FullName,
+        Contact,
+        Email,
+        Date,
+        Description,
+        CollageName,
+        Status,
+        Course,
+        Interaction,
+        FollowUp})
+    if(error){
+        res.send({error})
+    }else{
 
     CourseInquirymodel.updateOne({ _id: req.query.id }, { ...req.body, Testarr })
         .then((data) => {
@@ -93,7 +106,7 @@ const updateinquiry = (req, res) => {
         .catch((err) => {
             res.send({ err })
         })
-    // }
+    }
 }
 
 

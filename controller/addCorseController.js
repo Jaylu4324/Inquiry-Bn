@@ -7,41 +7,77 @@ const addBatchEvent = (req, res) => {
         EndtDate,
         Course,
         BatchTime,
-        Amount,
-        TypeOfPayment,
+        batchName,
         Days } = req.body
 
+        const { error, value } = validation.validate({
+            StartDate,
+            EndtDate,
+            Course,
+            BatchTime,
+            batchName,
+            Days  
+        })
 
     const eventdata = new AddCourseModel({
         StartDate,
         EndtDate,
         Course,
+        batchName,
         BatchTime,
         Days,
-        Amount,
-        TypeOfPayment,
         IsCompleted: false
     })
 
-    eventdata.save().then((data) => {
-        res.send({ msg: "Event Batch  added", data })
-    })
-        .catch((err) => {
-            res.send({ err })
+    if (error) {
+        res.status(400).json({ isSuccess: false, error })
+    }
+    else{
+
+        eventdata.save().then((data) => {
+            res.send({ msg: "Event Batch  added", data })
         })
+            .catch((err) => {
+                res.send({ err })
+            })
+    }
+
 }
 
 const updatBatchEvent = (req, res) => {
 
+    let {
+        StartDate,
+        EndtDate,
+        Course,
+        BatchTime,
+        batchName,
+        Days } = req.body
 
+        const { error, value } = validation.validate({
+            StartDate,
+            EndtDate,
+            Course,
+            BatchTime,
+            batchName,
+            Days  
+        })
 
-    AddCourseModel.updateOne({ _id: req.query.id }, req.body)
-        .then((data) => {
-            res.send({ msg: "Event batch Updated", data })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
+        if(error){
+        res.status(400).json({ isSuccess: false, error })
+
+        }
+        else{
+
+            AddCourseModel.updateOne({ _id: req.query.id }, req.body)
+                .then((data) => {
+                    res.send({ msg: "Event batch Updated", data })
+                })
+                .catch((err) => {
+                    res.send({ err })
+                })
+        }
+
 
 }
 

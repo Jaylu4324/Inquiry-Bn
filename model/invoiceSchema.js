@@ -36,6 +36,9 @@ const Invoice = mongoose.Schema({
 })
 
 const InvoiceValidation = joi.object({
+    stuId: joi.string().required(),
+    courseId: joi.string().required(),
+
 
 invoiceDate:joi.date().required(),
 

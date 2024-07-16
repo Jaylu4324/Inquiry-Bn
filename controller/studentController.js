@@ -13,13 +13,12 @@ const addStudent = async(req, res) => {
         baseString,
         btime,
         Parentcontact,
-        days,
+        
         
 
 
     } = req.body
-    let fees=await AddCourseModel.findOne({_id:CourseId})
-    console.log(fees.Amount)
+    
     const stuData = new stuModel({
         Name,
         Contact,
@@ -27,15 +26,16 @@ const addStudent = async(req, res) => {
         Email,
         CollegeName,
         AcademicCourse,
-        Rfees: fees.Amount,
+        Rfees:parseInt(Tfees),
         course,
         Date,
         btime,
         Parentcontact,
-        days,
-        Pfees: 0,
-        Tfees:fees.Amount,
+        
+        Pfees:parseInt(0),
+        Tfees:parseInt(Tfees),
         baseString,
+        
     })
 
     stuData.save().then((data) => {
@@ -49,8 +49,7 @@ const addStudent = async(req, res) => {
 
 const updateStu = (req, res) => {
 
-
-
+   
     stuModel.updateOne({ _id: req.query.id }, {...req.body,CourseId:req.body.CourseId._id})
         .then((data) => {
             res.send({ msg: "Student Updated", data })

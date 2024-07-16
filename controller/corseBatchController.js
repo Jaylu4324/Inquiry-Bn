@@ -1,4 +1,4 @@
-const model = require("../model/corseBatchShcema")
+const {courseBatchModel,coursebatchValidation} = require("../model/corseBatchShcema")
 const {CourseInquirymodel} = require("../model/corseinquiryshcema");
 
 
@@ -7,105 +7,124 @@ const addBatch = (req, res) => {
     let { EventId, StuName } = req.body;
     let course11 = req.query.course;
   
-    const data = new model({
+    const {error,value} = coursebatchValidation.validate({
+      EventId,StuName
+    })
+
+    
+    const data = new courseBatchModel({
       EventId,
       StuName,
       isCompleted: false
     });
-  
-    StuName.forEach(ele => {
-      CourseInquirymodel.findOne({ _id: ele._id })
-        .then(cp => {
-          if (cp) {
-            let index = cp.Testarr.findIndex(ele1 => ele1.Course === course11);
-            console.log("index ", index, "cp", cp);
-            if (index !== -1) {
-              cp.Testarr[index].isAdded = true;
-              CourseInquirymodel.updateOne({ _id: ele._id }, cp)
-                .then(() => {
-                  console.log("\n\n\n\nchanged new  ", cp);
-                })
-                .catch(er => {
-                  console.log(er);
-                });
+
+    if (error) {
+      res.status(400).json({ isSuccess: false, error })
+      
+    }
+    else{
+      
+      StuName.forEach(ele => {
+        CourseInquirymodel.findOne({ _id: ele._id })
+          .then(cp => {
+            if (cp) {
+              let index = cp.Testarr.findIndex(ele1 => ele1.Course === course11);
+              console.log("index ", index, "cp", cp);
+              if (index !== -1) {
+                cp.Testarr[index].isAdded = true;
+                CourseInquirymodel.updateOne({ _id: ele._id }, cp)
+                  .then(() => {
+                    console.log("\n\n\n\nchanged new  ", cp);
+                  })
+                  .catch(er => {
+                    console.log(er);
+                  });
+              }
             }
-          }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      });
+    
+      data.save()
+        .then(data1 => {
+          res.send({ msg: "Batch Added", data1 });
         })
         .catch(err => {
-          console.log(err);
+          console.error('Error:', err);
+          res.send({ err });
         });
-    });
+    }
   
-    data.save()
-      .then(data1 => {
-        res.send({ msg: "Batch Added", data1 });
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        res.send({ err });
-      });
   };
   
 
 
 
-
-
-
-
-
-
-
   const updateBatch = (req, res) => {
-    model.findOne({ _id: req.query.id })
-      .then(prevdata => {
-        if (prevdata && prevdata.StuName.length > 0) {
-          let ids = prevdata.StuName.map(ele => ele._id);
-          return CourseInquirymodel.updateMany({ _id: { $in: ids } }, { $set: { 'Testarr.$[elem].isAdded': false } }, { arrayFilters: [{ 'elem.Course': req.query.course }] });
-        }
-      })
-      .then(() => {
-        let { StuName, EventId } = req.body;
-        let course11 = req.query.course;
-  
-        if (StuName.length > 0) {
-          return model.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id })
-            .then(() => {
-              StuName.forEach(ele => {
-                CourseInquirymodel.findOne({ _id: ele._id })
-                  .then(cp => {
-                    if (cp) {
-                      let index = cp.Testarr.findIndex(ele1 => ele1.Course === course11);
-                      console.log("index ", index, "cp", cp);
-                      if (index !== -1) {
-                        cp.Testarr[index].isAdded = true;
-                        CourseInquirymodel.updateOne({ _id: ele._id }, cp)
-                          .then(() => {
-                            console.log("\n\n\n\nchanged new  ", cp);
-                          })
-                          .catch(er => {
-                            console.log(er);
-                          });
+
+    const {error,value} = coursebatchValidation.validate({
+      EventId:req.body.EventId._id
+      ,StuName
+    })
+
+    if(error){
+      res.status(400).json({ isSuccess: false, error })
+
+    }
+    else{
+
+      courseBatchModel.findOne({ _id: req.query.id })
+        .then(prevdata => {
+          if (prevdata && prevdata.StuName.length > 0) {
+            let ids = prevdata.StuName.map(ele => ele._id);
+            return CourseInquirymodel.updateMany({ _id: { $in: ids } }, { $set: { 'Testarr.$[elem].isAdded': false } }, { arrayFilters: [{ 'elem.Course': req.query.course }] });
+          }
+        })
+        .then(() => {
+          let { StuName, EventId } = req.body;
+          let course11 = req.query.course;
+    
+          if (StuName.length > 0) {
+            return courseBatchModel.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id })
+              .then(() => {
+                StuName.forEach(ele => {
+                  CourseInquirymodel.findOne({ _id: ele._id })
+                    .then(cp => {
+                      if (cp) {
+                        let index = cp.Testarr.findIndex(ele1 => ele1.Course === course11);
+                        console.log("index ", index, "cp", cp);
+                        if (index !== -1) {
+                          cp.Testarr[index].isAdded = true;
+                          CourseInquirymodel.updateOne({ _id: ele._id }, cp)
+                            .then(() => {
+                              console.log("\n\n\n\nchanged new  ", cp);
+                            })
+                            .catch(er => {
+                              console.log(er);
+                            });
+                        }
                       }
-                    }
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  });
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    });
+                });
+                res.send({ msg: "reg Data set successfully" });
               });
-              res.send({ msg: "reg Data set successfully" });
-            });
-        } else {
-          return model.updateOne({ _id: req.query.id }, { StuName, EventId })
-            .then(() => {
-              res.send({ msg: "Please provide some data" });
-            });
-        }
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        res.send({ err });
-      });
+          } else {
+            return courseBatchModel.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id })
+              .then(() => {
+                res.send({ msg: "Please provide some data" });
+              });
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          res.send({ err });
+        });
+    }
   };
   
 
@@ -113,7 +132,7 @@ const addBatch = (req, res) => {
     const batchId = req.query.id;
     const course11 = req.query.course;
   
-    model.findByIdAndDelete(batchId)
+    courseBatchModel.findByIdAndDelete(batchId)
       .then(deletedBatch => {
         if (deletedBatch) {
           const studentIds = deletedBatch.StuName.map(student => student._id);
@@ -155,7 +174,7 @@ const addBatch = (req, res) => {
   
 
 const displayBatch = (req, res) => {
-    model.find({EventId:req.query.id}).populate('EventId')
+  courseBatchModel.find({EventId:req.query.id}).populate('EventId')
         .then(data => {
             res.send({ msg: "Display reg Batch", data });
         })
@@ -166,12 +185,12 @@ const displayBatch = (req, res) => {
 };
 
 const completedBatch = (req, res) => {
-    model.findOne({ _id: req.query.id })
+  courseBatchModel.findOne({ _id: req.query.id })
         .then(data => {
             if (data) {
                 let obj = JSON.parse(JSON.stringify(data));
                 obj.isCompleted = true;
-                return model.updateOne({ _id: req.query.id }, obj)
+                return courseBatchModel.updateOne({ _id: req.query.id }, obj)
                     .then(() => {
                         res.send({ msg: "isCompleted flag set", isCompleted: obj.isCompleted });
                     });
@@ -186,7 +205,7 @@ const completedBatch = (req, res) => {
 };
 
 const displayCompletedBatch = (req, res) => {
-    model.find({ isCompleted: true })
+  courseBatchModel.find({ isCompleted: true })
         .then(data => {
             res.send({ data });
         })
