@@ -73,7 +73,7 @@ const updateinquiry = (req, res) => {
         Date,
         Description,
         CollageName,
-        Status,
+
         Course,
         Interaction,
         FollowUp } = req.body
@@ -91,7 +91,6 @@ const updateinquiry = (req, res) => {
         Date,
         Description,
         CollageName,
-        Status,
         Course,
         Interaction,
         FollowUp})
