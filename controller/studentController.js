@@ -13,6 +13,7 @@ const addStudent = async(req, res) => {
         baseString,
         btime,
         Parentcontact,
+        Tfees,
         
         
 
