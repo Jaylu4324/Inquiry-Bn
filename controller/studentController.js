@@ -5,12 +5,12 @@ const addStudent = async (req, res) => {
   try {
     let { 
       Name, CourseId, Contact, Email, CollegeName, AcademicCourse, Date, 
-      baseString, btime, Parentcontact, Tfees 
+      baseString,  Parentcontact, Tfees 
     } = req.body;
 
     const {error,value}=studitailsValidation.validate({
        CourseId,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
-       btime,  baseString
+         baseString
     })
     if (error) {
       res.status(404).send({ error });
@@ -22,7 +22,7 @@ const addStudent = async (req, res) => {
     
     const stuData = new stuModel({
       Name, Contact, CourseId, Email, CollegeName, AcademicCourse, 
-      Rfees: parseInt(Tfees), Date, btime, Parentcontact, 
+      Rfees: parseInt(Tfees), Date,  Parentcontact, 
       Pfees: 0, Tfees: parseInt(Tfees), baseString
     });
 
@@ -46,12 +46,12 @@ const updateStu = async (req, res) => {
 
     let { 
       Name, CourseId, Contact, Email, CollegeName, AcademicCourse, Date, 
-      baseString, btime, Parentcontact, Tfees 
+      baseString,  Parentcontact, Tfees 
     } = req.body;
 console.log("-->",CourseId)
     const {error,value}=studitailsValidation.validate({
       CourseId:CourseId._id,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
-      btime,  baseString
+        baseString
    })
    if (error) {
      res.status(404).send({ error });

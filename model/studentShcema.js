@@ -26,9 +26,7 @@ const student  = mongoose.Schema({
     Date:{
         type:Date
     },
-    btime:{
-        type:Date
-    },
+   
     Parentcontact:{
         type:Number
     },
@@ -54,7 +52,6 @@ const studitailsValidation = joi.object({
     CollegeName:joi.string().required(),
     AcademicCourse:joi.string().required(),
     Date:joi.date().required(),
-    btime:joi.date().required(),
     Parentcontact:joi.number().required(),
     Tfees:joi.number().required(),
     baseString:joi.string().required(),
