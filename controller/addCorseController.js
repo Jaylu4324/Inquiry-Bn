@@ -1,5 +1,5 @@
 const { AddCourseModel, validation } = require('../model/addCorsebatch');
-const RagularbatchSchema = require('../model/corseBatchShcema');
+const {courseBatchModel} = require('../model/corseBatchShcema');
 
 const addBatchEvent = async (req, res) => {
     try {
@@ -91,10 +91,16 @@ const postiscompleted = async (req, res) => {
         const getid = req.query.id;
         const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
 
-        const batcharr = await RagularbatchSchema.find({ EventId: req.query.id });
+        const batcharr = await courseBatchModel.find({ EventId: req.query.id });
+
+        if(batcharr.length<1){
+            return res.status(400).json({ isSuccess: false, error:{details:["There Should Be Assign Student For This Batch"]} });
+
+
+        }
         for (let ele of batcharr) {
             ele.isCompleted = true;
-            await RagularbatchSchema.updateOne({ _id: ele._id }, ele);
+            await courseBatchModel.updateOne({ _id: ele._id }, ele);
         }
 
         res.status(200).json({ msg: 'Batch event completed', getiscomp });

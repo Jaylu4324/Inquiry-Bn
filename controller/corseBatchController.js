@@ -45,7 +45,7 @@ const updateBatch = async (req, res) => {
     let { EventId, StuName } = req.body;
     const course11 = req.query.course;
 
-    const { error, value } = coursebatchValidation.validate({ EventId, StuName });
+    const { error, value } = coursebatchValidation.validate({ EventId:EventId._id, StuName });
 
     if (error) {
       return res.status(400).json({ isSuccess: false, error });
@@ -61,7 +61,7 @@ const updateBatch = async (req, res) => {
       );
     }
 
-    await courseBatchModel.updateOne({ _id: req.query.id }, { StuName, EventId });
+    await courseBatchModel.updateOne({ _id: req.query.id }, { StuName, EventId:EventId._id });
 
     await Promise.all(StuName.map(async (ele) => {
       const cp = await CourseInquirymodel.findOne({ _id: ele._id });
@@ -141,7 +141,7 @@ const completedBatch = async (req, res) => {
 
 const displayCompletedBatch = async (req, res) => {
   try {
-    const data = await courseBatchModel.find({ isCompleted: true });
+    const data = await courseBatchModel.find({ isCompleted: true }).populate("EventId");
     res.status(200).json({ data });
   } catch (err) {
     console.error('Error:', err);
