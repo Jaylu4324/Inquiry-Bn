@@ -60,7 +60,9 @@ const validation = joi.object({
         .max(30)
         .required(),
 
-    Contact: joi.number().length(10)
+    Contact: joi.number()
+    .min(1000000000)  
+    .max(9999999999)
         .required(),
 
     Email: joi.string()
