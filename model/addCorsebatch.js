@@ -26,10 +26,10 @@ const addCorseBatch=mongoose.Schema({
 })
 
 const validation = joi.object({
+    Course:joi.string().required(),
     StartDate:joi.date().required(),
-Course:joi.string().required(),
+    Days:joi.array().min(1).required(),
 BatchTime:joi.date().required(),
-Days:joi.array().min(1).required(),
 batchName:joi.string().required()
 })
 

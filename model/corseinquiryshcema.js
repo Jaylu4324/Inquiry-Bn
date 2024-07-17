@@ -69,21 +69,21 @@ const validation = joi.object({
 
     Date: joi.date().required(),
 
-    Description: joi.string()
-        .required(),
     
-
+    
     CollageName: joi.string()
-        .required(),
-
+    .required(),
+    
     Course: joi.array().min(1)
-        .required(),
-
-    Interaction: joi.string()
-        .required(),
-
+    .required(),
+    
     FollowUp: joi.string()
-        .required(),
+    .required(),
+    Interaction: joi.string()
+    .required(),
+    
+    Description: joi.string()
+        .required()
 })
 
 const CourseInquirymodel = mongoose.model('corseInquiry', corseInquiry)

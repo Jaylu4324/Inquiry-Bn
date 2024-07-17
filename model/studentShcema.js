@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose')
-
+const joi = require('joi')
 
 const student  = mongoose.Schema({
     CourseId:{
@@ -52,7 +52,14 @@ const student  = mongoose.Schema({
     }
 })
 
+const studitailsValidation = joi.object({
+    CourseId:joi.string().required(),
+    Name:joi.string().required(),
+    Contact:joi.number().required(),
+    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    CourseId:joi.string().required()
 
+})
 
 const stuModel =mongoose.model('student',student)
 module.exports={stuModel}

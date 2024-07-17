@@ -36,13 +36,13 @@ const Invoice = mongoose.Schema({
 })
 
 const InvoiceValidation = joi.object({
-    stuId: joi.string().required(),
     courseId: joi.string().required(),
+    stuId: joi.string().required(),
 
 
+    Amount:joi.number().required(),
 invoiceDate:joi.date().required(),
 
-Amount:joi.number().required(),
 TypeOfPayment:joi.string().required(),
 
    
