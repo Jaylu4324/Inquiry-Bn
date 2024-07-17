@@ -57,7 +57,11 @@ const studitailsValidation = joi.object({
     Name:joi.string().required(),
     Contact:joi.number().required(),
     Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
-    CourseId:joi.string().required()
+    CollegeName:joi.string().required(),
+    AcademicCourse:joi.string().required(),
+    CollegeName:joi.string().required(),
+    CollegeName:joi.string().required()
+
 
 })
 

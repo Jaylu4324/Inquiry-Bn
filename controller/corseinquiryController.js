@@ -2,7 +2,7 @@ const { CourseInquirymodel, validation } = require('../model/corseinquiryshcema'
 
 const addInquiry = async (req, res) => {
     try {
-        let { FullName, Contact, Email, Date, Description, CollageName, Course, Interaction, FollowUp } = req.body;
+        let { FullName, Contact, Email, Date, CollageName, Course,FollowUp, Interaction,Description} = req.body;
 
         let { error, value } = validation.validate({ FullName, Contact, Email, Date, CollageName, Course,FollowUp, Interaction,Description});
         if (error) {
