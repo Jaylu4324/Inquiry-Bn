@@ -97,13 +97,14 @@ const postiscompleted = async (req, res) => {
             return res.status(400).json({ isSuccess: false, error:{details:["There Should Be Assign Student For This Batch"]} });
 
 
-        }
+        }else{
         for (let ele of batcharr) {
             ele.isCompleted = true;
             await courseBatchModel.updateOne({ _id: ele._id }, ele);
         }
 
         res.status(200).json({ msg: 'Batch event completed', getiscomp });
+    }
     } catch (err) {
         res.status(500).json({ err: 'Error in completing' });
     }
