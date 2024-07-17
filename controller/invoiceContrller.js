@@ -34,10 +34,10 @@ const addInvoice = async (req, res) => {
 
     } = req.body;
     const { error, value } = InvoiceValidation.validate({
-        stuId,
         courseId,
-        invoiceDate,
+        stuId,
         Amount,
+        invoiceDate,
         TypeOfPayment,
         
         
@@ -103,10 +103,10 @@ const updateinvoice = async (req, res) => {
         let { stuId,courseId,invoiceDate, Amount, TypeOfPayment } = req.body;
 
         const { error, value } = InvoiceValidation.validate({
-            stuId:stuId._id,
             courseId:courseId._id,
-            invoiceDate,
+            stuId:stuId._id,
             Amount,
+            invoiceDate,
             TypeOfPayment,
         });
 

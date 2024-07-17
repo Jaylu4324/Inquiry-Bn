@@ -1,43 +1,21 @@
-const { CourseInquirymodel , validation } = require('../model/corseinquiryshcema')
+const { CourseInquirymodel, validation } = require('../model/corseinquiryshcema');
 
-const addInquiry = (req, res) => {
-    let { FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Course,
+const addInquiry = async (req, res) => {
+    try {
+        let { FullName, Contact, Email, Date, Description, CollageName, Course, Interaction, FollowUp } = req.body;
 
-        Interaction,
-        FollowUp } = req.body
-  
+        let { error, value } = validation.validate({ FullName, Contact, Email, Date, CollageName, Course,FollowUp, Interaction,Description});
+        if (error) {
+            return res.status(400).send({ error });
+        }
 
-
-
-    let {error, value}=validation.validate({FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Course,
-        Interaction,
-        FollowUp})
-    if(error){
-    res.send({error})
-    }else{
-
-        let Testarr = Course && Course.map((ele) => {
-            return {
-                Course: ele,
-                isAdded: false
-            }
-        })
-        console.log(Testarr)
+        let Testarr = Course && Course.map((ele) => ({
+            Course: ele,
+            isAdded: false
+        }));
+        console.log(Testarr);
 
         const data = new CourseInquirymodel({
-
             FullName,
             Contact,
             Email,
@@ -53,248 +31,194 @@ const addInquiry = (req, res) => {
             Interaction,
             FollowUp,
             isAdded: false
-        })
+        });
 
+        const data1 = await data.save();
+        res.status(201).send({ msg: "Inquiry Added", data1 });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
-    data.save().then((data1) => {
-        res.send({ mag: "Inquiry Added", data1 })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-}
+const updateinquiry = async (req, res) => {
+    try {
+        let { FullName, Contact, Email, Date, Description, CollageName, Course, Interaction, FollowUp } = req.body;
 
-const updateinquiry = (req, res) => {
-    let { FullName,
-
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-
-        Course,
-        Interaction,
-        FollowUp } = req.body
-
-    let Testarr = Course && Course.map((ele) => {
-        return {
+        let Testarr = Course && Course.map((ele) => ({
             Course: ele,
             isAdded: false
+        }));
+
+        let { error, value } = validation.validate({ FullName, Contact, Email, Date, CollageName, Course,FollowUp, Interaction,Description});
+        if (error) {
+            return res.status(400).send({ error });
         }
-    })
 
-    let {error, value}=validation.validate({FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Course,
-        Interaction,
-        FollowUp})
-    if(error){
-        res.send({error})
-    }else{
-
-    CourseInquirymodel.updateOne({ _id: req.query.id }, { ...req.body, Testarr })
-        .then((data) => {
-            res.send({ msg: "Inquiry Updated", data })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
+        const data = await CourseInquirymodel.updateOne({ _id: req.query.id }, { ...req.body, Testarr });
+        res.status(200).send({ msg: "Inquiry Updated", data });
+    } catch (err) {
+        res.status(500).send({ err });
     }
-}
-
-
-const deletinquiry = (req, res) => {
-    CourseInquirymodel.find({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.isDeleted = true
-
-        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Inquiry Soft Deleted" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-
-}
-const hardelet = (req, res) => {
-
-    CourseInquirymodel.deleteOne({ _id: req.query.id })
-        .then((data) => {
-            res.send({ msg: "Inquiry DEleted" })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-const displayInquiry = (req, res) => {
-    CourseInquirymodel.find().then((data) => {
-        res.send({ msg: "display Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const displayOnGoingInquiry = (req, res) => {
-    CourseInquirymodel.find({ onGoing: true, isDeleted: false }).then((data) => {
-        res.send({ msg: "display Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const displayRejectInquiry = (req, res) => {
-    CourseInquirymodel.find({ Reject: true, isDeleted: false }).then((data) => {
-        res.send({ msg: "display Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-
-const displayConfirmInquiry = (req, res) => {
-    CourseInquirymodel.find({ Confirm: true, isDeleted: false }).then((data) => {
-        res.send({ msg: "display Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const RejectInquiry = (req, res) => {
-    CourseInquirymodel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.onGoing = false
-        obj.Confirm = false
-        obj.Reject = true
-
-        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Inquiry Rejected" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const ConfirmInquiry = (req, res) => {
-    CourseInquirymodel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.onGoing = false
-        obj.Confirm = true
-        obj.Reject = false
-
-        CourseInquirymodel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Inquiry confirm" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-const getISAddeddata = (req, res) => {
-    let Course = req.query.Course;
-
-    CourseInquirymodel.find({
-        Confirm: true,
-        isDeleted: false,
-        Testarr: {
-            $elemMatch: {
-                Course: Course,
-                isAdded: false
-            }
-        }
-    })
-        .then((data) => {
-            res.send({ msg: "allIsAdded", data });
-        })
-        .catch((err) => {
-            res.send({ err });
-        });
 };
 
-const fillterbyDate = (req, res) => {
-    let key = req.query.key
-    let sortby = req.query.sortby
-    let type = req.query.type
+const deletinquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.find({ _id: req.query.id });
+        let obj = JSON.parse(JSON.stringify(data[0]));
+        obj.isDeleted = true;
 
+        await CourseInquirymodel.updateOne({ _id: req.query.id }, obj);
+        res.status(200).send({ msg: "Inquiry Soft Deleted" });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
+const hardelet = async (req, res) => {
+    try {
+        await CourseInquirymodel.deleteOne({ _id: req.query.id });
+        res.status(200).send({ msg: "Inquiry Deleted" });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
-    CourseInquirymodel.find({[type]:true}).sort({ [key]: parseInt(sortby) })
-        .then((data) => {
-            res.send({ data, msg: "else fillter" })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
+const displayInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.find();
+        res.status(200).send({ msg: "Display Inquiry", data });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
+const displayOnGoingInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.find({ onGoing: true, isDeleted: false });
+        res.status(200).send({ msg: "Display Ongoing Inquiry", data });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
-}
+const displayRejectInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false });
+        res.status(200).send({ msg: "Display Rejected Inquiry", data });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
+const displayConfirmInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false });
+        res.status(200).send({ msg: "Display Confirmed Inquiry", data });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
+
+const RejectInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.findOne({ _id: req.query.id });
+        let obj = JSON.parse(JSON.stringify(data));
+        obj.onGoing = false;
+        obj.Confirm = false;
+        obj.Reject = true;
+
+        await CourseInquirymodel.updateOne({ _id: req.query.id }, obj);
+        res.status(200).send({ msg: "Inquiry Rejected" });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
+
+const ConfirmInquiry = async (req, res) => {
+    try {
+        const data = await CourseInquirymodel.findOne({ _id: req.query.id });
+        let obj = JSON.parse(JSON.stringify(data));
+        obj.onGoing = false;
+        obj.Confirm = true;
+        obj.Reject = false;
+
+        await CourseInquirymodel.updateOne({ _id: req.query.id }, obj);
+        res.status(200).send({ msg: "Inquiry Confirmed" });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
+
+const getISAddeddata = async (req, res) => {
+    try {
+        let Course = req.query.Course;
+
+        const data = await CourseInquirymodel.find({
+            Confirm: true,
+            isDeleted: false,
+            Testarr: {
+                $elemMatch: {
+                    Course: Course,
+                    isAdded: false
+                }
+            }
+        });
+        res.status(200).send({ msg: "allIsAdded", data });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
+
+const fillterbyDate = async (req, res) => {
+    try {
+        let key = req.query.key;
+        let sortby = req.query.sortby;
+        let type = req.query.type;
+
+        const data = await CourseInquirymodel.find({ [type]: true }).sort({ [key]: parseInt(sortby) });
+        res.status(200).send({ data, msg: "Filtered by Date" });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
 const filterByMonth = async (req, res) => {
-    let { month, sort ,type} = req.query
-
-
-
     try {
-        const januaryData = await CourseInquirymodel.find({[type]:true,
+        let { month, sort, type } = req.query;
+
+        const data = await CourseInquirymodel.find({
+            [type]: true,
             $expr: {
-                $eq: [{ $month: "$Date" }, month]
+                $eq: [{ $month: "$Date" }, parseInt(month)]
             }
         }).sort({ Date: parseInt(sort) });
-        res.json(januaryData);
+        res.status(200).send(data);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).send({ error: err.message });
     }
-
 };
 
-
-
 const commonSearch = async (req, res) => {
-    let { FullName,type } = req.query
-    const populatedata = await CourseInquirymodel.find({[type]:true , isDeleted: false })
+    try {
+        let { FullName, type } = req.query;
 
+        const populatedata = await CourseInquirymodel.find({ [type]: true, isDeleted: false });
+        const filterdata = populatedata.filter((ele) => ele.FullName && ele.FullName.toLowerCase() === FullName.toLowerCase());
 
-        const filterdata = populatedata.filter((ele) => {
-            return ele.FullName && ele.FullName.toLowerCase() == FullName.toLowerCase()
-        })
-        res.send({ filterdata })
-    
-}
-const Alldata=(req,res)=>{
+        res.status(200).send({ filterdata });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
-    let {key}=req.query
-    CourseInquirymodel.find({[key]:true}).then((allData)=>{
-        res.send({allData})
-    }).catch((err)=>{
-        res.send({err})
-    })
+const Alldata = async (req, res) => {
+    try {
+        let { key } = req.query;
+        const allData = await CourseInquirymodel.find({ [key]: true });
+        res.status(200).send({ allData });
+    } catch (err) {
+        res.status(500).send({ err });
+    }
+};
 
-}
-
-
-
-
-
-
-module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth ,Alldata}
+module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth, Alldata };

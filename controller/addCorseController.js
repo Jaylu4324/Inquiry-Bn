@@ -1,147 +1,122 @@
-const {AddCourseModel,validation} = require('../model/addCorsebatch')
-const RagularbatchSchema = require('../model/corseBatchShcema')
+const { AddCourseModel, validation } = require('../model/addCorsebatch');
+const RagularbatchSchema = require('../model/corseBatchShcema');
 
-const addBatchEvent = (req, res) => {
-    let {
-        StartDate,
-        
-        Course,
-        BatchTime,
-        batchName,
-        Days } = req.body
-
-        const { error, value } = validation.validate({
+const addBatchEvent = async (req, res) => {
+    try {
+        let {
             StartDate,
-            
             Course,
             BatchTime,
             batchName,
-            Days  
-        })
-
-    const eventdata = new AddCourseModel({
-        StartDate,
-        
-        Course,
-        batchName,
-        BatchTime,
-        Days,
-        IsCompleted: false
-    })
-
-    if (error) {
-        res.status(400).json({ isSuccess: false, error })
-    }
-    else{
-
-        eventdata.save().then((data) => {
-            res.send({ msg: "Event Batch  added", data })
-        })
-            .catch((err) => {
-                res.send({ err })
-            })
-    }
-
-}
-
-const updatBatchEvent = (req, res) => {
-
-    let {
-        StartDate,
-        
-        Course,
-        BatchTime,
-        batchName,
-        Days } = req.body
+            Days
+        } = req.body;
 
         const { error, value } = validation.validate({
+            Course,
             StartDate,
-            
+            Days  ,
+            BatchTime,
+            batchName
+        });
+
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error });
+        }
+
+        const eventdata = new AddCourseModel({
+            StartDate,
+            Course,
+            batchName,
+            BatchTime,
+            Days,
+            IsCompleted: false
+        });
+
+        const data = await eventdata.save();
+        res.status(201).json({ msg: "Event Batch added", data });
+    } catch (err) {
+        res.status(500).json({ err });
+    }
+};
+
+const updatBatchEvent = async (req, res) => {
+    try {
+        let {
+            StartDate,
             Course,
             BatchTime,
             batchName,
-            Days  
-        })
+            Days
+        } = req.body;
 
-        if(error){
-        res.status(400).json({ isSuccess: false, error })
+        const { error, value } = validation.validate({
+            Course,
+            StartDate,
+            Days  ,
+            BatchTime,
+            batchName 
+        });
 
-        }
-        else{
-
-            AddCourseModel.updateOne({ _id: req.query.id }, req.body)
-                .then((data) => {
-                    res.send({ msg: "Event batch Updated", data })
-                })
-                .catch((err) => {
-                    res.send({ err })
-                })
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error });
         }
 
+        const data = await AddCourseModel.updateOne({ _id: req.query.id }, req.body);
+        res.status(200).json({ msg: "Event batch Updated", data });
+    } catch (err) {
+        res.status(500).json({ err });
+    }
+};
 
-}
+const deleteBatchEvent = async (req, res) => {
+    try {
+        await AddCourseModel.deleteOne({ _id: req.query.id });
+        res.status(200).json({ msg: "Event batch Deleted" });
+    } catch (err) {
+        res.status(500).json({ err });
+    }
+};
 
-const deleteBatchEvent = (req, res) => {
-    AddCourseModel.deleteOne({ _id: req.query.id })
-        .then((data) => {
-            res.send({ msg: "Event batch DEleted" })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
+const getAllData = async (req, res) => {
+    try {
+        const data = await AddCourseModel.find({ IsCompleted: false });
+        res.status(200).json({ msg: "All Data", data });
+    } catch (err) {
+        res.status(500).json({ err });
+    }
+};
 
-const getAllData = (req, res) => {
-    AddCourseModel.find({ IsCompleted: false }).then((data) => {
-        res.send({ msg: "All Data", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
+const postiscompleted = async (req, res) => {
+    try {
+        const getid = req.query.id;
+        const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
 
-const postiscompleted= async (req,res)=>{
-try{
+        const batcharr = await RagularbatchSchema.find({ EventId: req.query.id });
+        for (let ele of batcharr) {
+            ele.isCompleted = true;
+            await RagularbatchSchema.updateOne({ _id: ele._id }, ele);
+        }
 
-const getid=req.query.id
-const getiscomp= await AddCourseModel.findByIdAndUpdate(getid,{IsCompleted:true},{new:true})
+        res.status(200).json({ msg: 'Batch event completed', getiscomp });
+    } catch (err) {
+        res.status(500).json({ err: 'Error in completing' });
+    }
+};
 
-const batcharr =await RagularbatchSchema.find({EventId:req.query.id}) 
-batcharr.map(async(ele)=>{
-    ele.isCompleted=true
-    
-   const mapped = await RagularbatchSchema.updateOne({_id:ele._id},ele)
-})
+const getiscompleted = async (req, res) => {
+    try {
+        const getcompleted = await AddCourseModel.find({ IsCompleted: true });
+        res.status(200).json({ msg: 'Display completed data', getcompleted });
+    } catch (err) {
+        res.status(500).json({ err: 'Error in displaying completed data' });
+    }
+};
 
-
-res.status(200).json({msg:'batch event completed',getiscomp})
-
-}
-catch(err){
-    console.log(err)
-res.status(400).json({err:'error in completing'})
-
-
-}
-}
-
-
-
-
-const getiscompleted= async(req,res)=>{
-
-try{
-const getcompleted= await AddCourseModel.find({IsCompleted:true})
-res.status(200).json({msg:'display completed data',getcompleted})
-}
-catch(err){
-
-
-    console.log(err)
-res.status(400).json({err:'error in displaying complted data'})
-
-
-}
-
-}
-module.exports={addBatchEvent,updatBatchEvent,deleteBatchEvent,getAllData,postiscompleted,getiscompleted}
+module.exports = {
+    addBatchEvent,
+    updatBatchEvent,
+    deleteBatchEvent,
+    getAllData,
+    postiscompleted,
+    getiscompleted
+};
