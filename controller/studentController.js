@@ -1,32 +1,69 @@
-const { stuModel } = require('../model/studentShcema');
+const { stuModel,studitailsValidation } = require('../model/studentShcema');
 const { AddCourseModel } = require('../model/addCorsebatch');
 
 const addStudent = async (req, res) => {
   try {
     let { 
-      Name, CourseId, Contact, Email, CollegeName, AcademicCourse, course, Date, 
+      Name, CourseId, Contact, Email, CollegeName, AcademicCourse, Date, 
       baseString, btime, Parentcontact, Tfees 
     } = req.body;
 
+    const {error,value}=studitailsValidation.validate({
+       CourseId,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
+       btime,  baseString
+    })
+    if (error) {
+      res.status(404).send({ error });
+        
+    }
+
+    else{
+      
+    
     const stuData = new stuModel({
       Name, Contact, CourseId, Email, CollegeName, AcademicCourse, 
-      Rfees: parseInt(Tfees), course, Date, btime, Parentcontact, 
+      Rfees: parseInt(Tfees), Date, btime, Parentcontact, 
       Pfees: 0, Tfees: parseInt(Tfees), baseString
     });
 
+    
+
+
     const data = await stuData.save();
     res.status(201).json({ msg: "Student Data Added", data });
-  } catch (err) {
+  } 
+  
+}
+  catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
   }
+
 };
 
 const updateStu = async (req, res) => {
   try {
-    const data = await stuModel.updateOne({ _id: req.query.id }, { ...req.body, CourseId: req.body.CourseId._id });
+
+    let { 
+      Name, CourseId, Contact, Email, CollegeName, AcademicCourse, Date, 
+      baseString, btime, Parentcontact, Tfees 
+    } = req.body;
+console.log("-->",CourseId)
+    const {error,value}=studitailsValidation.validate({
+      CourseId:CourseId._id,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
+      btime,  baseString
+   })
+   if (error) {
+     res.status(404).send({ error });
+       
+   }
+   else{
+
+    const data = await stuModel.updateOne({ _id: req.query.id }, { ...req.body, CourseId:CourseId._id});
     res.status(200).json({ msg: "Student Updated", data });
-  } catch (err) {
+  } 
+}
+  catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
   }
@@ -44,7 +81,7 @@ const deleteStu = async (req, res) => {
 
 const getAllStu = async (req, res) => {
   try {
-    const data = await stuModel.find({ CourseId: req.query.id });
+    const data = await stuModel.find({ CourseId: req.query.id }).populate("CourseId");
     res.status(200).json({ msg: "All student", data });
   } catch (err) {
     console.error('Error:', err);

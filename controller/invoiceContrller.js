@@ -219,7 +219,7 @@ const deletinvoice = async (req, res) => {
 };
 
 const displayInvoice = (req, res) => {
-    invoiceModel.find({ isDeleted: false }).populate("stuId").then((data) => {
+    invoiceModel.find({ isDeleted: false }).populate("stuId").populate("courseId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
@@ -227,7 +227,7 @@ const displayInvoice = (req, res) => {
 };
 
 const courseInvoice = (req, res) => {
-    invoiceModel.find({ isDeleted: false,courseId:req.query.parentId }).populate("stuId").then((data) => {
+    invoiceModel.find({ isDeleted: false,courseId:req.query.parentId }).populate("stuId").populate("courseId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
@@ -422,7 +422,7 @@ const fillterbyDate = (req, res) => {
 
     if (!courseId) {
 
-        invoiceModel.find().populate("stuId").sort({ [key]: parseInt(sortby) })
+        invoiceModel.find().populate("stuId").populate("courseId").sort({ [key]: parseInt(sortby) })
             .then((data) => {
                 res.send({ data, msg: " is fillter" })
             })
@@ -430,7 +430,7 @@ const fillterbyDate = (req, res) => {
                 res.send({ err })
             })
     } else {
-        invoiceModel.find({ courseId }).populate("stuId").sort({ [key]: parseInt(sortby) })
+        invoiceModel.find({ courseId }).populate("stuId").populate("courseId").sort({ [key]: parseInt(sortby) })
             .then((data) => {
                 res.send({ data, msg: "else fillter" })
             })
@@ -452,7 +452,7 @@ const filterByMonth = async (req, res) => {
                 $expr: {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
-            }).sort({invoiceDate:sort}).populate("stuId");
+            }).sort({invoiceDate:sort}).populate("stuId").populate("courseId");
             res.send(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -466,7 +466,7 @@ const filterByMonth = async (req, res) => {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
                 , courseId:req.query.courseId
-            }).sort({invoiceDate:sort}).populate("stuId");
+            }).sort({invoiceDate:sort}).populate("stuId").populate("courseId");
             res.json(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -476,7 +476,7 @@ const filterByMonth = async (req, res) => {
 
 const search=async(req,res)=>{
     
-   const populatedata =await invoiceModel.find().populate("stuId")
+   const populatedata =await invoiceModel.find().populate("stuId").populate("courseId")
 
   const filterdata= populatedata.filter((ele)=>{
     return ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
