@@ -52,25 +52,25 @@ const student  = mongoose.Schema({
     }
 })
 
-const studitailsValidation = joi.object({
-    CourseId:joi.string().required(),
-    Name:joi.string().required(),
-    Contact:joi.number().length(10).required(),
-    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
-    CollegeName:joi.string().required(),
-    AcademicCourse:joi.string().required(),
-    course:joi.string().required(),
-    Date:joi.date().required(),
-    btime:joi.date().required(),
-    course:joi.string().required(),
-    course:joi.string().required(),
-    course:joi.string().required(),
-    course:joi.string().required(),
-    course:joi.string().required(),
+// const studitailsValidation = joi.object({
+//     CourseId:joi.string().required(),
+//     Name:joi.string().required(),
+//     Contact:joi.number().length(10).required(),
+//     Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+//     CollegeName:joi.string().required(),
+//     AcademicCourse:joi.string().required(),
+//     course:joi.string().required(),
+//     Date:joi.date().required(),
+//     btime:joi.date().required(),
+//     course:joi.string().required(),
+//     course:joi.string().required(),
+//     course:joi.string().required(),
+//     course:joi.string().required(),
+//     course:joi.string().required(),
 
 
 
-})
+// })
 
 const stuModel =mongoose.model('student',student)
 module.exports={stuModel}
