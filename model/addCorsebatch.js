@@ -29,7 +29,7 @@ const validation = joi.object({
     StartDate:joi.date().required(),
 Course:joi.string().required(),
 BatchTime:joi.date().required(),
-Days:joi.array().required(),
+Days:joi.array().min(1).required(),
 batchName:joi.string().required()
 })
 
