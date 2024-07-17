@@ -61,7 +61,8 @@ const validation = joi.object({
         .required(),
 
     Contact: joi.number()
-    .min(1000000000)  
+    .min(1000000000)
+    .message("Phone Number Must Be 10 Digit")  
     .max(9999999999)
         .required(),
 
