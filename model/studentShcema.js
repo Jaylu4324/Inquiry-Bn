@@ -55,12 +55,19 @@ const student  = mongoose.Schema({
 const studitailsValidation = joi.object({
     CourseId:joi.string().required(),
     Name:joi.string().required(),
-    Contact:joi.number().required(),
+    Contact:joi.number().min(10).required(),
     Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
     CollegeName:joi.string().required(),
     AcademicCourse:joi.string().required(),
-    CollegeName:joi.string().required(),
-    CollegeName:joi.string().required()
+    course:joi.string().required(),
+    Date:joi.date().required(),
+    course:joi.string().required(),
+    btime:joi.string().required(),
+    course:joi.string().required(),
+    course:joi.string().required(),
+    course:joi.string().required(),
+    course:joi.string().required(),
+
 
 
 })

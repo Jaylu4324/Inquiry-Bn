@@ -4,11 +4,11 @@ const RagularbatchSchema = require('../model/corseBatchShcema');
 const addBatchEvent = async (req, res) => {
     try {
         let {
-            StartDate,
             Course,
+            StartDate,
+            Days,
             BatchTime,
-            batchName,
-            Days
+            batchName
         } = req.body;
 
         const { error, value } = validation.validate({
@@ -42,11 +42,11 @@ const addBatchEvent = async (req, res) => {
 const updatBatchEvent = async (req, res) => {
     try {
         let {
-            StartDate,
             Course,
+            StartDate,
+            Days,
             BatchTime,
-            batchName,
-            Days
+            batchName
         } = req.body;
 
         const { error, value } = validation.validate({

@@ -24,13 +24,13 @@ const getImageBase64 = (filePath) => {
 const addInvoice = async (req, res) => {
     let {
 
-        invoiceDate,
         courseId,
+        stuId,
         Amount,
+        invoiceDate,
+
         TypeOfPayment,
         
-
-        stuId,
 
     } = req.body;
     const { error, value } = InvoiceValidation.validate({
@@ -100,7 +100,7 @@ const addInvoice = async (req, res) => {
 
 const updateinvoice = async (req, res) => {
     try {
-        let { stuId,courseId,invoiceDate, Amount, TypeOfPayment } = req.body;
+        let { courseId,stuId,Amount,invoiceDate, TypeOfPayment } = req.body;
 
         const { error, value } = InvoiceValidation.validate({
             courseId:courseId._id,
