@@ -76,7 +76,7 @@ const validation = joi.object({
     CollageName: joi.string()
         .required(),
 
-    Course: joi.array()
+    Course: joi.array().min(1)
         .required(),
 
     Interaction: joi.string()
