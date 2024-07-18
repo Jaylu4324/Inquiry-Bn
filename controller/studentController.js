@@ -102,7 +102,7 @@ const Alldata = async (req, res) => {
 const InvoiceGet = async (req, res) => {
   try {
     const courseId = req.query.id;
-    const students = await stuModel.find({ CourseId: courseId, Rfees: { $ne: 0 } });
+    const students = await stuModel.find({ CourseId: courseId, Rfees: { $ne: 0 } }).populate("CourseId");
     res.status(200).json(students);
   } catch (err) {
     console.error('Error:', err);
@@ -117,9 +117,9 @@ const fillterbyDate = async (req, res) => {
 
     let data;
     if (!courseid) {
-      data = await stuModel.find().sort({ [key]: sortby });
+      data = await stuModel.find().sort({ [key]: sortby }).populate("CourseId");
     } else {
-      data = await stuModel.find({ CourseId: courseid }).sort({ [key]: sortby });
+      data = await stuModel.find({ CourseId: courseid }).sort({ [key]: sortby }).populate("CourseId");
     }
 
     res.status(200).json({ data, msg: "Filtered" });
@@ -140,14 +140,14 @@ const filterByMonth = async (req, res) => {
         $expr: {
           $eq: [{ $month: "$Date" }, month]
         }
-      }).sort({ Date: sort });
+      }).sort({ Date: sort }).populate("CourseId");
     } else {
       data = await stuModel.find({
         $expr: {
           $eq: [{ $month: "$Date" }, month]
         },
         CourseId: perentId
-      }).sort({ Date: sort });
+      }).sort({ Date: sort }).populate("CourseId");
     }
 
     res.status(200).json(data);
@@ -159,7 +159,7 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const data = await stuModel.find({  }).populate("CourseId");
+    const data = await stuModel.find({ }).populate("CourseId");
    let data1= data.filter((ele)=>(ele.Name.toLowerCase()==req.query.Name.toLowerCase()))
    
     res.status(200).json({ data:data1 });
