@@ -2,63 +2,69 @@
 const mongoose = require('mongoose')
 const joi = require('joi')
 
-const student  = mongoose.Schema({
-    CourseId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"addCorseBatch"
+const student = mongoose.Schema({
+    CourseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "addCorseBatch"
 
     },
-    Name:{
-        type:String
+    Name: {
+        type: String
     },
-    Contact:{
-        type:Number
+    Contact: {
+        type: Number
     },
-    Email:{
-        type:String
+    Email: {
+        type: String
     },
-    CollegeName:{
-        type:String
+    CollegeName: {
+        type: String
     },
-    AcademicCourse:{
-        type:String
+    AcademicCourse: {
+        type: String
     },
-    Date:{
-        type:Date
+    Date: {
+        type: Date
     },
-   
-    Parentcontact:{
-        type:Number
+
+    Parentcontact: {
+        type: Number
     },
-    Tfees:{
-        type:Number
+    Tfees: {
+        type: Number
     },
-    Pfees:{
-        type:Number
+    Pfees: {
+        type: Number
     },
-    Rfees:{
-        type:Number
+    Rfees: {
+        type: Number
     },
-    baseString:{
-        type:String
+    baseString: {
+        type: String
     }
 })
 
 const studitailsValidation = joi.object({
-    CourseId:joi.string().required(),
-    Name:joi.string().required(),
-    Contact:joi.number().required(),
-    Email:joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
-    CollegeName:joi.string().required(),
-    AcademicCourse:joi.string().required(),
-    Date:joi.date().required(),
-    Parentcontact:joi.number().required(),
-    Tfees:joi.number().required(),
-    baseString:joi.string().required(),
+    CourseId: joi.string().required(),
+    Name: joi.string().required(),
+    Contact: joi.number().min(1000000000)
+        .message("Phone Number Must Be 10 Digit")
+        .max(9999999999).required(),
+    Parentcontact: joi.number().min(1000000000)
+        .message("Phone Number Must Be 10 Digit")
+        .max(9999999999).required(),
+    Email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    CollegeName: joi.string().required(),
+    Tfees: joi.number().required(),
+    AcademicCourse: joi.string().required(),
+    Date: joi.date().required(),
+    baseString: joi.string().required().messages({
+        'any.required': 'Adhaar Card is required'
+      })
 
 
 
 })
 
-const stuModel =mongoose.model('student',student)
-module.exports={stuModel,studitailsValidation}
+const stuModel = mongoose.model('student', student)
+module.exports = { stuModel, studitailsValidation }

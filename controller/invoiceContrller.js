@@ -444,6 +444,8 @@ const fillterbyDate = (req, res) => {
 
 const filterByMonth = async (req, res) => {
     let { courseId, month, sort } = req.query
+    console.log(req.query,":dsfdsfdfdfdsfd")
+
     sort=parseInt(sort)
     if (!courseId) {
 
@@ -479,7 +481,7 @@ const search=async(req,res)=>{
    const populatedata =await invoiceModel.find().populate("stuId").populate("courseId")
 
   const filterdata= populatedata.filter((ele)=>{
-    return ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
+    return ele.stuId.Name && ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
    })
    res.send({filterdata})
 }
