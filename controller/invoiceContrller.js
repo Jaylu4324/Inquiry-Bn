@@ -30,7 +30,7 @@ const addInvoice = async (req, res) => {
         invoiceDate,
 
         TypeOfPayment,
-        
+
 
     } = req.body;
     const { error, value } = InvoiceValidation.validate({
@@ -39,8 +39,8 @@ const addInvoice = async (req, res) => {
         Amount,
         invoiceDate,
         TypeOfPayment,
-        
-        
+
+
     });
 
     if (error) {
@@ -72,9 +72,9 @@ const addInvoice = async (req, res) => {
                 res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
             }
 
-            
-            
-            else{
+
+
+            else {
                 stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(Amount)
                 stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(Amount)
 
@@ -100,11 +100,11 @@ const addInvoice = async (req, res) => {
 
 const updateinvoice = async (req, res) => {
     try {
-        let { courseId,stuId,Amount,invoiceDate, TypeOfPayment } = req.body;
+        let { courseId, stuId, Amount, invoiceDate, TypeOfPayment } = req.body;
 
         const { error, value } = InvoiceValidation.validate({
-            courseId:courseId._id,
-            stuId:stuId._id,
+            courseId: courseId._id,
+            stuId: stuId._id,
             Amount,
             invoiceDate,
             TypeOfPayment,
@@ -119,7 +119,7 @@ const updateinvoice = async (req, res) => {
         const invoiceId = req.query.id;
         const studentId = req.body.stuId._id;
         let newAmount = req.body.Amount;
-        newAmount=parseInt(newAmount)
+        newAmount = parseInt(newAmount)
 
         // Find the invoice by ID
         const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
@@ -138,24 +138,24 @@ const updateinvoice = async (req, res) => {
         let stuObj = JSON.parse(JSON.stringify(studentData));
         console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount);
 
-        stuObj.Rfees = parseInt(stuObj.Rfees) + parseInt(oldAmount) 
-        stuObj.Pfees = parseInt(stuObj.Pfees) - parseInt(oldAmount) 
+        stuObj.Rfees = parseInt(stuObj.Rfees) + parseInt(oldAmount)
+        stuObj.Pfees = parseInt(stuObj.Pfees) - parseInt(oldAmount)
 
         if (parseInt(newAmount) > parseInt(stuObj.Rfees)) {
             return res.status(404).send({ msg: "Paid Amount Must Be less than Total Amount" });
         }
-        stuObj.Rfees = parseInt(stuObj.Rfees) -parseInt(newAmount)
-        stuObj.Pfees = parseInt(stuObj.Pfees)   +parseInt(newAmount)
+        stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(newAmount)
+        stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(newAmount)
 
         // Save the updated student data
         await stuModel.updateOne({ _id: studentId }, stuObj);
 
-        
+
         // Update the invoice amount
         invoiceData.Amount = parseInt(newAmount);
         console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
         let cp = JSON.parse(JSON.stringify(invoiceData));
-        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId ,courseId:req.body.courseId._id});
+        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId, courseId: req.body.courseId._id });
 
         res.send({ msg: "Invoice and student fees updated successfully" });
     } catch (err) {
@@ -227,7 +227,7 @@ const displayInvoice = (req, res) => {
 };
 
 const courseInvoice = (req, res) => {
-    invoiceModel.find({ isDeleted: false,courseId:req.query.parentId }).populate("stuId").populate("courseId").then((data) => {
+    invoiceModel.find({ isDeleted: false, courseId: req.query.parentId }).populate("stuId").populate("courseId").then((data) => {
         res.send({ msg: "display invoice", data });
     }).catch((err) => {
         res.send({ err });
@@ -415,38 +415,51 @@ const pdfmail = async (req, res) => {
     // Send response to client
     res.send('Invoice generated and email/WhatsApp sent.');
 };
-const fillterbyDate = (req, res) => {
-    let key = req.query.key
-    let sortby = req.query.sortby
-    let courseId = req.query.courseId
+const fillterbyDate = async (req, res) => {
+    try {
+        let key = req.query.key;
+        let sortby = parseInt(req.query.sortby, 10);
+        let courseId = req.query.courseId;
 
-    if (!courseId) {
+        let query = {};
+        if (courseId) {
+            query.courseId = courseId;
+        }
 
-        invoiceModel.find().populate("stuId").populate("courseId").sort({ [key]: parseInt(sortby) })
-            .then((data) => {
-                res.send({ data, msg: " is fillter" })
-            })
-            .catch((err) => {
-                res.send({ err })
-            })
-    } else {
-        invoiceModel.find({ courseId }).populate("stuId").populate("courseId").sort({ [key]: parseInt(sortby) })
-            .then((data) => {
-                res.send({ data, msg: "else fillter" })
-            })
-            .catch((err) => {
-                res.send({ err })
-            })
+        // Define projection to include necessary fields
+        let projection = '_id stuId courseId invoiceId invoiceDate Amount TypeOfPayment Description isDeleted';
 
+        // Query invoices with projection and populate references
+        let data1 = await invoiceModel.find(query)
+            .select(projection)
+            .populate('stuId')
+            .populate('courseId');
+
+        // Perform sorting based on the specified key and sort direction
+        if (key === "Name") {
+            data1.sort((a, b) => sortby === 1 ? b.stuId.Name.localeCompare(a.stuId.Name) : a.stuId.Name.localeCompare(b.stuId.Name));
+        } else if (key === "Rfees") {
+            data1.sort((a, b) => sortby === 1 ? parseInt(b.stuId.Rfees) - parseInt(a.stuId.Rfees) : parseInt(a.stuId.Rfees) - parseInt(b.stuId.Rfees));
+        } else if (key === "invoiceDate") {
+            data1.sort((a, b) => sortby === 1 ? a.invoiceDate - b.invoiceDate : b.invoiceDate - a.invoiceDate);
+        }
+
+        // Send the response with the sorted and populated data
+        res.send({ data: data1 });
+    } catch (err) {
+        console.error("Error in fillterbyDate:", err);
+        res.status(500).send({ error: 'Internal Server Error' });
     }
-}
+};
+
+
 
 
 const filterByMonth = async (req, res) => {
     let { courseId, month, sort } = req.query
-    console.log(req.query,":dsfdsfdfdfdsfd")
+    console.log(req.query, ":dsfdsfdfdfdsfd")
 
-    sort=parseInt(sort)
+    sort = parseInt(sort)
     if (!courseId) {
 
         try {
@@ -454,7 +467,7 @@ const filterByMonth = async (req, res) => {
                 $expr: {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
-            }).sort({invoiceDate:sort}).populate("stuId").populate("courseId");
+            }).sort({ invoiceDate: sort }).populate("stuId").populate("courseId");
             res.send(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -467,8 +480,8 @@ const filterByMonth = async (req, res) => {
                 $expr: {
                     $eq: [{ $month: "$invoiceDate" }, month]
                 }
-                , courseId:req.query.courseId
-            }).sort({invoiceDate:sort}).populate("stuId").populate("courseId");
+                , courseId: req.query.courseId
+            }).sort({ invoiceDate: sort }).populate("stuId").populate("courseId");
             res.json(januaryData);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -476,13 +489,13 @@ const filterByMonth = async (req, res) => {
     }
 };
 
-const search=async(req,res)=>{
-    
-   const populatedata =await invoiceModel.find().populate("stuId").populate("courseId")
+const search = async (req, res) => {
 
-  const filterdata= populatedata.filter((ele)=>{
-    return ele.stuId.Name && ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
-   })
-   res.send({filterdata})
+    const populatedata = await invoiceModel.find().populate("stuId").populate("courseId")
+
+    const filterdata = populatedata.filter((ele) => {
+        return ele.stuId.Name && ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
+    })
+    res.send({ filterdata })
 }
-module.exports = { addInvoice, updateinvoice, search,deletinvoice,courseInvoice, displayInvoice, pdfmail,fillterbyDate,filterByMonth };
+module.exports = { addInvoice, updateinvoice, search, deletinvoice, courseInvoice, displayInvoice, pdfmail, fillterbyDate, filterByMonth };

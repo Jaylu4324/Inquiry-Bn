@@ -159,8 +159,10 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const data = await stuModel.find({ Name: req.query.Name });
-    res.status(200).json({ data });
+    const data = await stuModel.find({  }).populate("CourseId");
+   let data1= data.filter((ele)=>(ele.Name.toLowerCase()==req.query.Name.toLowerCase()))
+   
+    res.status(200).json({ data:data1 });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
