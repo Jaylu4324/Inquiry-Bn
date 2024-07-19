@@ -27,7 +27,7 @@ const Update = async (req, res) => {
       return res.status(400).send({ msg: "No changes made" });
     }
 
-    res.send({ msg: "Data updated successfully" });
+    res.status(201).send({ msg: "Data updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ msg: "Internal server error", error: error.message });
@@ -37,7 +37,7 @@ const Update = async (req, res) => {
 const getAllData = async (req, res) => {
   try {
     let data = await BatchCompletedModel.find().populate("CourseId").populate("Astudent");
-    res.send({ data });
+    res.status(201).send({ data });
   } catch (error) {
     console.error(error);
     res.status(500).send({ msg: "Internal server error", error: error.message });
