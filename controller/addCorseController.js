@@ -119,11 +119,22 @@ const getiscompleted = async (req, res) => {
     }
 };
 
+const allcourse=async(req,res)=>{
+    try{
+        const getdata= await AddCourseModel.find()
+        res.send({data:getdata})
+    }
+    catch(err){
+        res.send({err})
+    }
+}
+
 module.exports = {
     addBatchEvent,
     updatBatchEvent,
     deleteBatchEvent,
     getAllData,
     postiscompleted,
-    getiscompleted
+    getiscompleted,
+    allcourse
 };
