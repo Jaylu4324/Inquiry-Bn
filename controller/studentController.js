@@ -103,7 +103,7 @@ const InvoiceGet = async (req, res) => {
   try {
     const courseId = req.query.id;
     const students = await stuModel.find({ CourseId: courseId, Rfees: { $ne: 0 } }).populate("CourseId");
-    res.status(200).json(students);
+    res.status(200).json({data:students});
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: 'Database query failed' });
