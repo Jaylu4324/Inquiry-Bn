@@ -169,4 +169,4 @@ const search = async (req, res) => {
   }
 };
 
-module.exports = { addStudent, updateStu, search, deleteStu, getAllStu, fillterbyDate, Alldata, filterByMonth, InvoiceGet };
+module.exports = { addStudent, updateStu, search, deleteStu, getAllStu,InvoiceGet, fillterbyDate, Alldata, filterByMonth, InvoiceGet };
