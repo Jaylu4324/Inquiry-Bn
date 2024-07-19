@@ -1,5 +1,6 @@
 const { AddCourseModel, validation } = require('../model/addCorsebatch');
-const {courseBatchModel} = require('../model/corseBatchShcema');
+const { courseBatchModel } = require('../model/corseBatchShcema');
+const { BatchCompletedModel } = require("../model/BatchCompleted")
 
 const addBatchEvent = async (req, res) => {
     try {
@@ -14,7 +15,7 @@ const addBatchEvent = async (req, res) => {
         const { error, value } = validation.validate({
             Course,
             StartDate,
-            Days  ,
+            Days,
             BatchTime,
             batchName
         });
@@ -52,9 +53,9 @@ const updatBatchEvent = async (req, res) => {
         const { error, value } = validation.validate({
             Course,
             StartDate,
-            Days  ,
+            Days,
             BatchTime,
-            batchName 
+            batchName
         });
 
         if (error) {
@@ -93,18 +94,45 @@ const postiscompleted = async (req, res) => {
 
         const batcharr = await courseBatchModel.find({ EventId: req.query.id });
 
-        if(batcharr.length<1){
-            return res.status(400).json({ isSuccess: false, error:{details:["There Should Be Assign Student For This Batch"]} });
+        if (batcharr.length < 1) {
+            return res.status(400).json({ isSuccess: false, error: { details: ["There Should Be Assign Student For This Batch"] } });
 
 
-        }else{
-        for (let ele of batcharr) {
-            ele.isCompleted = true;
-            await courseBatchModel.updateOne({ _id: ele._id }, ele);
+        } else {
+            for (let ele of batcharr) {
+                ele.isCompleted = true;
+
+                await courseBatchModel.updateOne({ _id: ele._id }, ele);
+
+                let Cid = req.query.id
+                let Astudent = ele._id
+                let StudentArray = ele.StuName.map((e) => { return { ...e, Date: "00-00-0000", Cetificate: "NO" } })
+
+                const datas = new BatchCompletedModel({
+                    CourseId: Cid,
+                    Astudent,
+
+                    StudentArray
+
+                })
+                datas.save().then((data1)=>{
+                    console.log("data saved",data1)
+                }).catch((err)=>{
+                    console.log(err)
+                })
+
+
+
+
+
+
+
+
+
+            }
+
+            res.status(200).json({ msg: 'Batch event completed', getiscomp });
         }
-
-        res.status(200).json({ msg: 'Batch event completed', getiscomp });
-    }
     } catch (err) {
         res.status(500).json({ err: 'Error in completing' });
     }
@@ -119,13 +147,13 @@ const getiscompleted = async (req, res) => {
     }
 };
 
-const allcourse=async(req,res)=>{
-    try{
-        const getdata= await AddCourseModel.find()
-        res.send({data:getdata})
+const allcourse = async (req, res) => {
+    try {
+        const getdata = await AddCourseModel.find()
+        res.send({ data: getdata })
     }
-    catch(err){
-        res.send({err})
+    catch (err) {
+        res.send({ err })
     }
 }
 
