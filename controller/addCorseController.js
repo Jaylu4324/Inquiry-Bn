@@ -106,7 +106,7 @@ const postiscompleted = async (req, res) => {
 
                 let Cid = req.query.id
                 let Astudent = ele._id
-                let StudentArray = ele.StuName.map((e) => { return { ...e, Date: "00-00-0000", Cetificate: "NO" } })
+                let StudentArray = ele.StuName.map((e) => { return { ...e, Date: "-", Cetificate: "NO" } })
 
                 const datas = new BatchCompletedModel({
                     CourseId: Cid,
