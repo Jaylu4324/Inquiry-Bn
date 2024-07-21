@@ -26,7 +26,7 @@ const addEventInquiry = async (req, res) => {
         });
 
         if (error) {
-            return res.status(400).json({ isSuccess: false, error: error.details[0].message });
+            return res.status(400).json({ isSuccess: false, error: error });
         }
 
         const data = new eventInquiryModel({
@@ -79,7 +79,7 @@ const updateEventinquiry = async (req, res) => {
         });
 
         if (error) {
-            return res.status(400).json({ isSuccess: false, error: error.details[0].message });
+            return res.status(400).json({ isSuccess: false, error: error });
         }
 
         const updatedData = await eventInquiryModel.updateOne(
