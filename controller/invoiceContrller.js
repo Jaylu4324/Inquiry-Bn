@@ -1,6 +1,6 @@
 const { invoiceModel, InvoiceValidation } = require('../model/invoiceSchema');
 const { stuModel } = require('../model/studentShcema')
-
+require('dotenv').config()
 const { jsPDF } = require("jspdf");
 
 
@@ -22,42 +22,31 @@ const getImageBase64 = (filePath) => {
 };
 
 const addInvoice = async (req, res) => {
-    let {
+    try {
+        const { courseId, stuId, Amount, invoiceDate, TypeOfPayment } = req.body;
 
-        courseId,
-        stuId,
-        Amount,
-        invoiceDate,
-
-        TypeOfPayment,
-
-
-    } = req.body;
-    const { error, value } = InvoiceValidation.validate({
-        courseId,
-        stuId,
-        Amount,
-        invoiceDate,
-        TypeOfPayment,
-
-
-    });
-
-    if (error) {
-        res.status(404).send({ error });
-    }
-    else {
-
-
-        let length = await invoiceModel.find()
-        console.log(req.body, "gbhg")
-
-
-        const data1 = new invoiceModel({
+        // Validate the request body
+        const { error } = InvoiceValidation.validate({
+            courseId,
             stuId,
-
+            Amount,
             invoiceDate,
-            invoiceId: `INV${new Date().toLocaleString().split("/")[0]}00${length.length + 1}`,
+            TypeOfPayment
+        });
+
+        if (error) {
+            return res.status(400).send({ error: error.details });
+        }
+
+        // Generate the new invoice ID
+        const length = await invoiceModel.countDocuments();
+        const invoiceId = `INV${new Date().getFullYear()}00${length + 1}`;
+
+        // Create a new invoice document
+        const newInvoice = new invoiceModel({
+            stuId,
+            invoiceDate,
+            invoiceId,
             Amount: parseInt(Amount),
             TypeOfPayment,
             Description: "THANK'S FOR PAYMENT!",
@@ -65,389 +54,382 @@ const addInvoice = async (req, res) => {
             isDeleted: false
         });
 
-        stuModel.findOne({ _id: req.body.stuId }).then((data) => {
-            let stuObj = JSON.parse(JSON.stringify(data))
+        // Find the student
+        const student = await stuModel.findById(stuId);
+        if (!student) {
+            return res.status(404).send({ msg: "Student not found" });
+        }
 
-            if (parseInt(req.body.Amount) > parseInt(stuObj.Rfees)) {
-                res.status(404).send({ msg: "Paid Amonut Must Be less then Total Amount" });
-            }
+        // Check if the paid amount exceeds the remaining fees
+        if (parseInt(Amount) > student.Rfees) {
+            return res.status(400).send({ msg: "Paid amount must be less than total amount" });
+        }
 
+        // Update the student's fees
+        student.Rfees -= parseInt(Amount);
+        student.Pfees += parseInt(Amount);
+        await stuModel.updateOne({ _id: stuId }, student);
 
+        // Save the new invoice
+        const savedInvoice = await newInvoice.save();
+        res.status(201).send({ msg: "Data Added", data: savedInvoice });
 
-            else {
-                stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(Amount)
-                stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(Amount)
-
-                stuModel.updateOne({ _id: req.body.stuId }, stuObj).then((udata) => {
-                    data1.save().then((data1) => {
-                        res.send({ msg: "Data Added", data1 });
-                    }).catch((err) => {
-                        res.send({ err, msg: "add" });
-                    });
-                })
-                    .catch((err) => {
-                        res.send({ err, msg: "updet" })
-                    })
-            }
-
-        })
-            .catch((err) => {
-                res.send({ err })
-            })
-
+    } catch (err) {
+        console.error("Error adding invoice:", err);
+        res.status(500).send({ error: 'Internal Server Error' });
     }
 };
 
+
 const updateinvoice = async (req, res) => {
     try {
-        let { courseId, stuId, Amount, invoiceDate, TypeOfPayment } = req.body;
-
-        const { error, value } = InvoiceValidation.validate({
+        // Destructure and validate request body
+        const { courseId, stuId, Amount, invoiceDate, TypeOfPayment } = req.body;
+        const { error } = InvoiceValidation.validate({
             courseId: courseId._id,
             stuId: stuId._id,
             Amount,
             invoiceDate,
-            TypeOfPayment,
+            TypeOfPayment
         });
 
         if (error) {
-            return res.status(404).send({ error });
+            return res.status(400).send({ error: error.details });
         }
 
-        console.log(req.body, "dvdfvmdfjvmdfjkvdfmvdf");
-
         const invoiceId = req.query.id;
-        const studentId = req.body.stuId._id;
-        let newAmount = req.body.Amount;
-        newAmount = parseInt(newAmount)
+        const studentId = stuId._id;
+        const newAmount = parseInt(Amount);
 
         // Find the invoice by ID
-        const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
+        const invoiceData = await invoiceModel.findById(invoiceId);
         if (!invoiceData) {
             return res.status(404).send({ msg: "Invoice not found" });
         }
 
         // Find the student by ID
-        const studentData = await stuModel.findOne({ _id: studentId });
+        const studentData = await stuModel.findById(studentId);
         if (!studentData) {
             return res.status(404).send({ msg: "Student not found" });
         }
 
         // Update the student's fees
-        const oldAmount = parseInt(invoiceData.Amount)
-        let stuObj = JSON.parse(JSON.stringify(studentData));
-        console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount);
+        const oldAmount = parseInt(invoiceData.Amount);
+        let updatedStudent = { ...studentData.toObject() };
+        updatedStudent.Rfees += oldAmount;
+        updatedStudent.Pfees -= oldAmount;
 
-        stuObj.Rfees = parseInt(stuObj.Rfees) + parseInt(oldAmount)
-        stuObj.Pfees = parseInt(stuObj.Pfees) - parseInt(oldAmount)
-
-        if (parseInt(newAmount) > parseInt(stuObj.Rfees)) {
-            return res.status(404).send({ msg: "Paid Amount Must Be less than Total Amount" });
+        if (newAmount > updatedStudent.Rfees) {
+            return res.status(400).send({ msg: "Paid amount must be less than total amount" });
         }
-        stuObj.Rfees = parseInt(stuObj.Rfees) - parseInt(newAmount)
-        stuObj.Pfees = parseInt(stuObj.Pfees) + parseInt(newAmount)
+
+        updatedStudent.Rfees -= newAmount;
+        updatedStudent.Pfees += newAmount;
 
         // Save the updated student data
-        await stuModel.updateOne({ _id: studentId }, stuObj);
-
+        await stuModel.updateOne({ _id: studentId }, updatedStudent);
 
         // Update the invoice amount
-        invoiceData.Amount = parseInt(newAmount);
-        console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd");
-        let cp = JSON.parse(JSON.stringify(invoiceData));
-        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId, courseId: req.body.courseId._id });
+        invoiceData.Amount = newAmount;
+        await invoiceModel.updateOne({ _id: invoiceId }, {
+            ...invoiceData.toObject(),
+            ...req.body,
+            stuId: studentId,
+            courseId: courseId._id
+        });
 
         res.send({ msg: "Invoice and student fees updated successfully" });
+
     } catch (err) {
-        console.error(err);
-        res.status(500).send({ err, msg: "Update failed" });
+        console.error("Error updating invoice:", err);
+        res.status(500).send({ error: 'Internal Server Error', msg: "Update failed" });
     }
 };
+
 
 
 
 
 
 const deletinvoice = async (req, res) => {
-
-
     try {
-        console.log(req.body, "delet inv")
+        // Destructure request body and query parameters
+        const { stuId, Amount } = req.body;
         const invoiceId = req.query.id;
-        const studentId = req.body.stuId._id;
-        const newAmount = req.body.Amount;
+
+        // Validate input
+        if (!invoiceId || !stuId || !Amount) {
+            return res.status(400).send({ msg: "Missing required fields" });
+        }
 
         // Find the invoice by ID
-        const invoiceData = await invoiceModel.findOne({ _id: invoiceId });
+        const invoiceData = await invoiceModel.findById(invoiceId);
         if (!invoiceData) {
             return res.status(404).send({ msg: "Invoice not found" });
         }
 
         // Find the student by ID
-        const studentData = await stuModel.findOne({ _id: studentId });
+        const studentData = await stuModel.findById(stuId._id);
         if (!studentData) {
             return res.status(404).send({ msg: "Student not found" });
         }
 
         // Update the student's fees
-        const oldAmount = invoiceData.Amount;
-        let stuObj = JSON.parse(JSON.stringify(studentData));
-        console.log(stuObj.Rfees, stuObj.Pfees, "dsfdsfdsf", oldAmount, newAmount)
-        stuObj.Rfees = stuObj.Rfees + oldAmount
-
-
-        stuObj.Pfees = stuObj.Pfees - oldAmount
-
-
-
+        const oldAmount = parseInt(invoiceData.Amount);
+        let updatedStudent = { ...studentData.toObject() };
+        updatedStudent.Rfees += oldAmount;
+        updatedStudent.Pfees -= oldAmount;
 
         // Save the updated student data
-        await stuModel.updateOne({ _id: studentId }, stuObj);
+        await stuModel.updateOne({ _id: stuId._id }, updatedStudent);
 
-        // Update the invoice amount
-
-
-        console.log(invoiceData, "dsfsdfdfdfdffdfffesadeadadasd")
-        let cp = JSON.parse(JSON.stringify(invoiceData))
-        await invoiceModel.updateOne({ _id: invoiceId }, { ...cp, ...req.body, stuId: studentId, isDeleted: true, Amount: 0 });
+        // Mark the invoice as deleted and set Amount to 0
+        await invoiceModel.updateOne(
+            { _id: invoiceId },
+            { isDeleted: true, Amount: 0 }
+        );
 
         res.send({ msg: "Invoice and student fees deleted successfully" });
     } catch (err) {
-        console.error(err);
-        res.status(500).send({ err, msg: "Update failed" });
+        console.error("Error deleting invoice:", err);
+        res.status(500).send({ error: 'Internal Server Error', msg: "Update failed" });
     }
 };
 
-const displayInvoice = (req, res) => {
-    invoiceModel.find({ isDeleted: false }).populate("stuId").populate("courseId").then((data) => {
-        res.send({ msg: "display invoice", data });
-    }).catch((err) => {
-        res.send({ err });
-    });
+
+const displayInvoice = async (req, res) => {
+    try {
+        // Find all non-deleted invoices and populate student and course data
+        const data = await invoiceModel.find({ isDeleted: false })
+            .populate("stuId")
+            .populate("courseId");
+
+        // Send successful response with invoice data
+        res.send({ msg: "Display invoice", data });
+    } catch (err) {
+        // Log the error and send a server error response
+        console.error("Error fetching invoices:", err);
+        res.status(500).send({ error: 'Internal Server Error', msg: "Failed to fetch invoices" });
+    }
 };
 
-const courseInvoice = (req, res) => {
-    invoiceModel.find({ isDeleted: false, courseId: req.query.parentId }).populate("stuId").populate("courseId").then((data) => {
-        res.send({ msg: "display invoice", data });
-    }).catch((err) => {
-        res.send({ err });
-    });
-};
-const nmailer = (pdfBuffer, row) => {
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "krunal8588@gmail.com",
-            pass: "cnrk mvrh tcqo dmjp",
-        },
-    });
 
-    const mailOptions = {
-        from: 'krunal8588@gmail.com', // sender address
-        to: `${row.stuId.Email}`, // list of receivers
-        subject: "Invoice", // Subject line
-        text: 'Please find attached the invoice.', // plain text body
-        attachments: [
-            {
-                filename: `${row.stuId.Name}_${row.stuId.course}.pdf`,
-                content: pdfBuffer, // use the buffer generated from the PDF
-                contentType: 'application/pdf'
-            }
-        ],
-    };
+const courseInvoice = async (req, res) => {
+    try {
+        // Extract the courseId from query parameters
+        const courseId = req.query.parentId;
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("Error sending email:", error);
-        } else {
-            console.log("Email sent:", info.response);
+        if (!courseId) {
+            return res.status(400).send({ msg: "Course ID is required" });
         }
-    });
+
+        // Find invoices for the specified course and ensure they are not deleted
+        const data = await invoiceModel.find({ isDeleted: false, courseId })
+            .populate("stuId")
+            .populate("courseId");
+
+        // Send successful response with invoice data
+        res.send({ msg: "Display invoice for the course", data });
+    } catch (err) {
+        // Log the error and send a server error response
+        console.error("Error fetching invoices for the course:", err);
+        res.status(500).send({ error: 'Internal Server Error', msg: "Failed to fetch invoices for the course" });
+    }
 };
 
-// const sendWhatsApp = (pdfBuffer, recipientNumber) => {
-//     const mediaUrl = `data:application/pdf;base64,${pdfBuffer.toString('base64')}`;
+const nmailer = async (pdfBuffer, row) => {
+    try {
+        // Create a transporter object using the default SMTP transport
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_SECRET_KEY,
+            },
+        });
 
-//     client.messages.create({
-//         from: 'whatsapp:+15123687385', // Your Twilio WhatsApp number
-//         to: `whatsapp:${recipientNumber}`, // Recipient's WhatsApp number
-//         body: 'Please find attached the invoice.',
-//         mediaUrl: mediaUrl,
-//     }).then(message => {
-//         console.log('WhatsApp message sent:', message.sid);
-//     }).catch(err => {
-//         console.error('Error sending WhatsApp message:', err);
-//     });
-// };
+        // Define email options
+        const mailOptions = {
+            from: process.env.EMAIL, // sender address
+            to: row.stuId.Email, // recipient address
+            subject: "Invoice", // Subject line
+            text: 'Please find attached the invoice.', // plain text body
+            attachments: [
+                {
+                    filename: `${row.stuId.Name}_${row.courseId.Course}.pdf`,
+                    content: pdfBuffer, // use the buffer generated from the PDF
+                    contentType: 'application/pdf',
+                }
+            ],
+        };
+
+        // Send email
+        const info = await transporter.sendMail(mailOptions);
+
+        // Log success
+        console.log("Email sent:", info.response);
+    } catch (error) {
+        // Log error
+        console.error("Error sending email:", error);
+    }
+};
+
+
+
 
 const pdfmail = async (req, res) => {
-    let row = req.body;
+    const row = req.body;
 
-    const doc = new jsPDF();
-
-    // Set background color
-    doc.setFillColor(255, 255, 255);
-    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
-
-    // Load the image and add it to the PDF
-    const imagePath = path.join(__dirname, 'name.png');
     try {
-        const imgBase64 = await getImageBase64(imagePath);
-        const logoWidth = 50;
-        const logoHeight = 20;
-        const centerX = doc.internal.pageSize.width / 2 - logoWidth / 2;
-        doc.addImage(imgBase64, 'PNG', centerX, 10, logoWidth, logoHeight);
-    } catch (error) {
-        console.error('Error loading image:', error);
-    }
+        // Initialize PDF document
+        const doc = new jsPDF();
 
-    // Title
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(24);
-    doc.setTextColor(0, 0, 110);
-    doc.text('Fees Receipt'.toUpperCase(), doc.internal.pageSize.width / 2, 40, { align: 'center' });
+        // Set background color
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
-    // Create a table with 2 columns and 8 rows
-    const table = {
-        headers: ['Field', 'Value'],
-        body: [
-            ['Invoice ID', row.invoiceId],
-            ['Date', row.invoiceDate && row.invoiceDate.split('T')[0]],
-            ['Student Name', row.stuId.Name && row.stuId.Name],
-            ['Course Name', row.stuId.course && row.stuId.course],
-            ['Payment Method', row.TypeOfPayment],
-            ['Paid Amount', row.Amount]
-        ],
-    };
-
-    // Add the table to the PDF with borders and colors
-    doc.autoTable({
-        startY: 60,
-        head: [table.headers],
-        body: table.body,
-        theme: 'striped',
-        styles: {
-            cellPadding: 3,
-            fontSize: 10,
-            valign: 'middle',
-            halign: 'center',
-            fontStyle: 'normal',
-            lineWidth: 0.1,
-        },
-        headStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 110],
-            fontStyle: 'bold',
-        },
-        columnStyles: {
-            0: {
-                cellWidth: 40,
-            },
-            1: {
-                cellWidth: 'auto',
-            },
-        },
-    });
-
-    // Add footer
-    const footerText = [
-        'Email: info@technishal.com',
-        'Contact: +91 9313386475',
-        'Address: H-1210, Titanium City Center Business Park,',
-        'Nr. Prahlad Nagar Rd, Jodhpur Village,',
-        'Ahmedabad, Gujarat 380015.',
-    ];
-
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-
-    // Add horizontal line
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.line(10, doc.internal.pageSize.height - 30, doc.internal.pageSize.width - 10, doc.internal.pageSize.height - 30);
-
-    // Add footer text with spacing
-    let footerY = doc.internal.pageSize.height - 25;
-    footerText.forEach((text, index) => {
-        doc.text(text, doc.internal.pageSize.width / 2, footerY, { align: 'center' });
-        footerY += 5;
-    });
-
-    // Add "This is a computer-generated invoice. Signature not required."
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('This is a computer-generated invoice. Signature not required.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 50, { align: 'center' });
-
-    // Copyright notice
-    doc.setTextColor(100);
-    doc.setFontSize(8);
-    doc.text('© 2023 TechNishal. All Rights Reserved.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 5, { align: 'center' });
-
-    // Convert the PDF to a buffer
-    const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-
-    // Send the email with the PDF attachment
-    nmailer(pdfBuffer, row);
-
-    // Send the PDF via WhatsApp
-    // const recipientNumber = '+919724947545'; // Replace with the recipient's WhatsApp number
-    // sendWhatsApp(pdfBuffer, recipientNumber);
-
-    // const client = new Client();
-
-    // client.on('qr', (qr) => {
-    //     // Generate and scan this code with your phone
-    //     console.log('QR RECEIVED', qr);
-    // });
-
-    // client.on('ready', () => {
-    //     console.log('Client is ready!');
-    // });
-
-    // client.on('message', msg => {
-    //     if (msg.body == '!ping') {
-    //         msg.reply('pong');
-    //     }
-    // });
-
-    // client.initialize();
-
-    // Send response to client
-    res.send('Invoice generated and email/WhatsApp sent.');
-};
-const fillterbyDate = async (req, res) => {
-    try {
-        let key = req.query.key;
-        let sortby = parseInt(req.query.sortby, 10);
-        let courseId = req.query.courseId;
-
-        let query = {};
-        if (courseId) {
-            query.courseId = courseId;
+        // Load and add image
+        const imagePath = path.join(__dirname, 'name.png');
+        try {
+            const imgBase64 = await getImageBase64(imagePath);
+            const logoWidth = 50;
+            const logoHeight = 20;
+            const centerX = doc.internal.pageSize.width / 2 - logoWidth / 2;
+            doc.addImage(imgBase64, 'PNG', centerX, 10, logoWidth, logoHeight);
+        } catch (error) {
+            console.error('Error loading image:', error);
         }
 
+        // Title
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(24);
+        doc.setTextColor(0, 0, 110);
+        doc.text('Fees Receipt'.toUpperCase(), doc.internal.pageSize.width / 2, 40, { align: 'center' });
+
+        // Table content
+        const table = {
+            headers: ['Field', 'Value'],
+            body: [
+                ['Invoice ID', row.invoiceId],
+                ['Date', row.invoiceDate ? row.invoiceDate.split('T')[0] : ''],
+                ['Student Name', row.stuId.Name || ''],
+                ['Course Name', row.courseId.Course || ''],
+                ['Payment Method', row.TypeOfPayment || ''],
+                ['Paid Amount', row.Amount || '']
+            ],
+        };
+
+        // Add table to PDF
+        doc.autoTable({
+            startY: 60,
+            head: [table.headers],
+            body: table.body,
+            theme: 'striped',
+            styles: {
+                cellPadding: 3,
+                fontSize: 10,
+                valign: 'middle',
+                halign: 'center',
+                fontStyle: 'normal',
+                lineWidth: 0.1,
+            },
+            headStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 110],
+                fontStyle: 'bold',
+            },
+            columnStyles: {
+                0: { cellWidth: 40 },
+                1: { cellWidth: 'auto' },
+            },
+        });
+
+        // Footer
+        const footerText = [
+            'Email: info@technishal.com',
+            'Contact: +91 9313386475',
+            'Address: H-1210, Titanium City Center Business Park,',
+            'Nr. Prahlad Nagar Rd, Jodhpur Village,',
+            'Ahmedabad, Gujarat 380015.',
+        ];
+
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+
+        // Add horizontal line
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.5);
+        doc.line(10, doc.internal.pageSize.height - 30, doc.internal.pageSize.width - 10, doc.internal.pageSize.height - 30);
+
+        // Add footer text with spacing
+        let footerY = doc.internal.pageSize.height - 25;
+        footerText.forEach(text => {
+            doc.text(text, doc.internal.pageSize.width / 2, footerY, { align: 'center' });
+            footerY += 5;
+        });
+
+        // Add computer-generated note and copyright
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text('This is a computer-generated invoice. Signature not required.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 50, { align: 'center' });
+
+        doc.setFontSize(8);
+        doc.text('© 2023 TechNishal. All Rights Reserved.', doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 5, { align: 'center' });
+
+        // Convert PDF to buffer
+        const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+
+        // Send the email with the PDF attachment
+        await nmailer(pdfBuffer, row);
+
+        // Send response to client
+        res.send('Invoice generated and email sent.');
+    } catch (err) {
+        console.error('Error generating invoice:', err);
+        res.status(500).send('Error generating invoice');
+    }
+};
+
+const fillterbyDate = async (req, res) => {
+    try {
+        const { key, sortby, courseId } = req.query;
+        const sortOrder = parseInt(sortby, 10); // Convert sortby to an integer
+
+        // Validate sortOrder (1 for ascending, -1 for descending)
+        if (![1, -1].includes(sortOrder)) {
+            return res.status(400).send({ error: 'Invalid sort order. Use 1 for ascending or -1 for descending.' });
+        }
+
+        // Build query object
+        const query = courseId ? { courseId } : {};
+
         // Define projection to include necessary fields
-        let projection = '_id stuId courseId invoiceId invoiceDate Amount TypeOfPayment Description isDeleted';
+        const projection = '_id stuId courseId invoiceId invoiceDate Amount TypeOfPayment Description isDeleted';
 
         // Query invoices with projection and populate references
-        let data1 = await invoiceModel.find(query)
+        let data = await invoiceModel.find(query)
             .select(projection)
             .populate('stuId')
-            .populate('courseId');
+            .populate('courseId')
+            .exec();
 
-        // Perform sorting based on the specified key and sort direction
-        if (key === "Name") {
-            data1.sort((a, b) => sortby === 1 ? b.stuId.Name.localeCompare(a.stuId.Name) : a.stuId.Name.localeCompare(b.stuId.Name));
-        } else if (key === "Rfees") {
-            data1.sort((a, b) => sortby === 1 ? parseInt(b.stuId.Rfees) - parseInt(a.stuId.Rfees) : parseInt(a.stuId.Rfees) - parseInt(b.stuId.Rfees));
-        } else if (key === "invoiceDate") {
-            data1.sort((a, b) => sortby === 1 ? a.invoiceDate - b.invoiceDate : b.invoiceDate - a.invoiceDate);
+        // Sort data based on the specified key
+        if (key) {
+            if (key === 'Name') {
+                data.sort((a, b) => sortOrder * a.stuId.Name.localeCompare(b.stuId.Name));
+            } else if (key === 'Rfees') {
+                data.sort((a, b) => sortOrder * (parseInt(b.stuId.Rfees) - parseInt(a.stuId.Rfees)));
+            } else if (key === 'invoiceDate') {
+                data.sort((a, b) => sortOrder * (new Date(b.invoiceDate) - new Date(a.invoiceDate)));
+            } else {
+                return res.status(400).send({ error: 'Invalid sort key. Use "Name", "Rfees", or "invoiceDate".' });
+            }
         }
 
         // Send the response with the sorted and populated data
-        res.send({ data: data1 });
+        res.send({ data });
     } catch (err) {
-        console.error("Error in fillterbyDate:", err);
+        console.error('Error in fillterbyDate:', err);
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };
@@ -455,47 +437,69 @@ const fillterbyDate = async (req, res) => {
 
 
 
+
 const filterByMonth = async (req, res) => {
-    let { courseId, month, sort } = req.query
-    console.log(req.query, ":dsfdsfdfdfdsfd")
+    try {
+        const { courseId, month, sort } = req.query;
 
-    sort = parseInt(sort)
-    if (!courseId) {
+        // Validate and parse `month` and `sort` parameters
+        const parsedMonth = parseInt(month, 10);
+        const parsedSort = parseInt(sort, 10);
 
-        try {
-            const januaryData = await invoiceModel.find({
-                $expr: {
-                    $eq: [{ $month: "$invoiceDate" }, month]
-                }
-            }).sort({ invoiceDate: sort }).populate("stuId").populate("courseId");
-            res.send(januaryData);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+            return res.status(400).json({ error: 'Invalid month. Please provide a number between 1 and 12.' });
         }
-    }
 
-    else {
-        try {
-            const januaryData = await invoiceModel.find({
-                $expr: {
-                    $eq: [{ $month: "$invoiceDate" }, month]
-                }
-                , courseId: req.query.courseId
-            }).sort({ invoiceDate: sort }).populate("stuId").populate("courseId");
-            res.json(januaryData);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        if (![1, -1].includes(parsedSort)) {
+            return res.status(400).json({ error: 'Invalid sort order. Use 1 for ascending or -1 for descending.' });
         }
+
+        // Build the query object
+        const query = {
+            $expr: {
+                $eq: [{ $month: "$invoiceDate" }, parsedMonth]
+            }
+        };
+
+        if (courseId) {
+            query.courseId = courseId;
+        }
+
+        // Fetch and sort the data
+        const data = await invoiceModel.find(query)
+            .sort({ invoiceDate: parsedSort })
+            .populate("stuId")
+            .populate("courseId")
+            .exec();
+
+        res.json(data);
+    } catch (err) {
+        console.error('Error in filterByMonth:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+
 const search = async (req, res) => {
+    try {
+        const populatedata = await invoiceModel.find().populate("stuId").populate("courseId");
 
-    const populatedata = await invoiceModel.find().populate("stuId").populate("courseId")
+        // Ensure `name` query parameter is provided
+        const { name } = req.query;
+        if (!name) {
+            return res.status(400).json({ error: 'Query parameter "name" is required.' });
+        }
 
-    const filterdata = populatedata.filter((ele) => {
-        return ele.stuId.Name && ele.stuId.Name.toLowerCase() == req.query.name.toLowerCase()
-    })
-    res.send({ filterdata })
-}
+        const filterdata = populatedata.filter((ele) => {
+            return ele.stuId.Name && ele.stuId.Name.toLowerCase() === name.toLowerCase();
+        });
+
+        // Send filtered data
+        res.status(200).json({ filterdata });
+    } catch (err) {
+        console.error('Error in search:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 module.exports = { addInvoice, updateinvoice, search, deletinvoice, courseInvoice, displayInvoice, pdfmail, fillterbyDate, filterByMonth };

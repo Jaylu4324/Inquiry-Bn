@@ -1,15 +1,27 @@
-const login=(req,res)=>{
-    var email1="test1@gmail.com";
-    var password1="12345";
+const login = (req, res) => {
+    try {
+        // Sample hardcoded credentials
+        const email1 = "test1@gmail.com";
+        const password1 = "12345";
 
-    let {email,password}=req.body;
+        // Extract email and password from request body
+        const { email, password } = req.body;
 
-    if(email1==email && password1==password){
-        res.send("Login Success");
+        // Check if both email and password are provided
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required.' });
+        }
+
+        // Validate credentials
+        if (email1 === email && password1 === password) {
+            return res.status(200).send("Login Success");
+        } else {
+            return res.status(401).send("Invalid Credentials");
+        }
+    } catch (err) {
+        console.error('Error in login:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    else{
-        res.send("Invalid Credentials");
-    }
-}
+};
 
-module.exports={login};
+module.exports = { login };

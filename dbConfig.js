@@ -1,6 +1,7 @@
 let mongoose = require('mongoose')
+require('dotenv').config()
 
-mongoose.connect('mongodb+srv://krunalmistry7545:krunal2909@cluster0.ea22c9l.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.CONNECTION_STRING,{useNewUrlParser:true})
 
 .then(()=>console.log('database connected'))
 .catch((err)=>console.log(err))

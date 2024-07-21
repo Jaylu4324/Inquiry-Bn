@@ -44,8 +44,9 @@ const updateBatch = async (req, res) => {
   try {
     let { EventId, StuName } = req.body;
     const course11 = req.query.course;
+    console.log('====>',EventId)
 
-    const { error, value } = coursebatchValidation.validate({ EventId:EventId._id, StuName });
+    const { error, value } = coursebatchValidation.validate({ EventId:EventId, StuName });
 
     if (error) {
       return res.status(400).json({ isSuccess: false, error });

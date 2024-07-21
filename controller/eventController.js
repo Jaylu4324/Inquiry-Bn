@@ -1,154 +1,152 @@
-const {eventModel,eventValidation} = require('../model/eventShcema')
+const { eventModel, eventValidation } = require('../model/eventShcema');
 
+const addevent = async (req, res) => {
+    try {
+        let {
+            StartDate,
+            EndtDate,
+            Course,
+            BatchTime,
+            TypeOfEvent,
+            Amount,
+            TypeOfPayment,
+            Days
+        } = req.body;
 
+        const eventdata = new eventModel({
+            StartDate,
+            EndtDate,
+            Course,
+            BatchTime,
+            TypeOfEvent,
+            Days,
+            Amount,
+            TypeOfPayment,
+            IsCompleted: false
+        });
 
-const addevent = (req, res) => {
-    let {
-        StartDate,
-        EndtDate,
-        Course,
-        BatchTime,
-        TypeOfEvent,
-        Amount,
-        TypeOfPayment,
-        Days } = req.body
+        const { error } = eventValidation.validate({
+            StartDate,
+            Course,
+            BatchTime,
+            Days,
+            TypeOfEvent,
+            TypeOfPayment,
+            Amount
+        });
 
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error });
+        }
 
-    const eventdata = new eventModel({
-        StartDate,
-        EndtDate,
-        Course,
-        BatchTime,
-        TypeOfEvent,
-        Days,
-        Amount,
-        TypeOfPayment,
-        IsCompleted: false
-    })
-
-    const { error, value } = eventValidation.validate({ 
-        StartDate,
-        Course,
-        BatchTime,
-        Days,
-        TypeOfEvent,
-        TypeOfPayment,
-        Amount});
-
-    if (error) {
-        res.status(400).json({ isSuccess: false, error })
+        const data = await eventdata.save();
+        res.status(201).json({ isSuccess: true, msg: "Event data added", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ isSuccess: false, err });
     }
+};
 
-else{
+const updateevent = async (req, res) => {
+    try {
+        let {
+            StartDate,
+            Course,
+            BatchTime,
+            Days,
+            TypeOfEvent,
+            TypeOfPayment,
+            Amount
+        } = req.body;
 
-    eventdata.save().then((data) => {
-        res.status(201).json({isSuccess:true , msg: "Event data added", data })
-    })
-        .catch((err) => {
-            res.status(500).json({isSuccess:false, err })
-        })
-}
-}
+        const { error } = eventValidation.validate({
+            StartDate,
+            Course,
+            BatchTime,
+            Days,
+            TypeOfEvent,
+            TypeOfPayment,
+            Amount
+        });
 
-const updateevent = (req, res) => {
-let {StartDate,
-    Course,
-    BatchTime,
-    Days,
-    TypeOfEvent,
-    TypeOfPayment,
-    Amount}=req.body
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error });
+        }
 
-    const { error, value } = eventValidation.validate({StartDate,
-        Course,
-        BatchTime,
-        Days,
-        TypeOfEvent,
-        TypeOfPayment,
-        Amount });
-if (error) {
-    res.status(400).json({ isSuccess: false, error })
-    
-}
-else{
+        const data = await eventModel.updateOne({ _id: req.query.id }, req.body);
+        res.status(200).json({ isSuccess: true, msg: "Event Updated", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ isSuccess: false, err });
+    }
+};
 
-    eventModel.updateOne({ _id: req.query.id }, req.body)
-        .then((data) => {
-            res.status(201).json({isSuccess:true, msg: "Event Updated", data })
-        })
-        .catch((err) => {
-            res.status(500).json({isSuccess:false, err })
-        })
-}
+const deleteevent = async (req, res) => {
+    try {
+        await eventModel.deleteOne({ _id: req.query.id });
+        res.status(200).send({ msg: "Event Deleted" });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
+const getAllData = async (req, res) => {
+    try {
+        const data = await eventModel.find({ IsCompleted: false });
+        res.status(200).send({ msg: "All Data", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
-}
+const eventComleted = async (req, res) => {
+    try {
+        const data = await eventModel.findOne({ _id: req.query.id });
+        if (!data) {
+            return res.status(404).send({ msg: "Event not found" });
+        }
 
-const deleteevent = (req, res) => {
-    eventModel.deleteOne({ _id: req.query.id })
-        .then((data) => {
-            res.send({ msg: "Event DEleted" })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
+        let obj = JSON.parse(JSON.stringify(data));
+        obj.IsCompleted = true;
 
-const getAllData = (req, res) => {
-    eventModel.find({ IsCompleted: false }).then((data) => {
-        res.send({ msg: "All Data", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
+        await eventModel.updateOne({ _id: req.query.id }, obj);
+        res.status(200).send({ msg: "Event Completed" });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
-const eventComleted = (req, res) => {
-    eventModel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.IsCompleted = true
+const getComletedevent = async (req, res) => {
+    try {
+        const data = await eventModel.find({ IsCompleted: true });
+        res.status(200).send({ msg: "All Completed Events", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
-        eventModel.updateOne({ _id: req.query.id }, obj).then((data1) => {
-            res.send({ msg: "event Comleted" })
-        })
-            .catch((err2) => {
-                res.send({ err2 })
-            })
+const getAllevent = async (req, res) => {
+    try {
+        const data = await eventModel.find({ TypeOfEvent: "event" });
+        res.status(200).send({ msg: "All events", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
+const getAllWorkshop = async (req, res) => {
+    try {
+        const data = await eventModel.find({ TypeOfEvent: "Workshop" });
+        res.status(200).send({ msg: "All Workshops", data });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ err });
+    }
+};
 
-const getComletedevent = (req, res) => {
-    eventModel.find({ IsCompleted: true }).then((data) => {
-        res.send({ msg: "All Comleted Event", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-
-const getAllevent = (req, res) => {
-    eventModel.find({ TypeOfEvent: "event" })
-        .then((data) => {
-            res.send({ msg: "All event", data })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const getAllWorkshop = (req, res) => {
-    eventModel.find({ TypeOfEvent: "Workshop" })
-        .then((data) => {
-            res.send({ msg: "All Workshop", data })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-module.exports = { addevent, updateevent, deleteevent, getAllData, eventComleted, getComletedevent, getAllevent, getAllWorkshop }
+module.exports = { addevent, updateevent, deleteevent, getAllData, eventComleted, getComletedevent, getAllevent, getAllWorkshop };

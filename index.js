@@ -1,5 +1,7 @@
 const express = require('express')
 require('./dbConfig')
+require('dotenv').config()
+
 const rout = require('./router/invoicsRoute')
 const routinqry = require('./router/corseinquryRoute')
 const ruotStu = require('./router/studentRoute')
@@ -43,6 +45,6 @@ app.use('/batchEvent',batchevent)
 app.use('/regBatch',regBatch)
 app.use("/ISC",ISC)
 
-app.listen(port = 5000, () => {
-  console.log(`port is run on ${port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`port is run on ${process.env.PORT}`)
 })

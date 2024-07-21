@@ -55,7 +55,7 @@ const corseInquiry = mongoose.Schema({
 
 const validation = joi.object({
     FullName: joi.string()
-        .alphanum()
+        
         .min(3)
         .max(30)
         .required(),

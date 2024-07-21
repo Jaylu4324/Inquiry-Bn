@@ -1,278 +1,278 @@
-const { eventInquiryModel, EinquiryValidation } = require('../model/eventInquiryShcema')
+const { eventInquiryModel, EinquiryValidation } = require('../model/eventInquiryShcema');
 
-const addEventInquiry = (req, res) => {
-
-    let { FullName,
-        eventId,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Interaction,
-        FollowUp } = req.body
-
-    const data = new eventInquiryModel({
-        eventId,
-        FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        onGoing: true,
-        Reject: false,
-        Confirm: false,
-        isDeleted: false,
-        isAdded: false,
-        Interaction,
-        FollowUp
-    })
-
-    const { error, value } = EinquiryValidation.validate({FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Interaction,
-        FollowUp});
-    if (error) {
-        res.status(400).json({ isSuccess: false, error })
-    }
-    else {
-
-        data.save().then((data1) => {
-            res.status(201).json({ isSuccess: true, msg: "Event Inquiry Added", data1 })
-        })
-            .catch((err) => {
-                res.status(500).json({ isSuccess: false, err })
-            })
-    }
-
-
-}
-
-
-const updateEventinquiry = (req, res) => {
-
-    let {
-        FullName,
-        Contact,
-        eventId,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Interaction,
-        FollowUp
-    } = req.body
-    const { error, value } = EinquiryValidation.validate({
-        FullName,
-        Contact,
-        Email,
-        Date,
-        Description,
-        CollageName,
-        Interaction,
-        FollowUp
-    });
-
-    if (error) {
-        res.status(400).json({ isSuccess: false, error })
-    }
-    else {
-        eventInquiryModel.updateOne({ _id: req.query.id }, {...req.body,eventId:eventId._id})
-            .then((data) => {
-                res.status(201).json({ isSuccess: true, msg: "Event Inquiry Updated", data })
-            })
-            .catch((err) => {
-                res.status(500).json({ isSuccess: false, err })
-            })
-    }
-
-}
-
-
-const deletEventinquiry = (req, res) => {
-    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.isDeleted = true
-
-        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Event Inquiry Soft Deleted" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-
-}
-const hardelet = (req, res) => {
-
-    eventInquiryModel.deleteOne({ _id: req.query.id })
-        .then((data) => {
-            res.send({ msg: "Inquiry DEleted" })
-        })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-const displayAllEventInquiry = (req, res) => {
-
-    eventInquiryModel.find({ eventId: req.query.id }).then((data) => {
-        res.send({ msg: "display all Event Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const displayOnGoingEventInquiry = (req, res) => {
-    eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).then((data) => {
-        res.send({ msg: "display OnGoing Event Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const displayRejectEventInquiry = (req, res) => {
-    eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id }).then((data) => {
-        res.send({ msg: "display Reject Event Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-
-const displayConfirmEventInquiry = (req, res) => {
-    eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).then((data) => {
-        res.send({ msg: "display Comfirm Event Inquiry", data })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const RejectEventInquiry = (req, res) => {
-    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.onGoing = false
-        obj.Confirm = false
-        obj.Reject = true
-
-        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Event Inquiry Rejected" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const ConfirmEventInquiry = (req, res) => {
-    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.onGoing = false
-        obj.Confirm = true
-        obj.Reject = false
-
-        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((dataup) => {
-            res.send({ msg: "Event Inquiry confirm" })
-        })
-            .catch((err1) => {
-                res.send({ err1 })
-            })
-    })
-        .catch((err) => {
-            res.send({ err })
-        })
-}
-
-const eventIsAdded = (req, res) => {
-    eventInquiryModel.findOne({ _id: req.query.id }).then((data) => {
-        let obj = JSON.parse(JSON.stringify(data))
-        obj.isAdded = !obj.isAdded
-
-        eventInquiryModel.updateOne({ _id: req.query.id }, obj).then((udata) => {
-            res.send({ mas: "isAdded", ud: udata.isAdded })
-        })
-            .catch((err) => {
-                res.send({ err })
-            })
-    }).catch((e) => {
-        res.send({ e })
-    })
-}
-
-const getISAddeddata = (req, res) => {
-    eventInquiryModel.find({ Confirm: true, isAdded: false, isDeleted: false, eventId: req.query.id }).then((data) => {
-        res.send({ msg: "allIsAdded", data })
-    }).catch((err) => {
-        res.send({ err })
-    })
-}
-
-const sortBykey =async (req,res)=>{
-    let {eventId,key,sortBy,type} = req.query
-    if (!eventId) {
-        
-        const sortData = await eventInquiryModel.find({[type]:true}).sort({[key]:parseInt(sortBy)})
-        res.send({sortData})
-
-    }
-    else{
-        const sortData = await eventInquiryModel.find({eventId,[type]:true}).sort({[key]:parseInt(sortBy)})
-        res.send({sortData})
-    }
-}
-const filterByMonth = async (req, res) => {
-    let { month, sortby ,type} = req.query
-
-
-
+const addEventInquiry = async (req, res) => {
     try {
-        const filterData = await eventInquiryModel.find({[type]:true,
-            $expr: {
-                $eq: [{ $month: "$Date" }, month]
-            }
+        let {
+            FullName,
+            eventId,
+            Contact,
+            Email,
+            Date,
+            Description,
+            CollageName,
+            Interaction,
+            FollowUp
+        } = req.body;
+
+        const { error, value } = EinquiryValidation.validate({
+            FullName,
+            Contact,
+            Email,
+            Date,
+            Description,
+            CollageName,
+            Interaction,
+            FollowUp
+        });
+
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error: error.details[0].message });
+        }
+
+        const data = new eventInquiryModel({
+            eventId,
+            FullName,
+            Contact,
+            Email,
+            Date,
+            Description,
+            CollageName,
+            onGoing: true,
+            Reject: false,
+            Confirm: false,
+            isDeleted: false,
+            isAdded: false,
+            Interaction,
+            FollowUp
+        });
+
+        const savedData = await data.save();
+        res.status(201).json({ isSuccess: true, msg: "Event Inquiry Added", data: savedData });
+    } catch (err) {
+        res.status(500).json({ isSuccess: false, err: err.message });
+    }
+};
+
+const updateEventinquiry = async (req, res) => {
+    try {
+        let {
+            FullName,
+            Contact,
+            eventId,
+            Email,
+            Date,
+            Description,
+            CollageName,
+            Interaction,
+            FollowUp
+        } = req.body;
+
+        const { error, value } = EinquiryValidation.validate({
+            FullName,
+            Contact,
+            Email,
+            Date,
+            Description,
+            CollageName,
+            Interaction,
+            FollowUp
+        });
+
+        if (error) {
+            return res.status(400).json({ isSuccess: false, error: error.details[0].message });
+        }
+
+        const updatedData = await eventInquiryModel.updateOne(
+            { _id: req.query.id },
+            { ...req.body, eventId: eventId._id }
+        );
+
+        res.status(200).json({ isSuccess: true, msg: "Event Inquiry Updated", data: updatedData });
+    } catch (err) {
+        res.status(500).json({ isSuccess: false, err: err.message });
+    }
+};
+
+const deletEventinquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.findOne({ _id: req.query.id });
+        if (!data) {
+            return res.status(404).json({ msg: "Event Inquiry not found" });
+        }
+
+        data.isDeleted = true;
+
+        const updatedData = await eventInquiryModel.updateOne({ _id: req.query.id }, data);
+        res.status(200).json({ msg: "Event Inquiry Soft Deleted", data: updatedData });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const hardelet = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.deleteOne({ _id: req.query.id });
+        res.status(200).json({ msg: "Inquiry Deleted", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const displayAllEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.find({ eventId: req.query.id });
+        res.status(200).json({ msg: "Display All Event Inquiries", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const displayOnGoingEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id });
+        res.status(200).json({ msg: "Display Ongoing Event Inquiries", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const displayRejectEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id });
+        res.status(200).json({ msg: "Display Rejected Event Inquiries", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const displayConfirmEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id });
+        res.status(200).json({ msg: "Display Confirmed Event Inquiries", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const RejectEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.findOne({ _id: req.query.id });
+        if (!data) {
+            return res.status(404).json({ msg: "Event Inquiry not found" });
+        }
+
+        data.onGoing = false;
+        data.Confirm = false;
+        data.Reject = true;
+
+        const updatedData = await eventInquiryModel.updateOne({ _id: req.query.id }, data);
+        res.status(200).json({ msg: "Event Inquiry Rejected", data: updatedData });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const ConfirmEventInquiry = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.findOne({ _id: req.query.id });
+        if (!data) {
+            return res.status(404).json({ msg: "Event Inquiry not found" });
+        }
+
+        data.onGoing = false;
+        data.Confirm = true;
+        data.Reject = false;
+
+        const updatedData = await eventInquiryModel.updateOne({ _id: req.query.id }, data);
+        res.status(200).json({ msg: "Event Inquiry Confirmed", data: updatedData });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const eventIsAdded = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.findOne({ _id: req.query.id });
+        if (!data) {
+            return res.status(404).json({ msg: "Event Inquiry not found" });
+        }
+
+        data.isAdded = !data.isAdded;
+
+        const updatedData = await eventInquiryModel.updateOne({ _id: req.query.id }, data);
+        res.status(200).json({ msg: "isAdded status toggled", isAdded: updatedData.isAdded });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const getISAddeddata = async (req, res) => {
+    try {
+        const data = await eventInquiryModel.find({
+            Confirm: true,
+            isAdded: false,
+            isDeleted: false,
+            eventId: req.query.id
+        });
+        res.status(200).json({ msg: "All IsAdded Data", data });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const sortBykey = async (req, res) => {
+    try {
+        let { eventId, key, sortBy, type } = req.query;
+        let sortData;
+
+        if (!eventId) {
+            sortData = await eventInquiryModel.find({ [type]: true }).sort({ [key]: parseInt(sortBy) });
+        } else {
+            sortData = await eventInquiryModel.find({ eventId, [type]: true }).sort({ [key]: parseInt(sortBy) });
+        }
+
+        res.status(200).json({ sortData });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
+
+const filterByMonth = async (req, res) => {
+    try {
+        let { month, sortby, type } = req.query;
+
+        const filterData = await eventInquiryModel.find({
+            [type]: true,
+            $expr: { $eq: [{ $month: "$Date" }, parseInt(month)] }
         }).sort({ Date: parseInt(sortby) });
-        res.json(filterData);
+
+        res.status(200).json(filterData);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-
 };
 
 const commonSearch = async (req, res) => {
-    let { FullName,type } = req.query
-    const populatedata = await eventInquiryModel.find({[type]:true , isDeleted: false })
+    try {
+        let { FullName, type } = req.query;
+        const populatedata = await eventInquiryModel.find({ [type]: true, isDeleted: false });
 
+        const filterdata = populatedata.filter(ele => ele.FullName && ele.FullName.toLowerCase() === FullName.toLowerCase());
+        res.status(200).json({ filterdata });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
 
-        const filterdata = populatedata.filter((ele) => {
-            return ele.FullName && ele.FullName.toLowerCase() == FullName.toLowerCase()
-        })
-        res.send({ filterdata })
-    
-}
-const Alldata=(req,res)=>{
-
-    let {key}=req.query
-    eventInquiryModel.find({[key]:true}).then((allData)=>{
-        res.send({allData})
-    }).catch((err)=>{
-        res.send({err})
-    })
-
-}
+const Alldata = async (req, res) => {
+    try {
+        let { key } = req.query;
+        const allData = await eventInquiryModel.find({ [key]: true });
+        res.status(200).json({ allData });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+};
 
 module.exports = {
     addEventInquiry,
@@ -291,4 +291,4 @@ module.exports = {
     filterByMonth,
     commonSearch,
     Alldata
-}
+};

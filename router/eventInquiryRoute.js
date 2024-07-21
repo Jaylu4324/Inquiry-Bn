@@ -38,10 +38,4 @@ route.get('/alldata',Alldata)
 
 
 
-
-
-
-
-
-
 module.exports = route
