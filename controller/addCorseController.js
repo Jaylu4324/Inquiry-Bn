@@ -90,7 +90,7 @@ const getAllData = async (req, res) => {
 const postiscompleted = async (req, res) => {
     try {
         const getid = req.query.id;
-        const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
+      
 
         const batcharr = await courseBatchModel.find({ EventId: req.query.id });
 
@@ -115,7 +115,8 @@ const postiscompleted = async (req, res) => {
                     StudentArray
 
                 })
-                datas.save().then((data1)=>{
+                datas.save().then(async(data1)=>{
+                    const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
                     console.log("data saved",data1)
                 }).catch((err)=>{
                     console.log(err)
