@@ -50,7 +50,6 @@ const eventInquiry = mongoose.Schema({
 
 const EinquiryValidation = joi.object({
     FullName:joi.string()
-    .alphanum()
     .min(3)
     .max(30)
     .required(),
