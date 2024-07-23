@@ -116,21 +116,21 @@ const postiscompleted = async (req, res) => {
 
                 })
                 datas.save().then(async(data1)=>{
-                    const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
                     console.log("data saved",data1)
                 }).catch((err)=>{
                     console.log(err)
                 })
-
-
-
-
-
-
-
-
-
+                
+                
+                
+                
+                
+                
+                
+                
+                
             }
+            const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
 
             res.status(200).json({ msg: 'Batch event completed', getiscomp });
         }

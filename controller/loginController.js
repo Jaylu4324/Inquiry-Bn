@@ -16,7 +16,7 @@ const login = (req, res) => {
         if (email1 === email && password1 === password) {
             return res.status(200).send("Login Success");
         } else {
-            return res.status(401).send("Invalid Credentials");
+            return res.status(401).send({error:"Invalid Credentials"});
         }
     } catch (err) {
         console.error('Error in login:', err);
