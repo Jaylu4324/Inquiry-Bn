@@ -20,7 +20,7 @@ const login = (req, res) => {
 
             let tokan =  jwt.sign({password:password,email:email},'TechNishal')
             console.log(tokan)
-            return res.status(200).send("Login Success");
+            return res.status(200).send("Login Success",tokan);
 
         } else {
             return res.status(401).send({error:"Invalid Credentials"});
