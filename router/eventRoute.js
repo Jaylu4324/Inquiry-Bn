@@ -19,15 +19,15 @@ const isAuth=(req,res,next)=>{
     }
     
  }
- 
-route.post('/addevent', addevent)
-route.post('/Updateevent', updateevent)
-route.delete('/Deleteevent', deleteevent)
-route.get('/Displayevent', getAllData)
-route.post('/Completed',eventComleted)
-route.get('/Completedevent',getComletedevent)
-route.get('/Allevent',getAllevent)
-route.get('/AllWorkshop',getAllWorkshop)
+
+route.post('/addevent',isAuth, addevent)
+route.post('/Updateevent',isAuth, updateevent)
+route.delete('/Deleteevent',isAuth, deleteevent)
+route.get('/Displayevent',isAuth, getAllData)
+route.post('/Completed',isAuth,eventComleted)
+route.get('/Completedevent',isAuth,getComletedevent)
+route.get('/Allevent',isAuth,getAllevent)
+route.get('/AllWorkshop',isAuth,getAllWorkshop)
 
 
 module.exports = route

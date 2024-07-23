@@ -20,20 +20,20 @@ const isAuth=(req,res,next)=>{
     }
     
  }
-route.post('/addInquiry', addInquiry)
-route.post('/Update', updateinquiry)
-route.delete('/Delete', deletinquiry)
-route.get('/Display', displayInquiry)
-route.get('/OnGoing', displayOnGoingInquiry)
-route.get('/Reject', displayRejectInquiry)
-route.get('/Confirm', displayConfirmInquiry)
-route.post('/RejectedInquiry',RejectInquiry)
-route.get("/getisAdded",getISAddeddata)
-route.post('/ConfimInquiry',ConfirmInquiry)
-route.get("/coursefillbydate",fillterbyDate)
-route.get("/coursefillbymonth",filterByMonth)
-route.get("/commansearchstu",commonSearch)
-route.get("/Alldata",Alldata)
+route.post('/addInquiry',isAuth, addInquiry)
+route.post('/Update',isAuth, updateinquiry)
+route.delete('/Delete',isAuth, deletinquiry)
+route.get('/Display',isAuth, displayInquiry)
+route.get('/OnGoing',isAuth, displayOnGoingInquiry)
+route.get('/Reject',isAuth, displayRejectInquiry)
+route.get('/Confirm',isAuth, displayConfirmInquiry)
+route.post('/RejectedInquiry',isAuth,RejectInquiry)
+route.get("/getisAdded",isAuth,getISAddeddata)
+route.post('/ConfimInquiry',isAuth,ConfirmInquiry)
+route.get("/coursefillbydate",isAuth,fillterbyDate)
+route.get("/coursefillbymonth",isAuth,filterByMonth)
+route.get("/commansearchstu",isAuth,commonSearch)
+route.get("/Alldata",isAuth,Alldata)
 
 
 

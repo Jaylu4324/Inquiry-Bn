@@ -38,22 +38,22 @@ const { addEventInquiry,
         
      }
 
-route.post('/addInquiry', addEventInquiry)
-route.post('/Update', updateEventinquiry)
-route.delete('/hardDelete', hardelet)
-route.delete('/Delete', deletEventinquiry)
-route.get('/Display', displayAllEventInquiry)
-route.get('/OnGoing', displayOnGoingEventInquiry)
-route.get('/Reject', displayRejectEventInquiry)
-route.get('/Confirm', displayConfirmEventInquiry)
-route.post('/RejectedInquiry', RejectEventInquiry)
-route.post('/ConfimInquiry', ConfirmEventInquiry)
-route.post('/isAdded',eventIsAdded)
-route.get('/getisAdded',getISAddeddata)
-route.get('/sortby',sortBykey)
-route.get('/filterbyMonth',filterByMonth)
-route.get('/search',commonSearch)
-route.get('/alldata',Alldata)
+route.post('/addInquiry',isAuth, addEventInquiry)
+route.post('/Update',isAuth, updateEventinquiry)
+route.delete('/hardDelete',isAuth, hardelet)
+route.delete('/Delete',isAuth, deletEventinquiry)
+route.get('/Display',isAuth, displayAllEventInquiry)
+route.get('/OnGoing',isAuth, displayOnGoingEventInquiry)
+route.get('/Reject',isAuth, displayRejectEventInquiry)
+route.get('/Confirm',isAuth, displayConfirmEventInquiry)
+route.post('/RejectedInquiry',isAuth, RejectEventInquiry)
+route.post('/ConfimInquiry',isAuth, ConfirmEventInquiry)
+route.post('/isAdded',isAuth,eventIsAdded)
+route.get('/getisAdded',isAuth,getISAddeddata)
+route.get('/sortby',isAuth,sortBykey)
+route.get('/filterbyMonth',isAuth,filterByMonth)
+route.get('/search',isAuth,commonSearch)
+route.get('/alldata',isAuth,Alldata)
 
 
 

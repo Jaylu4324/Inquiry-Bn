@@ -19,9 +19,9 @@ const isAuth=(req,res,next)=>{
     }
     
  }
- 
-route.post('/UpdateISC', Update)
-route.get("/getAllData",getAllData)
+
+route.post('/UpdateISC',isAuth, Update)
+route.get("/getAllData",isAuth,getAllData)
 
 
 

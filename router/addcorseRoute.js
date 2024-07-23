@@ -21,13 +21,13 @@ const isAuth=(req,res,next)=>{
     
  }
 
-route.post('/addBevent', addBatchEvent)
-route.post('/UpdateBevent', updatBatchEvent)
-route.delete('/DeleteBevent', deleteBatchEvent)
-route.get('/DisplayBevent', getAllData)
-route.post('/completedBevent',postiscompleted)
-route.get('/displaycompletedBevent',getiscompleted)
-route.get('/allcourse',allcourse)
+route.post('/addBevent',isAuth, addBatchEvent)
+route.post('/UpdateBevent',isAuth, updatBatchEvent)
+route.delete('/DeleteBevent',isAuth, deleteBatchEvent)
+route.get('/DisplayBevent',isAuth, getAllData)
+route.post('/completedBevent',isAuth,postiscompleted)
+route.get('/displaycompletedBevent',isAuth,getiscompleted)
+route.get('/allcourse',isAuth,allcourse)
 
 
 module.exports=route

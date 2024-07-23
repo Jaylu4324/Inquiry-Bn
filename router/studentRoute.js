@@ -20,16 +20,16 @@ const isAuth=(req,res,next)=>{
     }
     
  }
- 
-route.post('/stuadd', addStudent)
-route.post('/UpdateStu', updateStu)
-route.delete('/deleteStu', deleteStu)
-route.get('/allStuden', getAllStu)
-route.get('/fillter', fillterbyDate)
-route.get("/Alldata",Alldata)
-route.get("/filtermonth",filterByMonth)
-route.get("/stusearch",search)
-route.get("/InvoiceGet",InvoiceGet)
+
+route.post('/stuadd',isAuth, addStudent)
+route.post('/UpdateStu',isAuth, updateStu)
+route.delete('/deleteStu',isAuth, deleteStu)
+route.get('/allStuden',isAuth, getAllStu)
+route.get('/fillter',isAuth, fillterbyDate)
+route.get("/Alldata",isAuth,Alldata)
+route.get("/filtermonth",isAuth,filterByMonth)
+route.get("/stusearch",isAuth,search)
+route.get("/InvoiceGet",isAuth,InvoiceGet)
 
 module.exports = route
 

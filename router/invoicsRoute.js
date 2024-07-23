@@ -20,16 +20,16 @@ const isAuth=(req,res,next)=>{
     }
     
  }
- 
-route.post('/addinfo', addInvoice)
-route.post('/Update', updateinvoice)
-route.post('/Delete', deletinvoice)
-route.get('/Display', displayInvoice)
-route.post('/pdf',pdfmail)
-route.get('/filterinvocedate', fillterbyDate)
-route.get('/fillterinvocemonth', filterByMonth)
-route.get('/searchinstu', search)
-route.get('/courseIn', courseInvoice)
+
+route.post('/addinfo',isAuth, addInvoice)
+route.post('/Update',isAuth, updateinvoice)
+route.post('/Delete',isAuth, deletinvoice)
+route.get('/Display',isAuth, displayInvoice)
+route.post('/pdf',isAuth,pdfmail)
+route.get('/filterinvocedate',isAuth, fillterbyDate)
+route.get('/fillterinvocemonth',isAuth, filterByMonth)
+route.get('/searchinstu',isAuth, search)
+route.get('/courseIn',isAuth, courseInvoice)
 
 
 

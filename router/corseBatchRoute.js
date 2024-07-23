@@ -20,13 +20,13 @@ const isAuth=(req,res,next)=>{
     }
     
  }
- 
-route.post('/addbatch', addBatch)
-route.post('/Update', updateBatch)
-route.delete('/Delete', deleteBatch)
-route.get('/Display', displayBatch)
-route.post('/isCompleted',completedBatch)
-route.get('/displaycompleted',displayCompletedBatch)
+
+route.post('/addbatch',isAuth, addBatch)
+route.post('/Update',isAuth, updateBatch)
+route.delete('/Delete',isAuth, deleteBatch)
+route.get('/Display',isAuth, displayBatch)
+route.post('/isCompleted',isAuth,completedBatch)
+route.get('/displaycompleted',isAuth,displayCompletedBatch)
 
 
 
