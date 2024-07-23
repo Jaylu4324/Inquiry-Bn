@@ -40,7 +40,7 @@ const addInvoice = async (req, res) => {
 
         // Generate the new invoice ID
         const length = await invoiceModel.countDocuments();
-        const invoiceId = `INV${new Date().getFullYear()}00${length + 1}`;
+        const invoiceId = `INV${new Date().getMonth()+1}00${length + 1}`;
 
         // Create a new invoice document
         const newInvoice = new invoiceModel({

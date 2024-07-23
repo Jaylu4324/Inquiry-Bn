@@ -19,6 +19,25 @@ const { addEventInquiry,
     Alldata
      } = require('../controller/eventInquiryController')
 
+     const isAuth=(req,res,next)=>{
+        let token = req.headers.authorization.split(' ')[1]
+        console.log(req.headers)
+        try{
+         let chek =jwt.verify(token,'TechNishal')
+        if (chek) {
+         next()
+        }
+        else{
+         res.send({msg:'jwt not found'})
+        }
+       
+        }
+        catch(err){
+         res.send({err:err})
+        }
+        
+     }
+
 route.post('/addInquiry', addEventInquiry)
 route.post('/Update', updateEventinquiry)
 route.delete('/hardDelete', hardelet)

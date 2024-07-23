@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken')
+const bcrypt = require("bcrypt")
+
 const login = (req, res) => {
     try {
         // Sample hardcoded credentials
@@ -14,7 +17,11 @@ const login = (req, res) => {
 
         // Validate credentials
         if (email1 === email && password1 === password) {
+
+            let tokan =  jwt.sign({password:password,email:email},'TechNishal')
+            console.log(tokan)
             return res.status(200).send("Login Success");
+
         } else {
             return res.status(401).send({error:"Invalid Credentials"});
         }
@@ -22,6 +29,6 @@ const login = (req, res) => {
         console.error('Error in login:', err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+}
 
 module.exports = { login };
