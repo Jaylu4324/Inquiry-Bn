@@ -1,5 +1,7 @@
 const express = require('express')
 const route = express.Router()
+const jwt = require('jsonwebtoken')
+
 const { addStudent, updateStu,InvoiceGet, deleteStu,search, getAllStu ,fillterbyDate,Alldata,filterByMonth} = require('../controller/studentController')
 
 const isAuth=(req,res,next)=>{

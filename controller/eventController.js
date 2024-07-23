@@ -1,4 +1,7 @@
 const { eventModel, eventValidation } = require('../model/eventShcema');
+const {EventBacth} = require('../model/eventBatch');
+const {EventCompletedModel} = require('../model/eventComlepeted');
+
 
 const addevent = async (req, res) => {
     try {
@@ -107,6 +110,40 @@ const eventComleted = async (req, res) => {
         if (!data) {
             return res.status(404).send({ msg: "Event not found" });
         }
+
+
+
+        let AssignData = EventBacth.find({EventId:req.query.id});
+
+
+        if (AssignData.length < 0) {
+            return res.status(400).json({ isSuccess: false, error: { details: ["There Should Be Assign Student For This Batch"] } });
+            
+        }   
+        
+        AssignData.map((ele)=>{
+            ele.IsCompleted=true
+            EventBacth.updateOne({_id:ele._id},ele)
+
+            let Eid = req.query.id
+            let AssignStuid = ele._id
+            let Assignstu = ele.StuName.map((e)=> ({...e,Date:"-",Certificate:"NO"}))
+
+           let datasave = new EventCompletedModel({
+                CourseId:Eid,
+                Astudent:AssignStuid,
+                StudentArray:Assignstu
+            })
+
+            datasave.save().then((data)=>{
+                console.log("data added success")
+            })
+            .catch((err)=>{
+                res.send({err})
+            })
+
+        })
+
 
         let obj = JSON.parse(JSON.stringify(data));
         obj.IsCompleted = true;

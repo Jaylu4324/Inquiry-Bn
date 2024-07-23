@@ -1,5 +1,7 @@
 const express = require('express')
 const route = express.Router()
+const jwt = require('jsonwebtoken')
+
 const { addevent, updateevent, deleteevent, getAllData ,eventComleted,getComletedevent,getAllevent,getAllWorkshop} = require('../controller/eventController')
 const isAuth=(req,res,next)=>{
     let token = req.headers.authorization.split(' ')[1]

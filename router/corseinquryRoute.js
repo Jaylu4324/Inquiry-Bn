@@ -1,5 +1,6 @@
 const express = require('express')
 const route = express.Router()
+const jwt = require('jsonwebtoken')
 
 const { addInquiry, fillterbyDate,filterByMonth,commonSearch,updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry,getISAddeddata, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,Alldata} = require('../controller/corseinquiryController')
 const isAuth=(req,res,next)=>{

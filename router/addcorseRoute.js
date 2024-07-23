@@ -1,5 +1,7 @@
 const express=require('express')
 const route = express.Router()
+const jwt = require('jsonwebtoken')
+
 const {addBatchEvent,updatBatchEvent,allcourse,deleteBatchEvent,getAllData,postiscompleted,getiscompleted}=require('../controller/addCorseController')
 
 const isAuth=(req,res,next)=>{

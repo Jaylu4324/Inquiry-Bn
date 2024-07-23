@@ -107,13 +107,13 @@ const postiscompleted = async (req, res) => {
                 let Cid = req.query.id
                 let Astudent = ele._id
                 let StudentArray = ele.StuName.map((e) => { return { ...e, Date: "-", Cetificate: "NO" } })
-
+                
                 const datas = new BatchCompletedModel({
                     CourseId: Cid,
                     Astudent,
-
+                    
                     StudentArray
-
+                    
                 })
                 datas.save().then(async(data1)=>{
                     console.log("data saved",data1)
@@ -121,15 +121,11 @@ const postiscompleted = async (req, res) => {
                     console.log(err)
                 })
                 
-                
-                
-                
-                
-                
-                
-                
-                
             }
+                
+                
+                
+                
             const getiscomp = await AddCourseModel.findByIdAndUpdate(getid, { IsCompleted: true }, { new: true });
 
             res.status(200).json({ msg: 'Batch event completed', getiscomp });
