@@ -108,7 +108,7 @@ const updateinvoice = async (req, res) => {
         }
 
         // Find the student by ID
-        const studentData = await stuModel.findById(studentId, '-basestring').exec();
+        const studentData = await stuModel.findById(studentId, '-baseString').exec();
         if (!studentData) {
             return res.status(404).send({ msg: "Student not found" });
         }
