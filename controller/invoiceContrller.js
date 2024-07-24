@@ -201,7 +201,10 @@ const displayInvoice = async (req, res) => {
     try {
         // Find all non-deleted invoices and populate student and course data
         const data = await invoiceModel.find({ isDeleted: false })
-            .populate("stuId")
+            .populate({
+                  path: 'stuId',
+                select: '-baseString'
+            })
             .populate("courseId");
 
         // Send successful response with invoice data
@@ -225,7 +228,10 @@ const courseInvoice = async (req, res) => {
 
         // Find invoices for the specified course and ensure they are not deleted
         const data = await invoiceModel.find({ isDeleted: false, courseId })
-            .populate("stuId")
+        .populate({
+            path: 'stuId',
+          select: '-baseString'
+      })
             .populate("courseId");
 
         // Send successful response with invoice data
@@ -409,7 +415,10 @@ const fillterbyDate = async (req, res) => {
         // Query invoices with projection and populate references
         let data = await invoiceModel.find(query)
             .select(projection)
-            .populate('stuId')
+            .populate({
+                path: 'stuId',
+              select: '-baseString'
+          })
             .populate('courseId')
             .exec();
 
@@ -468,7 +477,10 @@ const filterByMonth = async (req, res) => {
         // Fetch and sort the data
         const data = await invoiceModel.find(query)
             .sort({ invoiceDate: parsedSort })
-            .populate("stuId")
+            .populate({
+                path: 'stuId',
+              select: '-baseString'
+          })
             .populate("courseId")
             .exec();
 
@@ -482,7 +494,10 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
     try {
-        const populatedata = await invoiceModel.find().populate("stuId").populate("courseId");
+        const populatedata = await invoiceModel.find() .populate({
+            path: 'stuId',
+          select: '-baseString'
+      }).populate("courseId");
 
         // Ensure `name` query parameter is provided
         const { name } = req.query;
