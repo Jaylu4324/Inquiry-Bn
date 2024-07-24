@@ -113,17 +113,17 @@ const eventComleted = async (req, res) => {
 
 
 
-        let AssignData = EventBacth.find({EventId:req.query.id});
+        let AssignData = await EventBacth.find({EventId:req.query.id});
 
 
-        if (AssignData.length < 0) {
+        if (AssignData.length < 1) {
             return res.status(400).json({ isSuccess: false, error: { details: ["There Should Be Assign Student For This Batch"] } });
             
         }   
         
-        AssignData.map((ele)=>{
+        AssignData.map(async(ele)=>{
             ele.IsCompleted=true
-            EventBacth.updateOne({_id:ele._id},ele)
+         const udata =   await EventBacth.updateOne({_id:ele._id},ele)
 
             let Eid = req.query.id
             let AssignStuid = ele._id
@@ -148,7 +148,7 @@ const eventComleted = async (req, res) => {
         let obj = JSON.parse(JSON.stringify(data));
         obj.IsCompleted = true;
 
-        await eventModel.updateOne({ _id: req.query.id }, obj);
+      const eudata = await eventModel.updateOne({ _id: req.query.id }, obj);
         res.status(200).send({ msg: "Event Completed" });
     } catch (err) {
         console.error('Error:', err);
