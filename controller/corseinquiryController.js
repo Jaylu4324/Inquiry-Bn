@@ -11,9 +11,14 @@ const addInquiry = async (req, res) => {
 
         let Testarr = Course && Course.map((ele) => ({
             Course: ele,
-            isAdded: false
+            isAdded: false, 
         }));
         console.log(Testarr);
+
+        let stuAddedArr = Course && Course.map((ele) => ({
+            Course: ele,
+            isStuAdded: false, 
+        }));
 
         const data = new CourseInquirymodel({
             FullName,
@@ -22,6 +27,7 @@ const addInquiry = async (req, res) => {
             Date,
             Description,
             Testarr,
+            stuAddedArr,
             CollageName,
             onGoing: true,
             Reject: false,
@@ -40,6 +46,8 @@ const addInquiry = async (req, res) => {
     }
 };
 
+
+
 const updateinquiry = async (req, res) => {
     try {
         let { FullName, Contact, Email, Date, Description, CollageName, Course, Interaction, FollowUp } = req.body;
@@ -49,12 +57,17 @@ const updateinquiry = async (req, res) => {
             isAdded: false
         }));
 
+        let stuAddedArr = Course && Course.map((ele) => ({
+            Course: ele,
+            isStuAdded: false, 
+        }));
+
         let { error, value } = validation.validate({ FullName, Contact, Email, Date, CollageName, Course,FollowUp, Interaction,Description});
         if (error) {
             return res.status(400).send({ error });
         }
 
-        const data = await CourseInquirymodel.updateOne({ _id: req.query.id }, { ...req.body, Testarr });
+        const data = await CourseInquirymodel.updateOne({ _id: req.query.id }, { ...req.body, Testarr,stuAddedArr });
         res.status(200).send({ msg: "Inquiry Updated", data });
     } catch (err) {
         res.status(500).send({ err });
@@ -221,4 +234,41 @@ const Alldata = async (req, res) => {
     }
 };
 
-module.exports = { addInquiry, updateinquiry, deletinquiry, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth, Alldata };
+
+const studentAddDropdown = async (req, res) => {
+    try {
+        // If Course parameter is provided in the query, use it; otherwise, default to "React"
+        const Course = req.query.Course || "React";
+
+        // Debugging: Log query parameters and schema details
+        console.log("Query Parameters:", req.query);
+        
+        const data = await CourseInquirymodel.find({
+            Confirm: true,
+            isDeleted: false,
+            stuAddedArr: {
+                $elemMatch: {
+                    Course: Course,
+                    isStuAdded: false
+                }
+            }
+        });
+
+        // Debugging: Log data returned from the query
+        console.log("Data Returned:", data);
+
+        // Check if data is empty and send a meaningful message
+        if (data.length === 0) {
+            return res.status(404).send({ msg: "No matching documents found" });
+        }
+
+        res.status(200).send({ msg: "Documents found", data });
+    } catch (err) {
+        console.error('Error in studentAddDropdown API:', err);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
+
+
+
+module.exports = { addInquiry, updateinquiry, deletinquiry, studentAddDropdown,commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth, Alldata };

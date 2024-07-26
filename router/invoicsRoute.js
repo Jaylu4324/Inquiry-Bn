@@ -3,7 +3,7 @@ const route = express.Router()
 const jwt = require('jsonwebtoken')
 require("dotenv").config()
 
-const { addInvoice, updateinvoice, deletinvoice,search,courseInvoice, displayInvoice,pdfmail,fillterbyDate,filterByMonth} = require('../controller/invoiceContrller')
+const { addInvoice, updateinvoice,search,courseInvoice, displayInvoice,pdfmail,fillterbyDate,filterByMonth} = require('../controller/invoiceContrller')
 
 const isAuth=(req,res,next)=>{
     let token = req.headers.authorization.split(' ')[1]
@@ -26,7 +26,7 @@ const isAuth=(req,res,next)=>{
 
 route.post('/addinfo',isAuth, addInvoice)
 route.post('/Update',isAuth, updateinvoice)
-route.post('/Delete',isAuth, deletinvoice)
+// route.post('/Delete',isAuth, deletinvoice)
 route.get('/Display',isAuth, displayInvoice)
 route.post('/pdf',isAuth,pdfmail)
 route.get('/filterinvocedate',isAuth, fillterbyDate)

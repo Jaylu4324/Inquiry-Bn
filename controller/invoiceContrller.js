@@ -40,7 +40,7 @@ const addInvoice = async (req, res) => {
 
         // Generate the new invoice ID
         const length = await invoiceModel.countDocuments();
-        const invoiceId = `INV${new Date().getMonth()+1}00${length + 1}`;
+        const invoiceId = `INV0${new Date().getMonth()+1}00${length + 1}`;
 
         // Create a new invoice document
         const newInvoice = new invoiceModel({
@@ -55,20 +55,23 @@ const addInvoice = async (req, res) => {
         });
 
         // Find the student
-        const student = await stuModel.findById(stuId);
+        const student = await stuModel.findById(stuId).select('Rfees Pfees')
         if (!student) {
             return res.status(404).send({ msg: "Student not found" });
         }
 
         // Check if the paid amount exceeds the remaining fees
         if (parseInt(Amount) > student.Rfees) {
-            return res.status(400).send({ msg: "Paid amount must be less than total amount" });
+            return res.status(400).send({error:{details:[{ message: "Paid amount must be less than total amount" }]}});
         }
 
         // Update the student's fees
         student.Rfees -= parseInt(Amount);
         student.Pfees += parseInt(Amount);
-        await stuModel.updateOne({ _id: stuId }, student);
+        await stuModel.updateOne(
+            { _id: stuId },
+            { $set: { Rfees: student.Rfees, Pfees: student.Pfees } }
+        );
 
         // Save the new invoice
         const savedInvoice = await newInvoice.save();
@@ -104,13 +107,13 @@ const updateinvoice = async (req, res) => {
         // Find the invoice by ID
         const invoiceData = await invoiceModel.findById(invoiceId);
         if (!invoiceData) {
-            return res.status(404).send({ msg: "Invoice not found" });
+            return res.status(404).send({error:{details:[{ message: "Invoice Not Found" }]}});
         }
 
         // Find the student by ID
-        const studentData = await stuModel.findById(studentId, '-baseString').exec();
+        const studentData = await stuModel.findById(stuId).select('Rfees Pfees');
         if (!studentData) {
-            return res.status(404).send({ msg: "Student not found" });
+            return res.status(404).send({error:{details:[{ message: "Student Not Found" }]}});
         }
 
         // Update the student's fees
@@ -120,14 +123,17 @@ const updateinvoice = async (req, res) => {
         updatedStudent.Pfees -= oldAmount;
 
         if (newAmount > updatedStudent.Rfees) {
-            return res.status(400).send({ msg: "Paid amount must be less than total amount" });
+            return res.status(400).send({error:{details:[{ message: "Paid amount must be less than total amount" }]}});
         }
 
         updatedStudent.Rfees -= newAmount;
         updatedStudent.Pfees += newAmount;
 
         // Save the updated student data
-        await stuModel.updateOne({ _id: studentId }, updatedStudent);
+        await stuModel.updateOne(
+            { _id: stuId },
+            { $set: { Rfees: updatedStudent.Rfees, Pfees: updatedStudent.Pfees } }
+        );
 
         // Update the invoice amount
         invoiceData.Amount = newAmount;
@@ -151,50 +157,50 @@ const updateinvoice = async (req, res) => {
 
 
 
-const deletinvoice = async (req, res) => {
-    try {
-        // Destructure request body and query parameters
-        const { stuId, Amount } = req.body;
-        const invoiceId = req.query.id;
+// const deletinvoice = async (req, res) => {
+//     try {
+//         // Destructure request body and query parameters
+//         const { stuId, Amount } = req.body;
+//         const invoiceId = req.query.id;
 
-        // Validate input
-        if (!invoiceId || !stuId || !Amount) {
-            return res.status(400).send({ msg: "Missing required fields" });
-        }
+//         // Validate input
+//         if (!invoiceId || !stuId || !Amount) {
+//             return res.status(400).send({ msg: "Missing required fields" });
+//         }
 
-        // Find the invoice by ID
-        const invoiceData = await invoiceModel.findById(invoiceId);
-        if (!invoiceData) {
-            return res.status(404).send({ msg: "Invoice not found" });
-        }
+//         // Find the invoice by ID
+//         const invoiceData = await invoiceModel.findById(invoiceId);
+//         if (!invoiceData) {
+//             return res.status(404).send({ msg: "Invoice not found" });
+//         }
 
-        // Find the student by ID
-        const studentData = await stuModel.findById(stuId._id);
-        if (!studentData) {
-            return res.status(404).send({ msg: "Student not found" });
-        }
+//         // Find the student by ID
+//         const studentData = await stuModel.findById(stuId._id);
+//         if (!studentData) {
+//             return res.status(404).send({ msg: "Student not found" });
+//         }
 
-        // Update the student's fees
-        const oldAmount = parseInt(invoiceData.Amount);
-        let updatedStudent = { ...studentData.toObject() };
-        updatedStudent.Rfees += oldAmount;
-        updatedStudent.Pfees -= oldAmount;
+//         // Update the student's fees
+//         const oldAmount = parseInt(invoiceData.Amount);
+//         let updatedStudent = { ...studentData.toObject() };
+//         updatedStudent.Rfees += oldAmount;
+//         updatedStudent.Pfees -= oldAmount;
 
-        // Save the updated student data
-        await stuModel.updateOne({ _id: stuId._id }, updatedStudent);
+//         // Save the updated student data
+//         await stuModel.updateOne({ _id: stuId._id }, updatedStudent);
 
-        // Mark the invoice as deleted and set Amount to 0
-        await invoiceModel.updateOne(
-            { _id: invoiceId },
-            { isDeleted: true, Amount: 0 }
-        );
+//         // Mark the invoice as deleted and set Amount to 0
+//         await invoiceModel.updateOne(
+//             { _id: invoiceId },
+//             { isDeleted: true, Amount: 0 }
+//         );
 
-        res.send({ msg: "Invoice and student fees deleted successfully" });
-    } catch (err) {
-        console.error("Error deleting invoice:", err);
-        res.status(500).send({ error: 'Internal Server Error', msg: "Update failed" });
-    }
-};
+//         res.send({ msg: "Invoice and student fees deleted successfully" });
+//     } catch (err) {
+//         console.error("Error deleting invoice:", err);
+//         res.status(500).send({ error: 'Internal Server Error', msg: "Update failed" });
+//     }
+// };
 
 
 const displayInvoice = async (req, res) => {
@@ -494,20 +500,24 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
     try {
-        const populatedata = await invoiceModel.find() .populate({
-            path: 'stuId',
-          select: '-baseString'
-      }).populate("courseId");
-
         // Ensure `name` query parameter is provided
         const { name } = req.query;
         if (!name) {
             return res.status(400).json({ error: 'Query parameter "name" is required.' });
         }
 
-        const filterdata = populatedata.filter((ele) => {
-            return ele.stuId.Name && ele.stuId.Name.toLowerCase() === name.toLowerCase();
-        });
+        // Use MongoDB query to filter directly in the database
+        const populatedata = await invoiceModel.find()
+            .populate({
+                path: 'stuId',
+                match: { Name: { $regex: new RegExp(`^${name}$`, 'i') } }, // Case-insensitive match for the student's name
+                select: '-baseString'
+            })
+            .populate("courseId")
+            .exec();
+
+        // Filter out invoices where stuId is null (no match for the name)
+        const filterdata = populatedata.filter((ele) => ele.stuId);
 
         // Send filtered data
         res.status(200).json({ filterdata });
@@ -517,4 +527,5 @@ const search = async (req, res) => {
     }
 };
 
-module.exports = { addInvoice, updateinvoice, search, deletinvoice, courseInvoice, displayInvoice, pdfmail, fillterbyDate, filterByMonth };
+
+module.exports = { addInvoice, updateinvoice, search, courseInvoice, displayInvoice, pdfmail, fillterbyDate, filterByMonth };

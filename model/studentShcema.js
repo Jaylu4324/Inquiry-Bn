@@ -44,7 +44,7 @@ const student = mongoose.Schema({
     }
 })
 
-const studitailsValidation = joi.object({
+const EditStudentVAlidation = joi.object({
     CourseId: joi.string().required(),
     Name: joi.string().required(),
     Contact: joi.number().min(1000000000)
@@ -66,5 +66,24 @@ const studitailsValidation = joi.object({
 
 })
 
+
+const AddStudentVAlidation = joi.object({
+    CourseId: joi.string().required(),
+    Parentcontact: joi.number().min(1000000000)
+        .message("Phone Number Must Be 10 Digit")
+        .max(9999999999).required(),
+
+
+    Tfees: joi.number().required(),
+    AcademicCourse: joi.string().required(),
+    Date: joi.date().required(),
+    baseString: joi.string().required().messages({
+        'any.required': 'Adhaar Card is required'
+      })
+
+
+
+})
+
 const stuModel = mongoose.model('student', student)
-module.exports = { stuModel, studitailsValidation }
+module.exports = { stuModel, EditStudentVAlidation,AddStudentVAlidation }

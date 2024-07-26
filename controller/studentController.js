@@ -1,27 +1,34 @@
-const { stuModel,studitailsValidation } = require('../model/studentShcema');
+const { stuModel,EditStudentVAlidation,AddStudentVAlidation } = require('../model/studentShcema');
 const { AddCourseModel } = require('../model/addCorsebatch');
+const {CourseInquirymodel} = require('../model/corseinquiryshcema')
+
 
 const addStudent = async (req, res) => {
   try {
     let { 
-      Name, CourseId, Contact, Email, CollegeName, AcademicCourse, Date, 
+      inquiryId, CourseId,  AcademicCourse, Date, 
       baseString,  Parentcontact, Tfees 
     } = req.body;
 
-    const {error,value}=studitailsValidation.validate({
-       CourseId,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
-         baseString
+    
+    const {error,value}=AddStudentVAlidation.validate({
+      CourseId,Parentcontact,Tfees ,  AcademicCourse, Date, 
+      baseString
     })
     if (error) {
-      res.status(404).send({ error });
-        
+      res.status(404).send({ error });   
     }
-
-    else{
-      
     
+    else{ 
+      const cousreData = await CourseInquirymodel.findOne({_id:inquiryId})
+
+    let index = cousreData.stuAddedArr.findIndex((ind)=>{ind.Course == req.query.course})
+    cousreData.stuAddedArr[index]["isStuAdded"]=true
+
+    const ud = await CourseInquirymodel.updateOne({_id:req.body.id},cousreData)
+
     const stuData = new stuModel({
-      Name, Contact, CourseId, Email, CollegeName, AcademicCourse, 
+      Name:cousreData.FullNam+e, Contact:cousreData.Contact, CourseId, Email:cousreData.Email, CollegeName, AcademicCourse, 
       Rfees: parseInt(Tfees), Date,  Parentcontact, 
       Pfees: 0, Tfees: parseInt(Tfees), baseString
     });
@@ -49,7 +56,7 @@ const updateStu = async (req, res) => {
       baseString,  Parentcontact, Tfees 
     } = req.body;
 console.log("-->",CourseId)
-    const {error,value}=studitailsValidation.validate({
+    const {error,value}=EditStudentVAlidation.validate({
       CourseId:CourseId._id,Name, Contact,Parentcontact,Tfees , Email, CollegeName, AcademicCourse, Date, 
         baseString
    })
