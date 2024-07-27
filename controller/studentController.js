@@ -71,7 +71,7 @@ console.log("-->",CourseId)
    }
    else{
 
-    const data = await stuModel.updateOne({ _id: req.query.id }, { ...req.body, CourseId:CourseId._id});
+    const data = await stuModel.updateOne({ _id: req.query.id }, { ...req.body, CourseId:CourseId});
     res.status(200).json({ msg: "Student Updated", data });
   } 
 }
