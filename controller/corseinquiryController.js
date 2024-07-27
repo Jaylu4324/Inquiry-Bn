@@ -238,12 +238,14 @@ const Alldata = async (req, res) => {
 const studentAddDropdown = async (req, res) => {
     try {
         // If Course parameter is provided in the query, use it; otherwise, default to "React"
-        const Course = req.query.Course || "React";
+        const Course = req.query.Course 
 
         // Debugging: Log query parameters and schema details
         console.log("Query Parameters:", req.query);
         
         const data = await CourseInquirymodel.find({
+            Confirm: true,
+            isDeleted: false,
            
             stuAddedArr: {
                 $elemMatch: {

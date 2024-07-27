@@ -35,7 +35,7 @@ const addInvoice = async (req, res) => {
         });
 
         if (error) {
-            return res.status(400).send({ error: error.details });
+            return res.status(400).send({ error: error });
         }
 
         // Generate the new invoice ID
