@@ -256,12 +256,10 @@ const studentAddDropdown = async (req, res) => {
         });
 
         // Debugging: Log data returned from the query
-        console.log("Data Returned:", data);
+        
 
         // Check if data is empty and send a meaningful message
-        if (data.length === 0) {
-            return res.status(404).send({ msg: "No matching documents found" });
-        }
+        
 
         res.status(200).send({ msg: "Documents found", data });
     } catch (err) {
