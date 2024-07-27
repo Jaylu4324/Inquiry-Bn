@@ -244,8 +244,7 @@ const studentAddDropdown = async (req, res) => {
         console.log("Query Parameters:", req.query);
         
         const data = await CourseInquirymodel.find({
-            Confirm: true,
-            isDeleted: false,
+           
             stuAddedArr: {
                 $elemMatch: {
                     Course: Course,

@@ -22,13 +22,18 @@ const addStudent = async (req, res) => {
     else{ 
       const cousreData = await CourseInquirymodel.findOne({_id:inquiryId})
 
-    let index = cousreData.stuAddedArr.findIndex((ind)=>{ind.Course == req.query.course})
-    cousreData.stuAddedArr[index]["isStuAdded"]=true
+    let index = cousreData.stuAddedArr.findIndex((ind)=>{
+      console.log("==>",ind)
+      return ind.Course == req.query.course
+    
+    })
+
+    cousreData.stuAddedArr[index].isStuAdded=true
 
     const ud = await CourseInquirymodel.updateOne({_id:req.body.id},cousreData)
 
     const stuData = new stuModel({
-      Name:cousreData.FullNam+e, Contact:cousreData.Contact, CourseId, Email:cousreData.Email, CollegeName, AcademicCourse, 
+      Name:cousreData.FullName, Contact:cousreData.Contact, CourseId, Email:cousreData.Email, CollegeName:cousreData.CollageName, AcademicCourse, 
       Rfees: parseInt(Tfees), Date,  Parentcontact, 
       Pfees: 0, Tfees: parseInt(Tfees), baseString
     });
