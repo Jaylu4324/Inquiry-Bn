@@ -237,10 +237,10 @@ const Alldata = async (req, res) => {
 
 const studentAddDropdown = async (req, res) => {
     try {
-        // If Course parameter is provided in the query, use it; otherwise, default to "React"
+        
         const Course = req.query.Course 
 
-        // Debugging: Log query parameters and schema details
+       
         console.log("Query Parameters:", req.query);
         
         const data = await CourseInquirymodel.find({
@@ -255,10 +255,7 @@ const studentAddDropdown = async (req, res) => {
             }
         });
 
-        // Debugging: Log data returned from the query
-        
-
-        // Check if data is empty and send a meaningful message
+       
         
 
         res.status(200).send({ msg: "Documents found", data });

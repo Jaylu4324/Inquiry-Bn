@@ -1,10 +1,14 @@
-const { EventCompletedModel } = require("../model/eventComlepeted");
+const { EventCompletedModel ,EditEventCompletedValidation} = require("../model/eventComlepeted");
 
 const Update = async (req, res) => {
   try {
     let UpdateId = req.query.UpdateId;
     let { Studentid, Date, Cetificate } = req.body;
     console.log(req.body, req.query);
+    const {error,value}=EditEventCompletedValidation.validate({Studentid, Date, Cetificate })
+    if (error) {
+      return res.status(400).send({ error: error });
+    } else {
 
     let copy = await EventCompletedModel.findOne({ _id: UpdateId });
     if (!copy) {
@@ -28,6 +32,7 @@ const Update = async (req, res) => {
     }
 
     res.status(201).send({ msg: "Data updated successfully" });
+  }
   } catch (error) {
     console.error(error);
     res.status(500).send({ msg: "Internal server error", error: error.message });

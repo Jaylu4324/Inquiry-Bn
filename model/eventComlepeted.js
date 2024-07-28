@@ -1,4 +1,5 @@
 const mongoose=require("mongoose")
+const Joi=require("joi")
 const Models=mongoose.Schema({
     CourseId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -13,5 +14,10 @@ const Models=mongoose.Schema({
     }
 
 })
+const EditEventCompletedValidation = Joi.object({
+    Studentid: Joi.string().required(), Date: Joi.date().required()
+    , Cetificate: Joi.string().required()
+
+})
 const EventCompletedModel=mongoose.model("EventCompletedModel",Models)
-module.exports={EventCompletedModel}
+module.exports={EventCompletedModel,EditEventCompletedValidation}
