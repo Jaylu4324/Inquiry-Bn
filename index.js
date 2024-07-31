@@ -14,6 +14,7 @@ const regBatch = require('./router/corseBatchRoute')
 const login=require('./router/loginRoute')
 const ISC=require("./router/IsCompletedRoute")
 const EventComleted = require("./router/isCompletedEvent")
+const Dashboard=require("./router/DashboardRoutes")
 const app = express()
 
 app.use(function (req, res, next) {
@@ -46,6 +47,7 @@ app.use('/batchEvent',batchevent)
 app.use('/regBatch',regBatch)
 app.use("/ISC",ISC)
 app.use("/EventComleted",EventComleted)
+app.use("/Dashboard",Dashboard)
 
 app.listen(process.env.PORT, () => {
   console.log(`port is run on ${process.env.PORT}`)
