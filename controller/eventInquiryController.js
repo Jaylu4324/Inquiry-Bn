@@ -255,10 +255,20 @@ const filterByMonth = async (req, res) => {
 const commonSearch = async (req, res) => {
     try {
         let { FullName, type } = req.query;
-        const populatedata = await eventInquiryModel.find({ [type]: true, isDeleted: false });
+        if(FullName){
+            FullName=FullName.trim()
+        }
 
-        const filterdata = populatedata.filter(ele => ele.FullName && ele.FullName.toLowerCase() === FullName.toLowerCase());
-        res.status(200).json({ filterdata });
+        const filter = {
+            [type]: true,
+            isDeleted: false,
+            FullName: { $regex: new RegExp(FullName, 'i') }
+        };
+
+        const populatedata = await eventInquiryModel.find(filter);
+
+
+        res.status(200).json({ filterdata:populatedata });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }

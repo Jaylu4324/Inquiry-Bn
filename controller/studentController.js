@@ -171,10 +171,22 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const data = await stuModel.find({ }).populate("CourseId");
-   let data1= data.filter((ele)=>(ele.Name.toLowerCase()==req.query.Name.toLowerCase()))
+    let Name=req.query.Name;
+    if(Name){
+      Name=Name.trim()
+    }
+
+    const filter = {
+  
+    
+      Name: { $regex: new RegExp(Name, 'i') }
+  };
+
+  const populatedata = await stuModel.find(filter).populate("CourseId");
+
+  
    
-    res.status(200).json({ data:data1 });
+    res.status(200).json({ data:populatedata });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });

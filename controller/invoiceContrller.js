@@ -501,16 +501,19 @@ const filterByMonth = async (req, res) => {
 const search = async (req, res) => {
     try {
         // Ensure `name` query parameter is provided
-        const { name } = req.query;
+        let  { name } = req.query;
         if (!name) {
             return res.status(400).json({ error: 'Query parameter "name" is required.' });
+        }
+        if(name){
+            name=name.trim()
         }
 
         // Use MongoDB query to filter directly in the database
         const populatedata = await invoiceModel.find()
             .populate({
                 path: 'stuId',
-                match: { Name: { $regex: new RegExp(`^${name}$`, 'i') } }, // Case-insensitive match for the student's name
+                match: { Name: { $regex: new RegExp(name, 'i')}}, // Case-insensitive match for the student's name
                 select: '-baseString'
             })
             .populate("courseId")

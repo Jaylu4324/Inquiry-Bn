@@ -210,20 +210,26 @@ const filterByMonth = async (req, res) => {
         res.status(500).send({ error: err.message });
     }
 };
-
 const commonSearch = async (req, res) => {
     try {
         let { FullName, type } = req.query;
+        if(FullName){
+            FullName=FullName.trim()
+        }
+        const filter = {
+            [type]: true,
+            isDeleted: false,
+            FullName: { $regex: new RegExp(FullName, 'i') }
+        };
 
-        const populatedata = await CourseInquirymodel.find({ [type]: true, isDeleted: false });
-        const filterdata = populatedata.filter((ele) => ele.FullName && ele.FullName.toLowerCase() === FullName.toLowerCase());
+        const populatedata = await CourseInquirymodel.find(filter);
 
-        res.status(200).send({ filterdata });
+        res.status(200).send({ filterdata: populatedata });
     } catch (err) {
         res.status(500).send({ err });
     }
 };
-
+  
 const Alldata = async (req, res) => {
     try {
         let { key } = req.query;
