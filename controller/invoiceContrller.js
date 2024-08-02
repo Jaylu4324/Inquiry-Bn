@@ -501,34 +501,33 @@ const filterByMonth = async (req, res) => {
 const search = async (req, res) => {
     try {
         // Ensure `name` query parameter is provided
-        let  { name } = req.query;
+        let { name } = req.query;
         if (!name) {
             return res.status(400).json({ error: 'Query parameter "name" is required.' });
         }
-        if(name){
-            name=name.trim()
-        }
+        name = name.trim();
 
-        // Use MongoDB query to filter directly in the database
-        const populatedata = await invoiceModel.find()
-            .populate({
-                path: 'stuId',
-                match: { Name: { $regex: new RegExp(name, 'i')}}, // Case-insensitive match for the student's name
-                select: '-baseString'
-            })
-            .populate("courseId")
-            .exec();
-
-        // Filter out invoices where stuId is null (no match for the name)
-        const filterdata = populatedata.filter((ele) => ele.stuId);
+        // Query to find matching invoices with a populated student
+        const populatedata = await invoiceModel.find({
+            stuId: {
+                $in: await stuModel.find({ Name: { $regex: new RegExp(name, 'i') } }).distinct('_id')
+            }
+        })
+        .populate({
+            path: 'stuId',
+            select: { baseString: 0 } // Exclude `baseString` while including all other fields
+        })
+        .populate('courseId')
+        .exec();
 
         // Send filtered data
-        res.status(200).json({ filterdata });
+        res.status(200).json({ filterdata: populatedata });
     } catch (err) {
         console.error('Error in search:', err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 
 module.exports = { addInvoice, updateinvoice, search, courseInvoice, displayInvoice, pdfmail, fillterbyDate, filterByMonth };
