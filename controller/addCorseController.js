@@ -88,9 +88,14 @@ const getAllData = async (req, res) => {
         console.log("l",limit)
         const skip = (page - 1) * limit;
 
+        const totalCount = await AddCourseModel.countDocuments({ IsCompleted: false });
+
         const data = await AddCourseModel.find({ IsCompleted: false }).skip(skip).limit(limit);
         console.log("api called",data)
-        res.status(200).json({ msg: "All Data", data });
+        res.status(200).json({ msg: "All Data",  data,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page});
     } catch (err) {
         res.status(500).json({ err });
     }
