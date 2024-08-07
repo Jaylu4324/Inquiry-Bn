@@ -83,7 +83,9 @@ const getAllData = async (req, res) => {
 
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-    
+
+        console.log("p",page)
+        console.log("l",limit)
         const skip = (page - 1) * limit;
 
         const data = await AddCourseModel.find({ IsCompleted: false }).skip(skip).limit(limit);
