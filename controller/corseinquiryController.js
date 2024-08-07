@@ -107,8 +107,21 @@ const displayInquiry = async (req, res) => {
 
 const displayOnGoingInquiry = async (req, res) => {
     try {
-        const data = await CourseInquirymodel.find({ onGoing: true, isDeleted: false });
-        res.status(200).send({ msg: "Display Ongoing Inquiry", data });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await CourseInquirymodel.countDocuments({ onGoing: true, isDeleted: false });
+
+
+
+        const data = await CourseInquirymodel.find({ onGoing: true, isDeleted: false }).skip(skip).limit(limit);
+        res.status(200).send({ msg: "Display Ongoing Inquiry", data, 
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).send({ err });
     }
@@ -116,8 +129,19 @@ const displayOnGoingInquiry = async (req, res) => {
 
 const displayRejectInquiry = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await CourseInquirymodel.countDocuments({ Reject: true, isDeleted: false }).skip(skip).limit(limit);
+
         const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false });
-        res.status(200).send({ msg: "Display Rejected Inquiry", data });
+        res.status(200).send({ msg: "Display Rejected Inquiry", data,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+         });
     } catch (err) {
         res.status(500).send({ err });
     }
@@ -125,8 +149,20 @@ const displayRejectInquiry = async (req, res) => {
 
 const displayConfirmInquiry = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await CourseInquirymodel.countDocuments({ Confirm: true, isDeleted: false }).skip(skip).limit(limit);
+
+
         const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false });
-        res.status(200).send({ msg: "Display Confirmed Inquiry", data });
+        res.status(200).send({ msg: "Display Confirmed Inquiry", data,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+         });
     } catch (err) {
         res.status(500).send({ err });
     }
