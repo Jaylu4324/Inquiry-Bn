@@ -80,7 +80,13 @@ const deleteBatchEvent = async (req, res) => {
 
 const getAllData = async (req, res) => {
     try {
-        const data = await AddCourseModel.find({ IsCompleted: false });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+    
+        const skip = (page - 1) * limit;
+
+        const data = await AddCourseModel.find({ IsCompleted: false }).skip(skip).limit(limit);
         res.status(200).json({ msg: "All Data", data });
     } catch (err) {
         res.status(500).json({ err });
