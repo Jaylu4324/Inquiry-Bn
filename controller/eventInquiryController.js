@@ -129,8 +129,19 @@ const displayAllEventInquiry = async (req, res) => {
 
 const displayOnGoingEventInquiry = async (req, res) => {
     try {
-        const data = await eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id });
-        res.status(200).json({ msg: "Display Ongoing Event Inquiries", data });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await eventInquiryModel.countDocuments({ onGoing: true, isDeleted: false, eventId: req.query.id });
+
+        const data = await eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        res.status(200).json({
+            msg: "Display Ongoing Event Inquiries", data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -138,8 +149,19 @@ const displayOnGoingEventInquiry = async (req, res) => {
 
 const displayRejectEventInquiry = async (req, res) => {
     try {
-        const data = await eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id });
-        res.status(200).json({ msg: "Display Rejected Event Inquiries", data });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await eventInquiryModel.countDocuments({ Reject: true, isDeleted: false, eventId: req.query.id });
+
+        const data = await eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        res.status(200).json({
+            msg: "Display Rejected Event Inquiries", data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -147,8 +169,23 @@ const displayRejectEventInquiry = async (req, res) => {
 
 const displayConfirmEventInquiry = async (req, res) => {
     try {
-        const data = await eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id });
-        res.status(200).json({ msg: "Display Confirmed Event Inquiries", data });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+
+        const skip = (page - 1) * limit;
+
+
+        const totalCount = await eventInquiryModel.countDocuments({ Confirm: true, isDeleted: false, eventId: req.query.id });
+
+
+        const data = await eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        res.status(200).json({
+            msg: "Display Confirmed Event Inquiries", data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -255,8 +292,8 @@ const filterByMonth = async (req, res) => {
 const commonSearch = async (req, res) => {
     try {
         let { FullName, type } = req.query;
-        if(FullName){
-            FullName=FullName.trim()
+        if (FullName) {
+            FullName = FullName.trim()
         }
 
         const filter = {
@@ -268,7 +305,7 @@ const commonSearch = async (req, res) => {
         const populatedata = await eventInquiryModel.find(filter);
 
 
-        res.status(200).json({ filterdata:populatedata });
+        res.status(200).json({ filterdata: populatedata });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -276,9 +313,20 @@ const commonSearch = async (req, res) => {
 
 const Alldata = async (req, res) => {
     try {
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         let { key } = req.query;
-        const allData = await eventInquiryModel.find({ [key]: true });
-        res.status(200).json({ allData });
+        const skip = (page - 1) * limit;
+
+        const totalCount = await eventInquiryModel.countDocuments({ [key]: true });
+        const allData = await eventInquiryModel.find({ [key]: true }).skip(skip).limit(limit);
+        res.status(200).json({
+            allData, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).json({ err: err.message });
     }

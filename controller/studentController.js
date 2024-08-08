@@ -93,8 +93,19 @@ const deleteStu = async (req, res) => {
 
 const getAllStu = async (req, res) => {
   try {
-    const data = await stuModel.find({ CourseId: req.query.id }).populate("CourseId");
-    res.status(200).json({ msg: "All student", data });
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+
+    const totalCount = await stuModel.countDocuments({ CourseId: req.query.id });
+
+
+    const data = await stuModel.find({ CourseId: req.query.id }).populate("CourseId").skip(skip).limit(limit);
+    res.status(200).json({ msg: "All student", data,totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
@@ -103,8 +114,17 @@ const getAllStu = async (req, res) => {
 
 const Alldata = async (req, res) => {
   try {
-    const data = await stuModel.find().populate("CourseId");
-    res.status(200).json({ data });
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await stuModel.countDocuments();
+
+    const data = await stuModel.find().populate("CourseId").skip(skip).limit(limit);
+    res.status(200).json({ data ,totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page});
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });

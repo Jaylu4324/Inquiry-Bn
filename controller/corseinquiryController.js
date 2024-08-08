@@ -134,9 +134,9 @@ const displayRejectInquiry = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const totalCount = await CourseInquirymodel.countDocuments({ Reject: true, isDeleted: false }).skip(skip).limit(limit);
+        const totalCount = await CourseInquirymodel.countDocuments({ Reject: true, isDeleted: false });
 
-        const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false });
+        const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false }).skip(skip).limit(limit);
         res.status(200).send({ msg: "Display Rejected Inquiry", data,
             totalCount,
             totalPages: Math.ceil(totalCount / limit),
@@ -152,12 +152,17 @@ const displayConfirmInquiry = async (req, res) => {
 
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+
+        console.log("p",page)
+        console.log("l",limit)
         const skip = (page - 1) * limit;
+        console.log("skippppp",skip)
 
-        const totalCount = await CourseInquirymodel.countDocuments({ Confirm: true, isDeleted: false }).skip(skip).limit(limit);
+        const totalCount = await CourseInquirymodel.countDocuments({ Confirm: true, isDeleted: false });
 
 
-        const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false });
+        const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false }).skip(skip).limit(limit);
+        console.log("in---",data)
         res.status(200).send({ msg: "Display Confirmed Inquiry", data,
             totalCount,
             totalPages: Math.ceil(totalCount / limit),

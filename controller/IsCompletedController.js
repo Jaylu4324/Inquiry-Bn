@@ -42,8 +42,17 @@ const Update = async (req, res) => {
 
 const getAllData = async (req, res) => {
   try {
-    let data = await BatchCompletedModel.find().populate("CourseId").populate("Astudent");
-    res.status(201).send({ data });
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+
+    const totalCount = await BatchCompletedModel.countDocuments();
+    let data = await BatchCompletedModel.find().populate("CourseId").populate("Astudent").skip(skip).limit(limit);
+    res.status(201).send({ data,totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page });
   } catch (error) {
     console.error(error);
     res.status(500).send({ msg: "Internal server error", error: error.message });

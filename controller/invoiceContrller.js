@@ -205,16 +205,27 @@ const updateinvoice = async (req, res) => {
 
 const displayInvoice = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalCount = await invoiceModel.countDocuments({  isDeleted: false });
+
         // Find all non-deleted invoices and populate student and course data
         const data = await invoiceModel.find({ isDeleted: false })
             .populate({
                   path: 'stuId',
                 select: '-baseString'
             })
-            .populate("courseId");
+            .populate("courseId").skip(skip).limit(limit);
 
         // Send successful response with invoice data
-        res.send({ msg: "Display invoice", data });
+        res.send({ msg: "Display invoice", data,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+         });
     } catch (err) {
         // Log the error and send a server error response
         console.error("Error fetching invoices:", err);
@@ -225,23 +236,33 @@ const displayInvoice = async (req, res) => {
 
 const courseInvoice = async (req, res) => {
     try {
+
+        
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         // Extract the courseId from query parameters
         const courseId = req.query.parentId;
-
+        
         if (!courseId) {
             return res.status(400).send({ msg: "Course ID is required" });
         }
-
+        
+        const totalCount = await invoiceModel.countDocuments({courseId,  isDeleted: false });
         // Find invoices for the specified course and ensure they are not deleted
         const data = await invoiceModel.find({ isDeleted: false, courseId })
         .populate({
             path: 'stuId',
           select: '-baseString'
       })
-            .populate("courseId");
+            .populate("courseId").skip(skip).limit(limit);;
 
         // Send successful response with invoice data
-        res.send({ msg: "Display invoice for the course", data });
+            totalCount,
+            res.send({ msg: "Display invoice for the course", data ,totalCount,
+                totalPages: Math.ceil(totalCount / limit),
+                currentPage: page});
     } catch (err) {
         // Log the error and send a server error response
         console.error("Error fetching invoices for the course:", err);

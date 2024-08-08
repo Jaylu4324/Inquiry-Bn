@@ -1,6 +1,6 @@
 const { eventModel, eventValidation } = require('../model/eventShcema');
-const {EventBacth} = require('../model/eventBatch');
-const {EventCompletedModel} = require('../model/eventComlepeted');
+const { EventBacth } = require('../model/eventBatch');
+const { EventCompletedModel } = require('../model/eventComlepeted');
 
 
 const addevent = async (req, res) => {
@@ -96,8 +96,20 @@ const deleteevent = async (req, res) => {
 
 const getAllData = async (req, res) => {
     try {
-        const data = await eventModel.find({ IsCompleted: false });
-        res.status(200).send({ msg: "All Data", data });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+
+        const totalCount = await eventModel.countDocuments({ IsCompleted: false });
+
+        const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit);
+        res.status(200).send({
+            msg: "All Data", data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send({ err });
@@ -113,34 +125,34 @@ const eventComleted = async (req, res) => {
 
 
 
-        let AssignData = await EventBacth.find({EventId:req.query.id});
+        let AssignData = await EventBacth.find({ EventId: req.query.id });
 
 
         if (AssignData.length < 1) {
             return res.status(400).json({ isSuccess: false, error: { details: ["There Should Be Assign Student For This Batch"] } });
-            
-        }   
-        
-        AssignData.map(async(ele)=>{
-            ele.IsCompleted=true
-         const udata =   await EventBacth.updateOne({_id:ele._id},ele)
+
+        }
+
+        AssignData.map(async (ele) => {
+            ele.IsCompleted = true
+            const udata = await EventBacth.updateOne({ _id: ele._id }, ele)
 
             let Eid = req.query.id
             let AssignStuid = ele._id
-            let Assignstu = ele.StuName.map((e)=> ({...e,Date:"-",Certificate:"NO"}))
+            let Assignstu = ele.StuName.map((e) => ({ ...e, Date: "-", Certificate: "NO" }))
 
-           let datasave = new EventCompletedModel({
-                CourseId:Eid,
-                Astudent:AssignStuid,
-                StudentArray:Assignstu
+            let datasave = new EventCompletedModel({
+                CourseId: Eid,
+                Astudent: AssignStuid,
+                StudentArray: Assignstu
             })
 
-            datasave.save().then((data)=>{
+            datasave.save().then((data) => {
                 console.log("data added success")
             })
-            .catch((err)=>{
-                res.send({err})
-            })
+                .catch((err) => {
+                    res.send({ err })
+                })
 
         })
 
@@ -148,7 +160,7 @@ const eventComleted = async (req, res) => {
         let obj = JSON.parse(JSON.stringify(data));
         obj.IsCompleted = true;
 
-      const eudata = await eventModel.updateOne({ _id: req.query.id }, obj);
+        const eudata = await eventModel.updateOne({ _id: req.query.id }, obj);
         res.status(200).send({ msg: "Event Completed" });
     } catch (err) {
         console.error('Error:', err);
