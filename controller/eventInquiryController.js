@@ -259,16 +259,29 @@ const getISAddeddata = async (req, res) => {
 
 const sortBykey = async (req, res) => {
     try {
+        page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         let { eventId, key, sortBy, type } = req.query;
         let sortData;
-
+        let totalCount
         if (!eventId) {
-            sortData = await eventInquiryModel.find({ [type]: true }).sort({ [key]: parseInt(sortBy) });
+         totalCount = await eventInquiryModel.countDocuments({ [type]: true });
+
+
+            sortData = await eventInquiryModel.find({ [type]: true }).sort({ [key]: parseInt(sortBy) }).skip(skip).limit(limit);
         } else {
-            sortData = await eventInquiryModel.find({ eventId, [type]: true }).sort({ [key]: parseInt(sortBy) });
+
+         totalCount = await eventInquiryModel.countDocuments({ eventId,[type]: true });
+
+
+            sortData = await eventInquiryModel.find({ eventId, [type]: true }).sort({ [key]: parseInt(sortBy) }).skip(skip).limit(limit);
         }
 
-        res.status(200).json({ sortData });
+        res.status(200).json({ sortData , totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page});
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -276,14 +289,23 @@ const sortBykey = async (req, res) => {
 
 const filterByMonth = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
         let { month, sortby, type } = req.query;
+        const totalCount = await eventInquiryModel.countDocuments({
+            [type]: true,
+            $expr: { $eq: [{ $month: "$Date" }, parseInt(month)] }
+        });
 
         const filterData = await eventInquiryModel.find({
             [type]: true,
             $expr: { $eq: [{ $month: "$Date" }, parseInt(month)] }
         }).sort({ Date: parseInt(sortby) });
 
-        res.status(200).json(filterData);
+        res.status(200).json({filterData, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page});
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -291,6 +313,10 @@ const filterByMonth = async (req, res) => {
 
 const commonSearch = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         let { FullName, type } = req.query;
         if (FullName) {
             FullName = FullName.trim()
@@ -301,11 +327,14 @@ const commonSearch = async (req, res) => {
             isDeleted: false,
             FullName: { $regex: new RegExp(FullName, 'i') }
         };
+        const totalCount = await eventInquiryModel.countDocuments(filter);
 
-        const populatedata = await eventInquiryModel.find(filter);
+        const populatedata = await eventInquiryModel.find(filter).skip(skip).limit(limit);
 
 
-        res.status(200).json({ filterdata: populatedata });
+        res.status(200).json({ filterdata: populatedata , totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page});
     } catch (err) {
         res.status(500).json({ err: err.message });
     }

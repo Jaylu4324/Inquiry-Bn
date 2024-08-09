@@ -40,7 +40,7 @@ const addInvoice = async (req, res) => {
 
         // Generate the new invoice ID
         const length = await invoiceModel.countDocuments();
-        const invoiceId = `INV0${new Date().getMonth()+1}00${length + 1}`;
+        const invoiceId = `INV0${new Date().getMonth() + 1}00${length + 1}`;
 
         // Create a new invoice document
         const newInvoice = new invoiceModel({
@@ -62,7 +62,7 @@ const addInvoice = async (req, res) => {
 
         // Check if the paid amount exceeds the remaining fees
         if (parseInt(Amount) > student.Rfees) {
-            return res.status(400).send({error:{details:[{ message: "Paid amount must be less than total amount" }]}});
+            return res.status(400).send({ error: { details: [{ message: "Paid amount must be less than total amount" }] } });
         }
 
         // Update the student's fees
@@ -107,13 +107,13 @@ const updateinvoice = async (req, res) => {
         // Find the invoice by ID
         const invoiceData = await invoiceModel.findById(invoiceId);
         if (!invoiceData) {
-            return res.status(404).send({error:{details:[{ message: "Invoice Not Found" }]}});
+            return res.status(404).send({ error: { details: [{ message: "Invoice Not Found" }] } });
         }
 
         // Find the student by ID
         const studentData = await stuModel.findById(stuId).select('Rfees Pfees');
         if (!studentData) {
-            return res.status(404).send({error:{details:[{ message: "Student Not Found" }]}});
+            return res.status(404).send({ error: { details: [{ message: "Student Not Found" }] } });
         }
 
         // Update the student's fees
@@ -123,7 +123,7 @@ const updateinvoice = async (req, res) => {
         updatedStudent.Pfees -= oldAmount;
 
         if (newAmount > updatedStudent.Rfees) {
-            return res.status(400).send({error:{details:[{ message: "Paid amount must be less than total amount" }]}});
+            return res.status(400).send({ error: { details: [{ message: "Paid amount must be less than total amount" }] } });
         }
 
         updatedStudent.Rfees -= newAmount;
@@ -210,22 +210,23 @@ const displayInvoice = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const totalCount = await invoiceModel.countDocuments({  isDeleted: false });
+        const totalCount = await invoiceModel.countDocuments({ isDeleted: false });
 
         // Find all non-deleted invoices and populate student and course data
         const data = await invoiceModel.find({ isDeleted: false })
             .populate({
-                  path: 'stuId',
+                path: 'stuId',
                 select: '-baseString'
             })
             .populate("courseId").skip(skip).limit(limit);
 
         // Send successful response with invoice data
-        res.send({ msg: "Display invoice", data,
+        res.send({
+            msg: "Display invoice", data,
             totalCount,
             totalPages: Math.ceil(totalCount / limit),
             currentPage: page
-         });
+        });
     } catch (err) {
         // Log the error and send a server error response
         console.error("Error fetching invoices:", err);
@@ -237,32 +238,34 @@ const displayInvoice = async (req, res) => {
 const courseInvoice = async (req, res) => {
     try {
 
-        
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
         // Extract the courseId from query parameters
         const courseId = req.query.parentId;
-        
+
         if (!courseId) {
             return res.status(400).send({ msg: "Course ID is required" });
         }
-        
-        const totalCount = await invoiceModel.countDocuments({courseId,  isDeleted: false });
+
+        const totalCount = await invoiceModel.countDocuments({ courseId, isDeleted: false });
         // Find invoices for the specified course and ensure they are not deleted
         const data = await invoiceModel.find({ isDeleted: false, courseId })
-        .populate({
-            path: 'stuId',
-          select: '-baseString'
-      })
+            .populate({
+                path: 'stuId',
+                select: '-baseString'
+            })
             .populate("courseId").skip(skip).limit(limit);;
 
         // Send successful response with invoice data
-            totalCount,
-            res.send({ msg: "Display invoice for the course", data ,totalCount,
+        totalCount,
+            res.send({
+                msg: "Display invoice for the course", data, totalCount,
                 totalPages: Math.ceil(totalCount / limit),
-                currentPage: page});
+                currentPage: page
+            });
     } catch (err) {
         // Log the error and send a server error response
         console.error("Error fetching invoices for the course:", err);
@@ -425,6 +428,14 @@ const pdfmail = async (req, res) => {
 
 const fillterbyDate = async (req, res) => {
     try {
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+
+
         const { key, sortby, courseId } = req.query;
         const sortOrder = parseInt(sortby, 10); // Convert sortby to an integer
 
@@ -440,14 +451,17 @@ const fillterbyDate = async (req, res) => {
         const projection = '_id stuId courseId invoiceId invoiceDate Amount TypeOfPayment Description isDeleted';
 
         // Query invoices with projection and populate references
+        const totalCount = await invoiceModel.countDocuments(query);
+
+
         let data = await invoiceModel.find(query)
             .select(projection)
             .populate({
                 path: 'stuId',
-              select: '-baseString'
-          })
+                select: '-baseString'
+            })
             .populate('courseId')
-            .exec();
+            .exec().skip(skip).limit(limit);
 
         // Sort data based on the specified key
         if (key) {
@@ -463,7 +477,11 @@ const fillterbyDate = async (req, res) => {
         }
 
         // Send the response with the sorted and populated data
-        res.send({ data });
+        res.send({
+            data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         console.error('Error in fillterbyDate:', err);
         res.status(500).send({ error: 'Internal Server Error' });
@@ -476,6 +494,10 @@ const fillterbyDate = async (req, res) => {
 
 const filterByMonth = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit
         const { courseId, month, sort } = req.query;
 
         // Validate and parse `month` and `sort` parameters
@@ -500,18 +522,23 @@ const filterByMonth = async (req, res) => {
         if (courseId) {
             query.courseId = courseId;
         }
+        const totalCount = await invoiceModel.countDocuments(query);
 
         // Fetch and sort the data
         const data = await invoiceModel.find(query)
             .sort({ invoiceDate: parsedSort })
             .populate({
                 path: 'stuId',
-              select: '-baseString'
-          })
+                select: '-baseString'
+            })
             .populate("courseId")
-            .exec();
+            .exec().skip(skip).limit(limit);
 
-        res.json(data);
+        res.json({
+            data, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         console.error('Error in filterByMonth:', err);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -521,6 +548,12 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
     try {
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit
+
         // Ensure `name` query parameter is provided
         let { name } = req.query;
         if (!name) {
@@ -529,20 +562,30 @@ const search = async (req, res) => {
         name = name.trim();
 
         // Query to find matching invoices with a populated student
+        const totalCount = await invoiceModel.countDocuments({
+            stuId: {
+                $in: await stuModel.find({ Name: { $regex: new RegExp(name, 'i') } }).distinct('_id')
+            }
+        });
+
         const populatedata = await invoiceModel.find({
             stuId: {
                 $in: await stuModel.find({ Name: { $regex: new RegExp(name, 'i') } }).distinct('_id')
             }
         })
-        .populate({
-            path: 'stuId',
-            select: { baseString: 0 } // Exclude `baseString` while including all other fields
-        })
-        .populate('courseId')
-        .exec();
+            .populate({
+                path: 'stuId',
+                select: { baseString: 0 } // Exclude `baseString` while including all other fields
+            })
+            .populate('courseId')
+            .exec().skip(skip).limit(limit);
 
         // Send filtered data
-        res.status(200).json({ filterdata: populatedata });
+        res.status(200).json({
+            filterdata: populatedata, totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
     } catch (err) {
         console.error('Error in search:', err);
         res.status(500).json({ error: 'Internal Server Error' });

@@ -144,17 +144,24 @@ const InvoiceGet = async (req, res) => {
 
 const fillterbyDate = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
     let { key, sortby, courseid } = req.query;
     sortby = parseInt(sortby);
-
+    let totalCount;
     let data;
     if (!courseid) {
-      data = await stuModel.find().sort({ [key]: sortby }).populate("CourseId");
+      totalCount = await stuModel.countDocuments();
+      data = await stuModel.find().sort({ [key]: sortby }).populate("CourseId").skip(skip).limit(limit);;
     } else {
-      data = await stuModel.find({ CourseId: courseid }).sort({ [key]: sortby }).populate("CourseId");
+      totalCount = await stuModel.countDocuments({ CourseId: courseid });
+      data = await stuModel.find({ CourseId: courseid }).sort({ [key]: sortby }).populate("CourseId").skip(skip).limit(limit);;
     }
 
-    res.status(200).json({ data, msg: "Filtered" });
+    res.status(200).json({ data, msg: "Filtered" , totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page});
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
@@ -163,26 +170,47 @@ const fillterbyDate = async (req, res) => {
 
 const filterByMonth = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+
     let { perentId, month, sort } = req.query;
     sort = parseInt(sort);
-
+      let totalCount;
     let data;
     if (!perentId) {
+       totalCount = await stuModel.countDocuments({
+        $expr: {
+          $eq: [{ $month: "$Date" }, month]
+        }
+      });
+
       data = await stuModel.find({
         $expr: {
           $eq: [{ $month: "$Date" }, month]
         }
-      }).sort({ Date: sort }).populate("CourseId");
+      }).sort({ Date: sort }).populate("CourseId").skip(skip).limit(limit);;
     } else {
+
+      totalCount = await stuModel.countDocuments({
+        $expr: {
+          $eq: [{ $month: "$Date" }, month]
+        },
+        CourseId: perentId
+      });
+
       data = await stuModel.find({
         $expr: {
           $eq: [{ $month: "$Date" }, month]
         },
         CourseId: perentId
-      }).sort({ Date: sort }).populate("CourseId");
+      }).sort({ Date: sort }).populate("CourseId").skip(skip).limit(limit);;
     }
 
-    res.status(200).json(data);
+    res.status(200).json({data, totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page});
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: err.message });
@@ -191,6 +219,11 @@ const filterByMonth = async (req, res) => {
 
 const search = async (req, res) => {
   try {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
     let Name=req.query.Name;
     if(Name){
       Name=Name.trim()
@@ -201,12 +234,16 @@ const search = async (req, res) => {
     
       Name: { $regex: new RegExp(Name, 'i') }
   };
+  const totalCount = await stuModel.countDocuments(filter);
 
-  const populatedata = await stuModel.find(filter).populate("CourseId");
+
+  const populatedata = await stuModel.find(filter).populate("CourseId").skip(skip).limit(limit);;
 
   
    
-    res.status(200).json({ data:populatedata });
+    res.status(200).json({ data:populatedata , totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page});
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ err });
