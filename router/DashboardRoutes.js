@@ -22,7 +22,7 @@ const isAuth=(req,res,next)=>{
 const {CourseData,StudentDetails,EventStudentDetails}=require("../controller/DashboardController")
 Route.get("/CourseData",isAuth,CourseData)
 Route.get("/StudentDetails",isAuth,StudentDetails)
-Route.get("/EventStudentDetails",isAuth,EventStudentDetails)
+Route.get("/EventStudentDetails",EventStudentDetails)
 
 
 module.exports=Route

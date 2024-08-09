@@ -1,7 +1,7 @@
 const {AddCourseModel}=require("../model/addCorsebatch")
 const {courseBatchModel}=require("../model/corseBatchShcema")
 const {eventModel}=require("../model/eventShcema")
-const {EventbatchSchema}=require("../model/eventBatch")
+const {EventBacth}=require("../model/eventBatch")
 const CourseData = async (req, res) => {
     try {
       let day = req.query.day;
@@ -25,7 +25,9 @@ const CourseData = async (req, res) => {
   const EventStudentDetails = async (req, res) => {
     try {
       let courseId = req.query.courseId;
-      let data = await EventbatchSchema.find({ EventId: courseId, isCompleted: false });
+      console.log("c",courseId)
+      let data = await EventBacth.find({ EventId: courseId, isCompleted: false });
+      console.log(data,"jdnvnd")
       res.status(200).send({ data });
     } catch (error) {
       res.status(500).send({ message: 'An error occurred while fetching student details', error: error.message });
