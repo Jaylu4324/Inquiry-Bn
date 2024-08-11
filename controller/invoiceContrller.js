@@ -461,7 +461,8 @@ const fillterbyDate = async (req, res) => {
                 select: '-baseString'
             })
             .populate('courseId')
-            .exec().skip(skip).limit(limit);
+            .skip(skip).limit(limit)
+            .exec();
 
         // Sort data based on the specified key
         if (key) {
@@ -532,7 +533,8 @@ const filterByMonth = async (req, res) => {
                 select: '-baseString'
             })
             .populate("courseId")
-            .exec().skip(skip).limit(limit);
+            .skip(skip).limit(limit)
+            .exec();
 
         res.json({
             data, totalCount,
@@ -578,7 +580,8 @@ const search = async (req, res) => {
                 select: { baseString: 0 } // Exclude `baseString` while including all other fields
             })
             .populate('courseId')
-            .exec().skip(skip).limit(limit);
+            .skip(skip).limit(limit)
+            .exec();
 
         // Send filtered data
         res.status(200).json({
