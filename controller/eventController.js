@@ -101,15 +101,26 @@ const getAllData = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
+            if (limit) {
+                const totalCount = await eventModel.countDocuments({ IsCompleted: false });
 
-        const totalCount = await eventModel.countDocuments({ IsCompleted: false });
+                const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit);
+                res.status(200).send({
+                    msg: "All Data", data, totalCount,
+                    totalPages: Math.ceil(totalCount / limit),
+                    currentPage: page
+                });  
+            } else {
+                const totalCount = await eventModel.countDocuments({ IsCompleted: false });
 
-        const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit);
+        const data = await eventModel.find({ IsCompleted: false });
         res.status(200).send({
             msg: "All Data", data, totalCount,
             totalPages: Math.ceil(totalCount / limit),
             currentPage: page
         });
+            }
+        
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send({ err });
