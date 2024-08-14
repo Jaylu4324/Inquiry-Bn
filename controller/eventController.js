@@ -7,6 +7,7 @@ const addevent = async (req, res) => {
     try {
         let {
             StartDate,
+            eventName,
             EndtDate,
             Course,
             BatchTime,
@@ -22,6 +23,7 @@ const addevent = async (req, res) => {
             Course,
             BatchTime,
             TypeOfEvent,
+            eventName,
             Days,
             Amount,
             TypeOfPayment,
@@ -30,6 +32,7 @@ const addevent = async (req, res) => {
 
         const { error } = eventValidation.validate({
             StartDate,
+            eventName,
             Course,
             BatchTime,
             Days,
@@ -57,6 +60,7 @@ const updateevent = async (req, res) => {
             Course,
             BatchTime,
             Days,
+            eventName,
             TypeOfEvent,
             TypeOfPayment,
             Amount
@@ -67,6 +71,7 @@ const updateevent = async (req, res) => {
             Course,
             BatchTime,
             Days,
+            eventName,
             TypeOfEvent,
             TypeOfPayment,
             Amount

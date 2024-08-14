@@ -28,6 +28,9 @@ const events=mongoose.Schema({
     },
     IsCompleted:{
         type:Boolean
+    },
+    eventName:{
+        type:String
     }
 })
 
@@ -38,7 +41,8 @@ BatchTime:joi.date().required(),
 Days:joi.array().min(1).required(),
 TypeOfEvent:joi.string().required(),
 TypeOfPayment:joi.string().required(),
-Amount:joi.number().required()
+Amount:joi.number().required(),
+eventName:joi.string().required()
 })
 
 const eventModel= mongoose.model("events",events)
