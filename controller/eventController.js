@@ -106,7 +106,7 @@ const getAllData = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-            if (limit) {
+            if (req.query.limit) {
                 const totalCount = await eventModel.countDocuments({ IsCompleted: false });
 
                 const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit);
