@@ -88,7 +88,7 @@ const getAllData = async (req, res) => {
         console.log("l",limit)
         const skip = (page - 1) * limit;
 
-        if (limit) {
+        if (req.query.limit) {
             
             const totalCount = await AddCourseModel.countDocuments({ IsCompleted: false });
     
