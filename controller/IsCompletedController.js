@@ -49,7 +49,7 @@ const getAllData = async (req, res) => {
 
 
     const totalCount = await BatchCompletedModel.countDocuments();
-    let data = await BatchCompletedModel.find().populate("CourseId").populate("Astudent").skip(skip).limit(limit);
+    let data = await BatchCompletedModel.find().populate("CourseId").populate("Astudent").skip(skip).limit(limit).sort({ _id: -1 });
     res.status(201).send({ data,totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page });

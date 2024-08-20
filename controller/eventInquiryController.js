@@ -136,7 +136,7 @@ const displayOnGoingEventInquiry = async (req, res) => {
 
         const totalCount = await eventInquiryModel.countDocuments({ onGoing: true, isDeleted: false, eventId: req.query.id });
 
-        const data = await eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        const data = await eventInquiryModel.find({ onGoing: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit).sort({ _id: -1 });
         res.status(200).json({
             msg: "Display Ongoing Event Inquiries", data, totalCount,
             totalPages: Math.ceil(totalCount / limit),
@@ -156,7 +156,7 @@ const displayRejectEventInquiry = async (req, res) => {
 
         const totalCount = await eventInquiryModel.countDocuments({ Reject: true, isDeleted: false, eventId: req.query.id });
 
-        const data = await eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        const data = await eventInquiryModel.find({ Reject: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit).sort({ _id: -1 });
         res.status(200).json({
             msg: "Display Rejected Event Inquiries", data, totalCount,
             totalPages: Math.ceil(totalCount / limit),
@@ -180,7 +180,7 @@ const displayConfirmEventInquiry = async (req, res) => {
         const totalCount = await eventInquiryModel.countDocuments({ Confirm: true, isDeleted: false, eventId: req.query.id });
 
 
-        const data = await eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit);
+        const data = await eventInquiryModel.find({ Confirm: true, isDeleted: false, eventId: req.query.id }).skip(skip).limit(limit).sort({ _id: -1 });
         res.status(200).json({
             msg: "Display Confirmed Event Inquiries", data, totalCount,
             totalPages: Math.ceil(totalCount / limit),

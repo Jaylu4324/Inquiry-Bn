@@ -92,7 +92,7 @@ const getAllData = async (req, res) => {
             
             const totalCount = await AddCourseModel.countDocuments({ IsCompleted: false });
     
-            const data = await AddCourseModel.find({ IsCompleted: false }).skip(skip).limit(limit);
+            const data = await AddCourseModel.find({ IsCompleted: false }).skip(skip).limit(limit).sort({ _id: -1 });
             console.log("api called",data)
             res.status(200).json({ msg: "All Data",  data,
                 totalCount,

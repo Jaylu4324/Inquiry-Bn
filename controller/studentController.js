@@ -102,7 +102,7 @@ const getAllStu = async (req, res) => {
     const totalCount = await stuModel.countDocuments({ CourseId: req.query.id });
 
 
-    const data = await stuModel.find({ CourseId: req.query.id }).populate("CourseId").skip(skip).limit(limit);
+    const data = await stuModel.find({ CourseId: req.query.id }).populate("CourseId").skip(skip).limit(limit).sort({ _id: -1 });
     res.status(200).json({ msg: "All student", data,totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page });

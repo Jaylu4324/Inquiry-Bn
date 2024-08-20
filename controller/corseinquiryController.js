@@ -116,7 +116,7 @@ const displayOnGoingInquiry = async (req, res) => {
 
 
 
-        const data = await CourseInquirymodel.find({ onGoing: true, isDeleted: false }).skip(skip).limit(limit);
+        const data = await CourseInquirymodel.find({ onGoing: true, isDeleted: false }).skip(skip).limit(limit).sort({ _id: -1 });
         res.status(200).send({
             msg: "Display Ongoing Inquiry", data,
             totalCount,
@@ -137,7 +137,7 @@ const displayRejectInquiry = async (req, res) => {
 
         const totalCount = await CourseInquirymodel.countDocuments({ Reject: true, isDeleted: false });
 
-        const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false }).skip(skip).limit(limit);
+        const data = await CourseInquirymodel.find({ Reject: true, isDeleted: false }).skip(skip).limit(limit).sort({ _id: -1 });
         res.status(200).send({
             msg: "Display Rejected Inquiry", data,
             totalCount,
@@ -163,7 +163,7 @@ const displayConfirmInquiry = async (req, res) => {
         const totalCount = await CourseInquirymodel.countDocuments({ Confirm: true, isDeleted: false });
 
 
-        const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false }).skip(skip).limit(limit);
+        const data = await CourseInquirymodel.find({ Confirm: true, isDeleted: false }).skip(skip).limit(limit).sort({ _id: -1 });
         console.log("in---", data)
         res.status(200).send({
             msg: "Display Confirmed Inquiry", data,

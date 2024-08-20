@@ -218,7 +218,7 @@ const displayInvoice = async (req, res) => {
                 path: 'stuId',
                 select: '-baseString'
             })
-            .populate("courseId").skip(skip).limit(limit);
+            .populate("courseId").skip(skip).limit(limit).sort({ _id: -1 });
 
         // Send successful response with invoice data
         res.send({
@@ -257,7 +257,7 @@ const courseInvoice = async (req, res) => {
                 path: 'stuId',
                 select: '-baseString'
             })
-            .populate("courseId").skip(skip).limit(limit);;
+            .populate("courseId").skip(skip).limit(limit).sort({ _id: -1 });
 
         // Send successful response with invoice data
         totalCount,

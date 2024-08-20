@@ -109,7 +109,7 @@ const getAllData = async (req, res) => {
             if (req.query.limit) {
                 const totalCount = await eventModel.countDocuments({ IsCompleted: false });
 
-                const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit);
+                const data = await eventModel.find({ IsCompleted: false }).skip(skip).limit(limit).sort({ _id: -1 });
                 res.status(200).send({
                     msg: "All Data", data, totalCount,
                     totalPages: Math.ceil(totalCount / limit),
@@ -118,7 +118,7 @@ const getAllData = async (req, res) => {
             } else {
                 const totalCount = await eventModel.countDocuments({ IsCompleted: false });
 
-        const data = await eventModel.find({ IsCompleted: false });
+        const data = await eventModel.find({ IsCompleted: false }).sort({ _id: -1 });
         res.status(200).send({
             msg: "All Data", data, totalCount,
             totalPages: Math.ceil(totalCount / limit),
@@ -186,7 +186,7 @@ const eventComleted = async (req, res) => {
 
 const getComletedevent = async (req, res) => {
     try {
-        const data = await eventModel.find({ IsCompleted: true });
+        const data = await eventModel.find({ IsCompleted: true }).sort({ _id: -1 });
         res.status(200).send({ msg: "All Completed Events", data });
     } catch (err) {
         console.error('Error:', err);
@@ -196,7 +196,7 @@ const getComletedevent = async (req, res) => {
 
 const getAllevent = async (req, res) => {
     try {
-        const data = await eventModel.find({ TypeOfEvent: "event" });
+        const data = await eventModel.find({ TypeOfEvent: "event" }).sort({ _id: -1 });
         res.status(200).send({ msg: "All events", data });
     } catch (err) {
         console.error('Error:', err);

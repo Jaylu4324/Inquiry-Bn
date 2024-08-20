@@ -84,7 +84,7 @@ const deleteBatch = async (req, res) => {
 
 const displayBatch = async (req, res) => {
     try {
-        const data = await EventBacth.find({ EventId: req.query.id }).populate('EventId');
+        const data = await EventBacth.find({ EventId: req.query.id }).populate('EventId').sort({ _id: -1 });
         res.send({ msg: "Display Batch", data });
     } catch (err) {
         console.error('Error:', err);
@@ -112,7 +112,7 @@ const completedBatch = async (req, res) => {
 
 const displayCompletedBatch = async (req, res) => {
     try {
-        const data = await EventBacth.find({ isCompleted: true });
+        const data = await EventBacth.find({ isCompleted: true }).sort({ _id: -1 });
         res.send({ data });
     } catch (err) {
         console.error('Error:', err);
