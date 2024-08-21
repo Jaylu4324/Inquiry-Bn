@@ -174,7 +174,7 @@ const getiscompleted = async (req, res) => {
 
 const allcourse = async (req, res) => {
     try {
-        const getdata = await AddCourseModel.find()
+        const getdata = await AddCourseModel.find().sort({_id:-1})
         res.send({ data: getdata })
     }
     catch (err) {
