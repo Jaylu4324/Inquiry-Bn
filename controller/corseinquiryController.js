@@ -1,3 +1,4 @@
+
 const { CourseInquirymodel, validation } = require('../model/corseinquiryshcema');
 
 const addInquiry = async (req, res) => {
@@ -361,7 +362,26 @@ const studentAddDropdown = async (req, res) => {
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };
+const updatedConfirmCourse=async(req,res)=>{
+    let id=req.query.id
+    let arr=req.body.arr
+    let prevdata=await CourseInquirymodel.findOne({_id:id})
+    prevdata.Course=[...prevdata.Course,...arr]
+    let Testarr1= arr && arr.map((ele) => ({
+        Course: ele,
+        isAdded: false,
+    }));
+    prevdata.Testarr=[...prevdata.Testarr,...Testarr1]
+    let stuAddedArr1 = arr && arr.map((ele) => ({
+        Course: ele,
+        isStuAdded: false,
+    }));
+    prevdata.stuAddedArr=[...prevdata.stuAddedArr,...stuAddedArr1]
+    let updated=await CourseInquirymodel.updateOne({_id:id},prevdata)
+
+
+}
 
 
 
-module.exports = { addInquiry, updateinquiry, deletinquiry, studentAddDropdown, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth, Alldata };
+module.exports = { addInquiry, updatedConfirmCourse,updateinquiry, deletinquiry, studentAddDropdown, commonSearch, displayOnGoingInquiry, displayInquiry, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry, getISAddeddata, fillterbyDate, filterByMonth, Alldata };

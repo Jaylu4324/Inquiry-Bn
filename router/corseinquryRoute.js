@@ -3,7 +3,7 @@ const route = express.Router()
 const jwt = require('jsonwebtoken')
 require("dotenv").config()
 
-const { addInquiry, fillterbyDate,filterByMonth,studentAddDropdown,commonSearch,updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry,getISAddeddata, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,Alldata} = require('../controller/corseinquiryController')
+const { addInquiry, updatedConfirmCourse,fillterbyDate,filterByMonth,studentAddDropdown,commonSearch,updateinquiry, deletinquiry, displayInquiry, displayOnGoingInquiry,getISAddeddata, displayRejectInquiry, displayConfirmInquiry, RejectInquiry, ConfirmInquiry,Alldata} = require('../controller/corseinquiryController')
 const isAuth=(req,res,next)=>{
     let token = req.headers.authorization.split(' ')[1]
     console.log(req.headers)
@@ -37,6 +37,7 @@ route.get("/coursefillbymonth",isAuth,filterByMonth)
 route.get("/commansearchstu",isAuth,commonSearch)
 route.get("/Alldata",isAuth,Alldata)
 route.get("/falsestu",studentAddDropdown)
+route.post("updatedConfirmCourse",updatedConfirmCourse)
 
 
 
