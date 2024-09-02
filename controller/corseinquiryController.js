@@ -363,24 +363,29 @@ const studentAddDropdown = async (req, res) => {
     }
 };
 const updatedConfirmCourse=async(req,res)=>{
-    let id=req.query.id
-    let arr=req.body.arr
-    console.log("call")
-    console.log(req.body,req.query)
-    let prevdata=await CourseInquirymodel.findOne({_id:id})
-    prevdata.Course=[...prevdata.Course,...arr]
-    let Testarr1= arr && arr.map((ele) => ({
-        Course: ele,
-        isAdded: false,
-    }));
-    prevdata.Testarr=[...prevdata.Testarr,...Testarr1]
-    let stuAddedArr1 = arr && arr.map((ele) => ({
-        Course: ele,
-        isStuAdded: false,
-    }));
-    prevdata.stuAddedArr=[...prevdata.stuAddedArr,...stuAddedArr1]
-    let updated=await CourseInquirymodel.updateOne({_id:id},prevdata)
-    res.send({msg:"data update"})
+    try {
+        
+        let id=req.query.id
+        let arr=req.body.arr
+        console.log("call")
+        console.log(req.body,req.query)
+        let prevdata=await CourseInquirymodel.findOne({_id:id})
+        prevdata.Course=[...prevdata.Course,...arr]
+        let Testarr1= arr && arr.map((ele) => ({
+            Course: ele,
+            isAdded: false,
+        }));
+        prevdata.Testarr=[...prevdata.Testarr,...Testarr1]
+        let stuAddedArr1 = arr && arr.map((ele) => ({
+            Course: ele,
+            isStuAdded: false,
+        }));
+        prevdata.stuAddedArr=[...prevdata.stuAddedArr,...stuAddedArr1]
+        let updated=await CourseInquirymodel.updateOne({_id:id},prevdata)
+        res.send({msg:"data update"})
+    } catch (error) {
+        res.send({error})
+    }
 
 
 }
