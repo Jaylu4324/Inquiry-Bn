@@ -37,7 +37,7 @@ route.get("/coursefillbymonth",isAuth,filterByMonth)
 route.get("/commansearchstu",isAuth,commonSearch)
 route.get("/Alldata",isAuth,Alldata)
 route.get("/falsestu",studentAddDropdown)
-route.post("updatedConfirmCourse",updatedConfirmCourse)
+route.post("/updatedConfirmCourse",updatedConfirmCourse)
 
 
 
