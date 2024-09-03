@@ -1,4 +1,5 @@
 
+const Joi = require('joi');
 const { CourseInquirymodel, validation } = require('../model/corseinquiryshcema');
 
 const addInquiry = async (req, res) => {
@@ -365,8 +366,16 @@ const studentAddDropdown = async (req, res) => {
 const updatedConfirmCourse=async(req,res)=>{
     try {
         
+const  validate = Joi.object({
+    arr:Joi.array().required().min(1)
+})
+
         let id=req.query.id
         let arr=req.body.arr
+        let { error, value } = validate.validate({arr})
+        if (error) {
+            return res.status(400).send({ error });
+        }
         console.log("call")
         console.log(req.body,req.query)
         let prevdata=await CourseInquirymodel.findOne({_id:id})
@@ -382,9 +391,9 @@ const updatedConfirmCourse=async(req,res)=>{
         }));
         prevdata.stuAddedArr=[...prevdata.stuAddedArr,...stuAddedArr1]
         let updated=await CourseInquirymodel.updateOne({_id:id},prevdata)
-        res.send({msg:"data update"})
+        res.status(200).send({msg:"data update"})
     } catch (error) {
-        res.send({error})
+        res.status(500).send({error})
     }
 
 
