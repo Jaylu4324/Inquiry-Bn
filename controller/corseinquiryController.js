@@ -375,6 +375,7 @@ const  validate = Joi.object({
         let { error, value } = validate.validate({arr})
         if (error) {
             return res.status(400).send({ error });
+            console.log("")
         }
         console.log("call")
         console.log(req.body,req.query)
